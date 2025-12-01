@@ -11,6 +11,7 @@ from modules.mediaServer.emby import emby_get_all_movies
 from core.logs import LOG_ERROR
 from datetime import datetime, timedelta
 
+
 async def refresh_movies_feeds():
     try:
         from urllib.parse import urlparse
@@ -213,22 +214,23 @@ async def update_avbase_release_everyday():
     异步抓取当天作品列表，并写入数据库
     数据库操作同步执行（db = next(get_db())）
     """
-    date_str = datetime.date.today().strftime("%Y-%m-%d")
-    record_date = datetime.date.today() 
+    date_str = datetime.today().strftime("%Y-%m-%d")
+
+    record_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+
     db = next(get_db())
 
     try:
         result = await get_release_grouped_by_prefix(date_str)
-        json_data = json.dumps([r.model_dump() for r in result], ensure_ascii=False, default=str)
+        json_data = json.dumps(
+            [r.model_dump() for r in result], ensure_ascii=False, default=str
+        )
         db.query(AvbaseReleaseEveryday).filter(
             AvbaseReleaseEveryday.date == record_date
         ).delete()
         db.commit()
 
-        record = AvbaseReleaseEveryday(
-            date=record_date,
-            data_json=json_data
-        )
+        record = AvbaseReleaseEveryday(date=record_date, data_json=json_data)
         db.add(record)
         db.commit()
 
@@ -236,6 +238,7 @@ async def update_avbase_release_everyday():
         db.rollback()
     finally:
         db.close()
+
 
 def clean_cache_dir(max_age_hours=48):
     from pathlib import Path
