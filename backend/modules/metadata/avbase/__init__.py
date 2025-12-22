@@ -5,7 +5,9 @@ from collections import defaultdict
 from .model import *
 from .helper import *
 from core.config import _config
-from core.system import replace_domain_in_value
+from core.system import replace_domain_in_value, encrypt_payload
+from core.system.model import DecryptedImagePayload
+import time
 
 
 async def get_actress_info_by_actress_name(
@@ -24,9 +26,17 @@ async def get_actress_info_by_actress_name(
         talent = page_props.get("talent", {})
 
         primary = talent.get("primary", {})
+
         if changeImagePrefix:
+            real_image_url = primary.get("image_url", "")
             SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-            actress.avatar_url = f'{SYSTEM_IMAGE_PREFIX}{primary.get("image_url")}'
+
+            image_payload = DecryptedImagePayload(
+                url=real_image_url, exp=int(time.time()) + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS") * 3600, src="avbase"
+            )
+
+            image_token = encrypt_payload(image_payload)
+            actress.avatar_url = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
         else:
             actress.avatar_url = f'{primary.get("image_url")}'
 
@@ -130,7 +140,6 @@ async def get_release_grouped_by_prefix(
 
         all_works.extend(works_data)
         page += 1
-
 
     grouped: defaultdict[str, List[Work]] = defaultdict(list)
 

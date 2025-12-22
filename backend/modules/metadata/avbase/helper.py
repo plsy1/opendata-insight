@@ -7,6 +7,10 @@ from fastapi import HTTPException
 from .model import SocialMedia, Movie
 from core.config import _config
 
+from core.system.model import DecryptedImagePayload
+from core.system import encrypt_payload
+import time
+
 
 async def get_movies(url: str, changeImagePrefix: bool = True) -> List[Movie]:
     try:
@@ -43,9 +47,17 @@ async def get_movies(url: str, changeImagePrefix: bool = True) -> List[Movie]:
             img_url = img_tag.get("src", "") if img_tag else ""
             if img_url:
                 img_url = img_url.replace("ps.", "pl.")
+
                 if changeImagePrefix:
                     SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-                    img_url = f"{SYSTEM_IMAGE_PREFIX}{img_url}"
+
+                    image_payload = DecryptedImagePayload(
+                        url=img_url, exp=int(time.time()) + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS") * 3600, src="avbase"
+                    )
+
+                    image_token = encrypt_payload(image_payload)
+
+                    img_url = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
 
             actors = [
                 a.get_text(strip=True)

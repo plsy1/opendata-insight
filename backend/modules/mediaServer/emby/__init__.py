@@ -3,6 +3,10 @@ import json
 from typing import List, Dict
 from core.config import _config
 from core.database import get_db, EmbyMovie
+from core.system.model import DecryptedImagePayload
+from core.system import encrypt_payload
+import time
+
 
 def is_movie_in_db_partial(title: str):
     db = next(get_db())
@@ -63,7 +67,6 @@ def emby_get_item_counts() -> Dict:
 
 
 def emby_get_latest_items() -> List[Dict]:
-
     params = {
         "Recursive": "true",
         "Fields": "BasicSyncInfo,CanDelete,CanDownload,PrimaryImageAspectRatio,ProductionYear",
@@ -72,31 +75,44 @@ def emby_get_latest_items() -> List[Dict]:
         "MediaTypes": "Video",
         "Limit": 16,
     }
-    try:
-        EMBY_URL = _config.get("EMBY_URL")
-        result = []
-        userId = emby_get_userId_of_administrator()
-        info = emby_request(
-            f"/Users/{userId}/Items/Latest", use_header=True, params=params
+
+    EMBY_URL = _config.get("EMBY_URL")
+    SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
+    result = []
+
+    userId = emby_get_userId_of_administrator()
+    info = emby_request(f"/Users/{userId}/Items/Latest", use_header=True, params=params)
+
+    for item in info:
+        name = item.get("Name")
+        item_id = item.get("Id")
+        serverId = item.get("ServerId")
+
+        real_image_url = f"{EMBY_URL}/Items/{item_id}/Images/Primary"
+
+        image_payload = DecryptedImagePayload(
+            url=real_image_url, exp=int(time.time()) + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS") * 3600, src="emby"
         )
-        for item in info:
-            name = item.get("Name")
-            id = item.get("Id")
-            SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-            primary = f"{SYSTEM_IMAGE_PREFIX}{EMBY_URL}/Items/{id}/Images/Primary"
-            serverId = item.get("ServerId")
-            indexLink = f"{EMBY_URL}/web/index.html#!/item?id={id}&context=home&serverId={serverId}"
-            result.append(
-                {
-                    "name": name,
-                    "primary": primary,
-                    "serverId": serverId,
-                    "indexLink": indexLink,
-                }
-            )
-        return result
-    except Exception as e:
-        return
+
+        image_token = encrypt_payload(image_payload)
+
+        primary = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
+
+        indexLink = (
+            f"{EMBY_URL}/web/index.html#!/item?"
+            f"id={item_id}&context=home&serverId={serverId}"
+        )
+
+        result.append(
+            {
+                "name": name,
+                "primary": primary,
+                "serverId": serverId,
+                "indexLink": indexLink,
+            }
+        )
+
+    return result
 
 
 def emby_get_resume_items() -> List[Dict]:
@@ -115,12 +131,21 @@ def emby_get_resume_items() -> List[Dict]:
         info = emby_request(
             f"/Users/{userId}/Items/Resume", use_header=True, params=params
         )
+        SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
         for item in info.get("Items"):
             name = item.get("Name")
-            id = item.get("Id")
+            item_id = item.get("Id")
             serverId = item.get("ServerId")
-            SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-            primary = f"{SYSTEM_IMAGE_PREFIX}{EMBY_URL}/Items/{id}/Images/Primary"
+
+            real_image_url = f"{EMBY_URL}/Items/{item_id}/Images/Primary"
+            image_payload = DecryptedImagePayload(
+                url=real_image_url, exp=int(time.time()) + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS") * 3600, src="emby"
+            )
+
+            image_token = encrypt_payload(image_payload)
+
+            primary = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
+
             indexLink = f"{EMBY_URL}/web/index.html#!/item?id={id}&context=home&serverId={serverId}"
             PlayedPercentage = item.get("UserData").get("PlayedPercentage")
             ProductionYear = item.get("ProductionYear")
@@ -141,6 +166,7 @@ def emby_get_resume_items() -> List[Dict]:
 
 def emby_get_views() -> List[Dict]:
     try:
+        SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
         EMBY_URL = _config.get("EMBY_URL")
         result = []
         userId = emby_get_userId_of_administrator()
@@ -148,13 +174,19 @@ def emby_get_views() -> List[Dict]:
         items = info.get("Items")
         for item in items:
             name = item.get("Name")
-            Id = item.get("Id")
+            item_id = item.get("Id")
             ServerId = item.get("ServerId")
-            SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-            primary = f"{SYSTEM_IMAGE_PREFIX}{EMBY_URL}/Items/{Id}/Images/Primary"
-            indexLink = (
-                f"{EMBY_URL}/web/index.html#!/videos?serverId={ServerId}&parentId={Id}"
+
+            real_image_url = f"{EMBY_URL}/Items/{item_id}/Images/Primary"
+            image_payload = DecryptedImagePayload(
+                url=real_image_url, exp=int(time.time()) + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS") * 3600, src="emby"
             )
+
+            image_token = encrypt_payload(image_payload)
+
+            primary = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
+
+            indexLink = f"{EMBY_URL}/web/index.html#!/videos?serverId={ServerId}&parentId={item_id}"
             result.append(
                 {
                     "name": name,

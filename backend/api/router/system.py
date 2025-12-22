@@ -6,14 +6,34 @@ from fastapi import Query
 import asyncio
 from services.background_task import *
 from core.system import *
+from core.system import decrypt_payload
+from core.system.model import DecryptedImagePayload
 
 router = APIRouter()
 from core.config import _config
-
+import time
 
 @router.get("/get_image")
-async def get_image(url: str = Query(...)):
-    content, headers = await fetch_and_cache_image(url)
+async def get_image(token: str = Query(...)):
+    """
+    token: 加密后的图片访问 token
+    """
+    try:
+        payload: DecryptedImagePayload = decrypt_payload(token)
+    except ValueError:
+        raise HTTPException(status_code=403, detail="Invalid token")
+
+    if payload.exp < int(time.time()):
+        raise HTTPException(status_code=403, detail="Token expired")
+
+    # SSRF
+    # allowed_prefix = _config.get("EMBY_URL")
+    # if not payload.url.startswith(allowed_prefix):
+    #     raise HTTPException(status_code=403, detail="Invalid image source")
+
+
+    content, headers = await fetch_and_cache_image(payload.url)
+
     return StreamingResponse(content, media_type="image/jpeg", headers=headers)
 
 

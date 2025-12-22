@@ -6,7 +6,14 @@ import httpx
 from urllib.parse import urlparse, quote
 from typing import Any, List
 from core.config import _config
+from core.system.model import DecryptedImagePayload
 import aiofiles
+import json
+import base64
+import time
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.exceptions import InvalidTag
+
 
 CACHE_EXPIRE_HOURS = _config.get("CACHE_EXPIRE_HOURS")
 CACHE_DIR = _config.get("CACHE_DIR")
@@ -14,9 +21,11 @@ CACHE_DIR = _config.get("CACHE_DIR")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 
-def replace_domain_in_value(value: Any, prefix: str, exclude: List[str] = None) -> Any:
+def replace_domain_in_value(
+    value: Any, prefix: str, exclude: List[str] = None
+) -> Any:
     """
-    递归替换 dict/list 结构中的所有 URL 为 prefix + urlencode(原URL)
+    递归替换 dict/list 结构中的所有 URL 为 prefix + encrypt_payload(DecryptedImagePayload)
     排除域名列表中的 URL 不做替换
     """
     if exclude is None:
@@ -24,7 +33,8 @@ def replace_domain_in_value(value: Any, prefix: str, exclude: List[str] = None) 
 
     if isinstance(value, dict):
         return {
-            k: replace_domain_in_value(v, prefix, exclude) for k, v in value.items()
+            k: replace_domain_in_value(v, prefix, exclude)
+            for k, v in value.items()
         }
     elif isinstance(value, list):
         return [replace_domain_in_value(v, prefix, exclude) for v in value]
@@ -34,7 +44,13 @@ def replace_domain_in_value(value: Any, prefix: str, exclude: List[str] = None) 
                 parsed = urlparse(value)
                 if parsed.netloc in exclude:
                     return value
-                return f"{prefix}{quote(value, safe='')}"
+                payload = DecryptedImagePayload(
+                    url=value,
+                    exp=int(time.time()) + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS") * 3600,
+                    src="auto", 
+                )
+                token = encrypt_payload(payload)
+                return f"{prefix}{token}"
             except Exception:
                 return value
         else:
@@ -81,3 +97,38 @@ async def fetch_and_cache_image(url: str) -> tuple[IOBase, dict]:
         "ETag": etag,
     }
     return open(cache_path, "rb"), headers
+
+
+def encrypt_payload(payload: DecryptedImagePayload) -> str:
+    """
+    payload: DecryptedImagePayload 实例
+    返回：URL-safe base64 字符串
+    """
+    key = _config.get_image_token_key()
+    aesgcm = AESGCM(key)
+    nonce = os.urandom(12)
+
+    plaintext = json.dumps(
+        payload.model_dump(), separators=(",", ":"), ensure_ascii=False
+    ).encode("utf-8")
+
+    ciphertext = aesgcm.encrypt(nonce, plaintext, None)
+    token = base64.urlsafe_b64encode(nonce + ciphertext).decode("utf-8")
+    return token
+
+
+def decrypt_payload(token: str) -> DecryptedImagePayload:
+    """
+    解密 token 并返回 DecryptedImagePayload 实例
+    """
+    try:
+        raw = base64.urlsafe_b64decode(token.encode("utf-8"))
+        nonce, ciphertext = raw[:12], raw[12:]
+        key = _config.get_image_token_key()
+        aesgcm = AESGCM(key)
+        plaintext = aesgcm.decrypt(nonce, ciphertext, None)
+        data = json.loads(plaintext.decode("utf-8"))
+        payload = DecryptedImagePayload(**data)
+        return payload
+    except (InvalidTag, ValueError, json.JSONDecodeError) as e:
+        raise ValueError("Invalid image token") from e

@@ -1,5 +1,6 @@
 import os
 import yaml
+import base64
 from threading import Lock
 
 
@@ -23,12 +24,17 @@ class ConfigManager:
         else:
             self.config = {}
 
+        self.config.setdefault("CACHE_EXPIRE_HOURS", 24)
+        self.config.setdefault("SECRET_KEY", "change-me")
+        self.config.setdefault("ALGORITHM", "HS256")
+        self.config.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", 1440)
+        self.config.setdefault(
+            "IMAGE_TOKEN_SECRET", base64.urlsafe_b64encode(os.urandom(32)).decode()
+        )
+        self.config.setdefault("SYSTEM_IMAGE_EXPIRE_HOURS", 6)
+
         self.config["CACHE_DIR"] = "data/cache_images"
-        self.config["CACHE_EXPIRE_HOURS"] = 24
-        self.config["SECRET_KEY"] = "fuckyou"
-        self.config["ALGORITHM"] = "HS256"
-        self.config["ACCESS_TOKEN_EXPIRE_MINUTES"] = int(1440)
-        self.config["SYSTEM_IMAGE_PREFIX"] = "/api/v1/system/get_image?url="
+        self.config["SYSTEM_IMAGE_PREFIX"] = "/api/v1/system/get_image?token="
 
     def get(self, key: str, default=""):
         return self.config.get(key, os.environ.get(key, default))
@@ -57,6 +63,10 @@ class ConfigManager:
             "EMBY_URL": self.config.get("EMBY_URL", ""),
             "EMBY_API_KEY": self.config.get("EMBY_API_KEY", ""),
         }
+
+    def get_image_token_key(self) -> bytes:
+        key = self.get("IMAGE_TOKEN_SECRET")
+        return base64.urlsafe_b64decode(key)
 
 
 _config = ConfigManager()
