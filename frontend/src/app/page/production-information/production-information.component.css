@@ -136,6 +136,12 @@
   padding-top: 10px;
 }
 
+.sample-image {
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+}
+
 .sample-image-list {
   display: flex;
   overflow-x: hidden;
