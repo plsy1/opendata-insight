@@ -30,7 +30,7 @@ export class AvbaseComponent implements OnInit {
   releaseData: AvbaseEverydayReleaseByPrefix[] = [];
 
   constructor(
-    private PageExploreService: PageExploreServiceService,
+    public PageExploreService: PageExploreServiceService,
     private router: Router
   ) {}
 

@@ -76,6 +76,14 @@
   border-bottom: 1px solid #ddd;
 }
 
+.movie-img.blurred {
+  filter: blur(16px);
+}
+
+.movie-card:hover .movie-img.blurred {
+  filter: blur(0);
+}
+
 .library-icon {
   position: absolute;
   top: 8px;

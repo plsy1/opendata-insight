@@ -9,6 +9,7 @@
       (movieDelete)="onUnsubscribeClick()"
       [showID]="false"
       [showDetialButton]="true"
+      [enableBlur]="ProductionSubscriptionService.isEnableBlur$() | async"
     ></app-movie-card>
   </div>
 </div>

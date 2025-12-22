@@ -14,7 +14,7 @@ import { MoviePosterComponent } from '../../../../shared/movie-poster/movie-post
 export class ResumeWatchingComponent implements OnInit {
   resumeItems: ResumeItem[] = [];
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(public dashboardService: DashboardService) {}
 
 ngOnInit(): void {
   this.dashboardService.getEmbyResumeItems().subscribe({

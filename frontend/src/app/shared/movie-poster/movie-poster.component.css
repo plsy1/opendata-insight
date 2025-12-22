@@ -12,14 +12,12 @@
   cursor: pointer;
   border-radius: 8px;
   padding: 5px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s, box-shadow 0.2s;
   position: relative;
 }
 
 .poster-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .poster-card .image-wrapper {
@@ -29,7 +27,7 @@
   overflow: hidden;
 }
 
-.poster-card .image-wrapper .poster-image {
+.poster-card .poster-image {
   position: absolute;
   top: 0;
   left: 0;
@@ -45,12 +43,12 @@
   bottom: 0;
   width: 100%;
   text-align: center;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
   font-size: 14px;
   padding: 4px 0;
   opacity: 0;
   transition: opacity 0.3s;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
 }
 
 .poster-card .image-wrapper:hover .poster-image {

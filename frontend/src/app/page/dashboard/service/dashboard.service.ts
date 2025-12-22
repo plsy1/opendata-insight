@@ -23,4 +23,12 @@ export class DashboardService {
   getEmbyViews(): Observable<any> {
     return this.common.request<any>('GET', 'emby/get_views');
   }
+
+  isEnableBlur$(): Observable<boolean> {
+    return this.common.enableBlur$;
+  }
+
+  get enableBlur(): boolean {
+    return this.common.enableBlur;
+  }
 }

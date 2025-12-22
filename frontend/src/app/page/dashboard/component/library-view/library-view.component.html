@@ -15,6 +15,7 @@
           <img
             loading="lazy"
             class="item-image"
+            [class.blurred]="dashboardService.isEnableBlur$() | async"
             [src]="view.primary"
             alt="{{ view.name }}"
             (error)="onImageError($event, view)"

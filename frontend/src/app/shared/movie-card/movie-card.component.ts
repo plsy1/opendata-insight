@@ -22,6 +22,7 @@ export class MovieCardComponent {
   @Input() hideImage = false;
   @Input() showID = true;
   @Input() showDetialButton = false;
+  @Input() enableBlur: boolean | null = false;
 
   inLibrary: boolean = false;
   libraryLink?: string;

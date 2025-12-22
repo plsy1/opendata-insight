@@ -13,7 +13,7 @@ import { MoviePosterComponent } from '../../../../shared/movie-poster/movie-post
 })
 export class RecentlyAddedComponent implements OnInit {
   latestItems: EmbyLatestItem[] = [];
-  constructor(private dashboardService: DashboardService) {}
+  constructor(public dashboardService: DashboardService) {}
 ngOnInit(): void {
   this.dashboardService.getEmbyLatestItems().subscribe({
     next: (data) => {

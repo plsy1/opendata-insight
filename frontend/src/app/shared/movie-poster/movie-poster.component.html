@@ -1,7 +1,18 @@
 <ng-container *ngIf="!hideImage && imgUrl">
-  <a *ngIf="link; else noLink" [href]="link" target="_blank" class="poster-card">
+  <a
+    *ngIf="link; else noLink"
+    [href]="link"
+    target="_blank"
+    class="poster-card"
+  >
     <div class="image-wrapper">
-      <img [src]="imgUrl" [alt]="title" class="poster-image" (error)="onImageError($event)" />
+      <img
+        [src]="imgUrl"
+        [alt]="title"
+        class="poster-image"
+        [class.blurred]="enableBlur"
+        (error)="onImageError($event)"
+      />
       <div class="hover-name">{{ title }}</div>
     </div>
   </a>
@@ -9,7 +20,13 @@
   <ng-template #noLink>
     <div class="poster-card">
       <div class="image-wrapper">
-        <img [src]="imgUrl" [alt]="title" class="poster-image" (error)="onImageError($event)" />
+        <img
+          [src]="imgUrl"
+          [alt]="title"
+          class="poster-image"
+          [class.blurred]="enableBlur"
+          (error)="onImageError($event)"
+        />
         <div class="hover-name">{{ title }}</div>
       </div>
     </div>

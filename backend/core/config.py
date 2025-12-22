@@ -31,7 +31,7 @@ class ConfigManager:
         self.config.setdefault(
             "IMAGE_TOKEN_SECRET", base64.urlsafe_b64encode(os.urandom(32)).decode()
         )
-        self.config.setdefault("SYSTEM_IMAGE_EXPIRE_HOURS", 6)
+        self.config.setdefault("SYSTEM_IMAGE_EXPIRE_HOURS", 1)
 
         self.config["CACHE_DIR"] = "data/cache_images"
         self.config["SYSTEM_IMAGE_PREFIX"] = "/api/v1/system/get_image?token="

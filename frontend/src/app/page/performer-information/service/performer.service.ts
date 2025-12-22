@@ -74,4 +74,12 @@ export class PerformerService {
       params: { name },
     });
   }
+
+    isEnableBlur$(): Observable<boolean> {
+    return this.common.enableBlur$;
+  }
+
+  get enableBlur(): boolean {
+    return this.common.enableBlur;
+  }
 }

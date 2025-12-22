@@ -52,7 +52,13 @@ async def get_movies(url: str, changeImagePrefix: bool = True) -> List[Movie]:
                     SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
 
                     image_payload = DecryptedImagePayload(
-                        url=img_url, exp=int(time.time()) + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS") * 3600, src="avbase"
+                        url=img_url,
+                        exp=(
+                            (int(time.time()) // 3600)
+                            + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS")
+                        )
+                        * 3600,
+                        src="avbase",
                     )
 
                     image_token = encrypt_payload(image_payload)

@@ -47,7 +47,7 @@ export class KeywordsSearchComponent implements OnInit {
   libraryStatus: { [title: string]: boolean } = {};
 
   constructor(
-    private keywordsService: KeywordsSearchService,
+    public keywordsService: KeywordsSearchService,
     private router: Router,
     private getRoute: ActivatedRoute
   ) {}

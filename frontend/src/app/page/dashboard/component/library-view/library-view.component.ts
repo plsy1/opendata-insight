@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { DashboardService } from './../../service/dashboard.service';
@@ -12,7 +12,8 @@ import { EmbyView } from '../../models/dashboard.interface';
 })
 export class LibraryViewComponent implements OnInit {
   views: EmbyView[] = [];
-  constructor(private dashboardService: DashboardService) {}
+
+  constructor(public dashboardService: DashboardService) {}
 
 ngOnInit(): void {
   this.dashboardService.getEmbyViews().subscribe({

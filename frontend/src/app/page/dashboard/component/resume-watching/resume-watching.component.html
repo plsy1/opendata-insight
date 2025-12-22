@@ -11,6 +11,7 @@
         [imgUrl]="item.primary"
         [link]="item.indexLink"
         [hideImage]="item.hideImage"
+        [enableBlur]="dashboardService.isEnableBlur$() | async"
       ></app-movie-poster>
     </div>
   </mat-card-content>

@@ -25,7 +25,7 @@ export class ProductionSubscriptionListComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private ProductionSubscriptionService: ProductionSubscriptionService
+    public ProductionSubscriptionService: ProductionSubscriptionService
   ) {}
 
   ngOnInit(): void {

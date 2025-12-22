@@ -23,7 +23,7 @@ import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.com
 export class DownloadHistoryComponent {
   keywordFeeds: KeywordFeed[] = [];
   constructor(
-    private ProductionSubscriptionService: ProductionSubscriptionService,
+    public ProductionSubscriptionService: ProductionSubscriptionService,
     private router: Router
   ) {}
 

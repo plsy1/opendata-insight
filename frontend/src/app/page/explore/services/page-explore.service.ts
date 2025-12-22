@@ -122,4 +122,12 @@ export class PageExploreServiceService {
       { params: { yyyymmdd } }
     );
   }
+
+  isEnableBlur$(): Observable<boolean> {
+    return this.common.enableBlur$;
+  }
+
+  get enableBlur(): boolean {
+    return this.common.enableBlur;
+  }
 }

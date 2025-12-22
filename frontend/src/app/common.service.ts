@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, map, throwError, Observable } from 'rxjs';
-import { of } from 'rxjs';
+import { of, BehaviorSubject } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
@@ -11,6 +11,30 @@ export class CommonService {
   apiUrl = '/api/v1';
   public isJumpFromProductionPage: boolean = false;
   public currentPerformer: string = '';
+
+  private readonly BLUR_KEY = 'enableBlur';
+
+  private enableBlurSubject = new BehaviorSubject<boolean>(this.loadBlur());
+  enableBlur$ = this.enableBlurSubject.asObservable();
+
+  get enableBlur(): boolean {
+    return this.enableBlurSubject.value;
+  }
+
+  setEnableBlur(value: boolean) {
+    this.enableBlurSubject.next(value);
+    localStorage.setItem(this.BLUR_KEY, String(value));
+  }
+
+  private loadBlur(): boolean {
+    const saved = localStorage.getItem(this.BLUR_KEY);
+    return saved !== 'false';
+  }
+
+  toggleBlur(): void {
+    const newValue = !this.enableBlur;
+    this.setEnableBlur(newValue);
+  }
 
   constructor(private router: Router, private http: HttpClient) {}
 

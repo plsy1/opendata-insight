@@ -10,19 +10,6 @@
   gap: 12px;
 }
 
-.image-wrapper {
-  position: relative;
-  width: 100%;
-  cursor: pointer;
-  border-radius: 4px;
-  overflow: hidden;
-  transition: transform 0.2s;
-}
-
-.image-wrapper:hover {
-  transform: translateY(-2px);
-}
-
 .item-image {
   width: 100%;
   display: block;
@@ -31,8 +18,12 @@
   transition: filter 0.2s;
 }
 
+.item-image.blurred {
+  filter: blur(8px);
+}
+
 .image-wrapper:hover .item-image {
-  filter: brightness(50%);
+  filter: blur(0);
 }
 
 .hover-name {
@@ -43,10 +34,6 @@
   background-color: rgba(0, 0, 0, 0.3);
   color: #fff;
   opacity: 0;
-}
-
-.image-wrapper:hover .hover-name {
-  opacity: 1;
 }
 
 @media (max-width: 768px) {
@@ -63,4 +50,8 @@
 
 mat-card-header {
   padding: 16px;
+}
+
+.image-wrapper:hover .hover-name {
+  opacity: 1;
 }

@@ -7,9 +7,6 @@
   box-sizing: border-box;
 }
 
-
-
-
 .poster-image-wrapper {
   position: relative;
 }
@@ -23,9 +20,6 @@
   }
 }
 
-
-/* span {
-  margin-top: 8px;
-  font-size: 14px;
-  line-height: 1.2;
-} */
+.avatar-img.blurred {
+  filter: blur(8px);
+}

@@ -1,3 +1,4 @@
+import { CommonService } from './../../../../common.service';
 import { Component, inject } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,7 +21,8 @@ export class TopbarComponent {
   constructor(
     private location: Location,
     private homeService: HomeService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    public commonService: CommonService
   ) {}
 
   toggleSidebar() {

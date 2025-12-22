@@ -13,5 +13,11 @@
     aria-label="changeTheme"
   >
   </i>
+  <i
+    class="fas"
+    [ngClass]="commonService.enableBlur ? 'fa-eye-slash' : 'fa-eye'"
+    (click)="commonService.toggleBlur()"
+    aria-label="image-blur"
+  ></i>
   <i class="fas fa-search icon" (click)="OpenSearch()" aria-label="Search"></i>
 </mat-toolbar>

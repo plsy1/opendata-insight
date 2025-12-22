@@ -32,7 +32,7 @@ interface performerList {
 export class PerformerSubscriptionListComponent {
   ActressList: performerList[] = [];
   constructor(
-    private PerformerSubscriptionService: PerformerSubscriptionService,
+    public PerformerSubscriptionService: PerformerSubscriptionService,
     private router: Router,
     private snackBar: MatSnackBar
   ) {}

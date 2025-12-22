@@ -32,7 +32,13 @@ async def get_actress_info_by_actress_name(
             SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
 
             image_payload = DecryptedImagePayload(
-                url=real_image_url, exp=int(time.time()) + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS") * 3600, src="avbase"
+                url=real_image_url,
+                exp=(
+                    (int(time.time()) // 3600)
+                    + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS")
+                )
+                * 3600,
+                src="avbase",
             )
 
             image_token = encrypt_payload(image_payload)
@@ -117,7 +123,7 @@ async def get_index():
 
 
 async def get_release_grouped_by_prefix(
-    date_str: str,changeImagePrefix: bool = True
+    date_str: str, changeImagePrefix: bool = True
 ) -> List[AvbaseEverydayReleaseByPrefix]:
     """
     获取指定日期的作品列表，并按 prefix 分组

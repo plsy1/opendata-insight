@@ -40,7 +40,7 @@ export class FanzaComponent implements OnInit {
   currentWorkPage: number = 1;
 
   constructor(
-    private PageExploreService: PageExploreServiceService,
+    public PageExploreService: PageExploreServiceService,
     private router: Router
   ) {}
 

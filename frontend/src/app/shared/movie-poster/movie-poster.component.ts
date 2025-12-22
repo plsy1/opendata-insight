@@ -13,6 +13,7 @@ export class MoviePosterComponent {
   @Input() imgUrl: string | null = null;
   @Input() link: string | null = null;
   @Input() hideImage: boolean = false;
+  @Input() enableBlur: boolean | null = false;
 
   onImageError(event: Event) {
     (event.target as HTMLImageElement).src = 'assets/favicon.png';

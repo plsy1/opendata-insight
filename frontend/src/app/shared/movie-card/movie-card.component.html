@@ -20,9 +20,10 @@
   </mat-menu>
 
   <img
-    [src]="imgUrl"
+    [src]="imgUrl || 'assets/favicon.ico'"
     [alt]="title"
     class="movie-img"
+    [class.blurred]="enableBlur"
     loading="lazy"
     (load)="onImageLoad()"
     (error)="onImageError($event)"

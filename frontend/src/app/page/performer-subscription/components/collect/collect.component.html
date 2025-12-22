@@ -2,12 +2,15 @@
   <mat-card *ngFor="let actress of ActressList" class="actress-card">
     <div class="card-content" (click)="onClick(actress.name)">
       <img
-        [src]="actress.avatar_url || 'assets/favicon.png'"
+        [src]="actress.avatar_url || 'assets/favicon.ico'"
         alt="Actress Avatar"
         class="avatar-img"
+        [class.blurred]="PerformerSubscriptionService.isEnableBlur$() | async"
+        
       />
-      <mat-card-title class="title">{{ actress.name }}</mat-card-title>
+            <mat-card-title class="title">{{ actress.name }}</mat-card-title>
     </div>
+    
 
     <button
       mat-icon-button
