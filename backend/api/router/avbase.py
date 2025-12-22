@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends
 from core.auth import tokenInterceptor
+from core.config import _config
 from modules.metadata.avbase import *
 from core.database import get_db, AvbaseReleaseEveryday
+
 router = APIRouter()
 
 
@@ -46,26 +48,30 @@ async def get_relesae(yyyymmdd: str, isValid: str = Depends(tokenInterceptor)):
 
     db = next(get_db())
     try:
-        record = db.query(AvbaseReleaseEveryday).filter(
-            AvbaseReleaseEveryday.date == record_date
-        ).first()
+        record = (
+            db.query(AvbaseReleaseEveryday)
+            .filter(AvbaseReleaseEveryday.date == record_date)
+            .first()
+        )
+
+        SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
 
         if record:
-            return json.loads(record.data_json)
-        
-        result = await get_release_grouped_by_prefix(date_str)
+            result = json.loads(record.data_json)
+            result = replace_domain_in_value(result, SYSTEM_IMAGE_PREFIX)
+            return result
 
-        json_data = json.dumps([r.model_dump() for r in result], ensure_ascii=False, default=str)
+        result = await get_release_grouped_by_prefix(date_str, False)
 
-
-        new_record = AvbaseReleaseEveryday(
-            date=record_date,
-            data_json=json_data
+        json_data = json.dumps(
+            [r.model_dump() for r in result], ensure_ascii=False, default=str
         )
+
+        new_record = AvbaseReleaseEveryday(date=record_date, data_json=json_data)
         db.add(new_record)
         db.commit()
 
-        return result
+        return replace_domain_in_value(result, SYSTEM_IMAGE_PREFIX)
 
     except Exception as e:
         db.rollback()

@@ -65,7 +65,7 @@ def init_app_scheduler() -> AppScheduler:
         clean_cache_dir,
         trigger=IntervalTrigger,
         job_id="Cache",
-        name="Clean Image Cache",
+        name="Clean Cache",
         hours=3,
     )
 

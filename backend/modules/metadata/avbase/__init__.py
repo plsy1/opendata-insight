@@ -117,7 +117,7 @@ async def get_index():
 
 
 async def get_release_grouped_by_prefix(
-    date_str: str,
+    date_str: str,changeImagePrefix: bool = True
 ) -> List[AvbaseEverydayReleaseByPrefix]:
     """
     获取指定日期的作品列表，并按 prefix 分组
@@ -133,8 +133,9 @@ async def get_release_grouped_by_prefix(
         data = await get_next_data(url)
 
         works_data = data.get("props", {}).get("pageProps", {}).get("works", [])
-        works_data = replace_domain_in_value(works_data, SYSTEM_IMAGE_PREFIX)
 
+        if changeImagePrefix:
+            works_data = replace_domain_in_value(works_data, SYSTEM_IMAGE_PREFIX)
         if not works_data:
             break
 

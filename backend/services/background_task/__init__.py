@@ -221,7 +221,7 @@ async def update_avbase_release_everyday():
     db = next(get_db())
 
     try:
-        result = await get_release_grouped_by_prefix(date_str)
+        result = await get_release_grouped_by_prefix(date_str, False)
         json_data = json.dumps(
             [r.model_dump() for r in result], ensure_ascii=False, default=str
         )
@@ -240,13 +240,24 @@ async def update_avbase_release_everyday():
         db.close()
 
 
-def clean_cache_dir(max_age_hours=48):
+def clean_cache_dir(max_image_cache_hours=48, max_avbase_release_days: int = 7):
     from pathlib import Path
 
     CACHE_DIR = _config.get("CACHE_DIR")
     now = datetime.now()
     for f in Path(CACHE_DIR).glob("*"):
         if now - datetime.fromtimestamp(f.stat().st_mtime) > timedelta(
-            hours=max_age_hours
+            hours=max_image_cache_hours
         ):
             f.unlink()
+
+    cutoff_date = datetime.today().date() - timedelta(days=max_avbase_release_days)
+    db = next(get_db())
+
+    try:
+        db.query(AvbaseReleaseEveryday).filter(
+            AvbaseReleaseEveryday.date < cutoff_date
+        ).delete(synchronize_session=False)
+        db.commit()
+    except Exception as e:
+        db.rollback()
