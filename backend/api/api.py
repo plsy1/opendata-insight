@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .router import prowlarr,qbittorrent,javbus,avbase,auth,feed,fanza,emby,javtrailers
+from .router import prowlarr,qbittorrent,javbus,avbase,auth,feed,fanza,emby,javtrailers,statistic
 from .router import system
 from core.auth import *
 
@@ -14,3 +14,4 @@ api_router.include_router(fanza.router, prefix="/fanza", tags=["fanza"])
 api_router.include_router(emby.router, prefix="/emby", tags=["emby"])
 api_router.include_router(javtrailers.router, prefix="/javtrailers", tags=["javtrailers"])
 api_router.include_router(system.router, prefix="/system", tags=["system"])
+api_router.include_router(statistic.router, prefix="/statistic", tags=["statistic"])

@@ -24,6 +24,10 @@ export class DashboardService {
     return this.common.request<any>('GET', 'emby/get_views');
   }
 
+  getAllStatistic(): Observable<any> {
+    return this.common.request<any>('GET', 'statistic/all');
+  }
+
   isEnableBlur$(): Observable<boolean> {
     return this.common.enableBlur$;
   }

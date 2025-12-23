@@ -1,0 +1,27 @@
+export interface StatOverview {
+  total: number;
+  downloaded: number;
+  not_downloaded: number;
+}
+
+export interface StatDailyItem {
+  date: string;   // ISO date: YYYY-MM-DD
+  count: number;
+}
+
+export interface StatStudioItem {
+  studio: string;
+  count: number;
+}
+
+export interface StatActorItem {
+  actor: string;
+  count: number;
+}
+
+export interface StatAllResponse {
+  overview: StatOverview;
+  daily: StatDailyItem[];
+  studio: StatStudioItem[];
+  actors: StatActorItem[];
+}

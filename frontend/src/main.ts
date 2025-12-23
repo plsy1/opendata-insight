@@ -1,11 +1,22 @@
 import { bootstrapApplication } from '@angular/platform-browser';
-import { AppComponent } from './app/app.component';
+import { importProvidersFrom } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
+
+import { NgxEchartsModule } from 'ngx-echarts';
+
+import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
 
 appConfig.providers = [
   ...(appConfig.providers || []),
-  provideHttpClient()
+
+  provideHttpClient(),
+
+  importProvidersFrom(
+    NgxEchartsModule.forRoot({
+      echarts: () => import('echarts'),
+    })
+  ),
 ];
 
 bootstrapApplication(AppComponent, appConfig)

@@ -1,0 +1,226 @@
+:host {
+  display: block;
+  padding: 16px;
+}
+
+/* ================= Theme Variables ================= */
+
+:host {
+  --bg-card: #ffffff;
+  --bg-soft: #fafafa;
+  --text-main: #222;
+  --text-sub: #777;
+  --border-soft: #eee;
+  --shadow-soft: 0 6px 18px rgba(0, 0, 0, 0.04);
+
+  --success-bg: linear-gradient(135deg, #e8f5e9, #f1fbf3);
+  --warn-bg: linear-gradient(135deg, #fff3e0, #fff8f0);
+}
+
+:host-context(.dark-theme) {
+  --bg-card: #1e1e1e;
+  --bg-soft: #2a2a2a;
+  --text-main: #e5e5e5;
+  --text-sub: #aaa;
+  --border-soft: #333;
+  --shadow-soft: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  --success-bg: linear-gradient(135deg, #1f3d2b, #264c36);
+  --warn-bg: linear-gradient(135deg, #4a3822, #5a442a);
+}
+
+/* ================= Overview ================= */
+
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-soft);
+}
+
+.stat-card.success {
+  background: var(--success-bg);
+}
+
+.stat-card.warn {
+  background: var(--warn-bg);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.stat-icon mat-icon {
+  font-size: 22px;
+  color: var(--text-main);
+}
+
+.stat-content .label {
+  font-size: 12px;
+  color: var(--text-sub);
+}
+
+.stat-content .value {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.1;
+}
+
+/* ================= Chart ================= */
+
+.chart-card {
+  margin-bottom: 20px;
+  padding: 16px;
+}
+
+.chart {
+  width: 100%;
+  height: 260px;
+}
+
+/* ================= Ranking ================= */
+
+.ranking-section {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.ranking-card {
+  padding: 16px;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-soft);
+  padding-bottom: 6px;
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--bg-soft);
+  margin-bottom: 8px;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.ranking-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.rank {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ccc;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+.name {
+  flex: 1;
+  color: var(--text-main);
+}
+
+.count {
+  font-weight: 600;
+  color: var(--text-sub);
+}
+
+/* ================= Top 3 Highlight ================= */
+
+.rank-1 {
+  border-left: 3px solid #f5c400;
+}
+
+.rank-1 .rank {
+  background: #f5c400;
+}
+
+.rank-2 {
+  border-left: 3px solid #bdbdbd;
+}
+
+.rank-2 .rank {
+  background: #bdbdbd;
+}
+
+.rank-3 {
+  border-left: 3px solid #cd7f32;
+}
+
+.rank-3 .rank {
+  background: #cd7f32;
+}
+
+/* ================= Loading ================= */
+
+.loading-card {
+  text-align: center;
+  padding: 24px;
+}
+
+/* ================= Responsive ================= */
+
+/* Mobile */
+@media (max-width: 599px) {
+  .overview-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .ranking-section {
+    grid-template-columns: 1fr;
+  }
+
+  .chart {
+    height: 220px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 600px) {
+  .chart {
+    height: 300px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 960px) {
+  :host {
+    padding: 24px;
+  }
+
+  .chart {
+    height: 340px;
+  }
+}

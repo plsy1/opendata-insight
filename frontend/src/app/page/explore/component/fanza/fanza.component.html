@@ -12,7 +12,7 @@
         [src]="actress.image || 'assets/favicon.ico'"
         [alt]="actress.name"
         class="avatar-img"
-                    [class.blurred]="PageExploreService.isEnableBlur$() | async"
+        [class.blurred]="PageExploreService.isEnableBlur$() | async"
         loading="lazy"
       />
       <div>{{ actress.name }}</div>
@@ -66,7 +66,7 @@
     [actors]="work.actresses"
     [rank]="work.rank"
     (movieClick)="posterClick($event)"
-                [class.blurred]="PageExploreService.isEnableBlur$() | async"
+    [enableBlur]="PageExploreService.isEnableBlur$() | async"
   ></app-movie-card>
 </div>
 

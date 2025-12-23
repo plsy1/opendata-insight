@@ -1,0 +1,87 @@
+<div class="dashboard" *ngIf="statisticData as data">
+  <!-- ================= Overview ================= -->
+  <div class="overview-cards">
+    <mat-card class="stat-card">
+      <div class="stat-icon">
+        <mat-icon>library_books</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="label">Total</div>
+        <div class="value">{{ data.overview.total }}</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card success">
+      <div class="stat-icon">
+        <mat-icon>download_done</mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="label">Downloaded</div>
+        <div class="value">{{ data.overview.downloaded }}</div>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card warn">
+      <div class="stat-icon">
+        <mat-icon>subscriptions </mat-icon>
+      </div>
+      <div class="stat-content">
+        <div class="label">Subscribing</div>
+        <div class="value">{{ data.overview.not_downloaded }}</div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- ================= Chart ================= -->
+  <mat-card class="chart-card">
+    <h2 class="card-title">
+      <mat-icon>timeline</mat-icon>
+      Download Trend
+    </h2>
+    <div echarts class="chart" [options]="dailyChartOptions"></div>
+  </mat-card>
+
+  <!-- ================= Ranking ================= -->
+  <div class="ranking-section">
+    <!-- Studio Ranking -->
+    <mat-card class="ranking-card">
+      <h2 class="card-title">
+        <mat-icon>business</mat-icon>
+        Label Ranking
+      </h2>
+
+      <div
+        class="ranking-item"
+        *ngFor="let s of data.studio; index as i"
+        [ngClass]="'rank-' + (i + 1)"
+      >
+        <span class="rank">{{ i + 1 }}</span>
+        <span class="name">{{ s.studio }}</span>
+        <span class="count">{{ s.count }}</span>
+      </div>
+    </mat-card>
+
+    <!-- Actor Ranking -->
+    <mat-card class="ranking-card">
+      <h2 class="card-title">
+        <mat-icon>person</mat-icon>
+        Actor Ranking
+      </h2>
+
+      <div
+        class="ranking-item"
+        *ngFor="let a of data.actors; index as i"
+        [ngClass]="'rank-' + (i + 1)"
+      >
+        <span class="rank">{{ i + 1 }}</span>
+        <span class="name">{{ a.actor }}</span>
+        <span class="count">{{ a.count }}</span>
+      </div>
+    </mat-card>
+  </div>
+</div>
+
+<!-- Loading -->
+<mat-card *ngIf="!statisticData" class="loading-card">
+  Loading statistics...
+</mat-card>
