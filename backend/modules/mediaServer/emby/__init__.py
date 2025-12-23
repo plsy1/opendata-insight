@@ -106,12 +106,15 @@ def emby_get_latest_items() -> List[Dict]:
             f"id={item_id}&context=home&serverId={serverId}"
         )
 
+        playbackLink = f"{EMBY_URL}/emby/videos/{item_id}/stream.mp4?api_key={_config.get('EMBY_API_KEY')}&Static=true"
+
         result.append(
             {
                 "name": name,
                 "primary": primary,
                 "serverId": serverId,
                 "indexLink": indexLink,
+                "playbackLink": playbackLink,
             }
         )
 
@@ -158,6 +161,7 @@ def emby_get_resume_items() -> List[Dict]:
             indexLink = f"{EMBY_URL}/web/index.html#!/item?id={item_id}&context=home&serverId={serverId}"
             PlayedPercentage = item.get("UserData").get("PlayedPercentage")
             ProductionYear = item.get("ProductionYear")
+            playbackLink = f"{EMBY_URL}/emby/videos/{item_id}/stream.mp4?api_key={_config.get('EMBY_API_KEY')}&Static=true"
             result.append(
                 {
                     "name": name,
@@ -166,6 +170,7 @@ def emby_get_resume_items() -> List[Dict]:
                     "indexLink": indexLink,
                     "PlayedPercentage": PlayedPercentage,
                     "ProductionYear": ProductionYear,
+                    "playbackLink": playbackLink,
                 }
             )
         return result

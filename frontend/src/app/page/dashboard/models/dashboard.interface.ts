@@ -21,6 +21,7 @@ export interface EmbyLatestItem {
   primary_local:string;
   serverId: string;
   indexLink: string;
+  playbackLink: string
   hideImage: boolean;
 }
 
@@ -30,6 +31,7 @@ export interface ResumeItem {
     primary_local:string;
   serverId: string;
   indexLink: string;
+  playbackLink: string
   PlayedPercentage: number;
   ProductionYear?: number;
   hideImage: boolean;

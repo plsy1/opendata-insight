@@ -42,6 +42,7 @@ async def get_actress_info_by_actress_name(
             )
 
             image_token = encrypt_payload(image_payload)
+            actress.raw_avatar_url = real_image_url
             actress.avatar_url = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
         else:
             actress.avatar_url = f'{primary.get("image_url")}'

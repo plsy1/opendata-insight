@@ -14,14 +14,14 @@
       <div class="action-icons">
         <button
           mat-icon-button
-          (click)="subscribeActress(performerInformation?.avatar_url)"
+          (click)="subscribeActress(performerInformation?.raw_avatar_url)"
           matTooltip="Add to Feed"
         >
           <i class="fas fa-rss"></i>
         </button>
         <button
           mat-icon-button
-          (click)="collectActress(performerInformation?.avatar_url)"
+          (click)="collectActress(performerInformation?.raw_avatar_url)"
           matTooltip="Add to Collection"
         >
           <i class="fas fa-heart"></i>

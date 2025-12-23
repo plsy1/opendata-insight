@@ -134,6 +134,7 @@ class Actress(BaseModel):
     blood_type: str = ""
     aliases: List[str] = Field(default_factory=list)
     avatar_url: str = ""
+    raw_avatar_url: str = ""
     social_media: List[SocialMedia] = Field(default_factory=list)
     
     
