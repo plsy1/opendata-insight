@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonService } from '../../common.service';
+import { MovieInformation } from './models/movie-information.interface';
+import { createDefaultMovieInformation } from './utils/default-movie-info';
 
 @Component({
   selector: 'app-production-information',
@@ -24,7 +26,7 @@ import { CommonService } from '../../common.service';
   styleUrl: './production-information.component.css',
 })
 export class ProductionInformationComponent implements OnInit {
-  movieData: any;
+  movieData: MovieInformation = createDefaultMovieInformation();
   movieId: string = '';
   isLoading: boolean = false;
 
@@ -86,11 +88,13 @@ export class ProductionInformationComponent implements OnInit {
 
   subscribeToMovie(): void {
     const work = this.movieData.props.pageProps.work;
-    const actorNames = work.casts.map((c: { actor: { name: string } }) => c.actor.name).join(', ');
+    const actorNames = work.casts
+      .map((c: { actor: { name: string } }) => c.actor.name)
+      .join(', ');
     this.ProductionInformationService.addProductionSubscribe(
       actorNames,
       this.movieData.props.pageProps.work.work_id,
-      this.movieData.props.pageProps.work.products[0]?.image_url,
+      this.movieData.props.pageProps.work.products[0].image_url ?? '',
       this.movieId
     ).subscribe({
       next: (results) => {

@@ -1,4 +1,7 @@
-<mat-card class="performer-card">
+<div *ngIf="isLoading" class="loading">
+  Loading...
+</div>
+<mat-card class="performer-card" *ngIf="!isLoading">
   <div class="performer-content-wrapper">
     <!-- 左侧头像 -->
     <div class="avatar-section">

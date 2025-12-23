@@ -1,4 +1,7 @@
-<div class="top-bar">
+<div *ngIf="isLoading" class="loading">
+</div>
+
+<div class="top-bar" *ngIf="!isLoading">
   <!-- 筛选框 -->
   <mat-form-field class="search-box" appearance="outline">
     <mat-label>Type</mat-label>

@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
 export class ActressInformationComponent {
   name: string = '';
   performerInformation: any;
-
+  isLoading: boolean = false;
   constructor(
     private getRoute: ActivatedRoute,
     private service: PerformerService,
@@ -40,13 +40,16 @@ export class ActressInformationComponent {
   }
 
   loadActressInformation(name: string): void {
+    this.isLoading = true;
     this.service.getActressInformation(encodeURIComponent(name)).subscribe({
       next: (data) => {
         this.performerInformation = data;
         this.service.savePerformerInformation(data);
+        this.isLoading = false;
       },
       error: (error) => {
         console.error('Failed to load', error);
+        this.isLoading = false;
       },
     });
   }

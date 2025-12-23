@@ -1,14 +1,22 @@
-<div class="thetop">
+<div *ngIf="isLoading" class="loading">
+  Loading...
+</div>
+
+<div class="thetop" *ngIf="!isLoading">
   <div class="movie-containerr">
     <div class="movie-left">
       <h2>
-        {{ movieData?.props?.pageProps?.work?.work_id || "Loading" }} -
-        {{ movieData?.props?.pageProps?.work?.title || "Loading" }}
+        {{ movieData.props.pageProps.work.work_id}} -
+        {{ movieData.props.pageProps.work.title }}
       </h2>
+
       <div class="movie-cover">
         <img
           loading="eager"
-          [src]="movieData?.props?.pageProps?.work?.products?.[0]?.image_url"
+          [src]="
+            movieData.props.pageProps.work.products[0].image_url ||
+            'assets/placeholder.png'
+          "
           alt="Movie Cover"
           class="movie-cover-img"
         />
@@ -18,10 +26,10 @@
         <div class="tag-list">
           <mat-chip-set>
             <mat-chip
-              *ngFor="let genre of movieData?.props?.pageProps?.work?.genres"
+              *ngFor="let genre of movieData.props.pageProps.work.genres || []"
               class="tag"
             >
-              {{ genre?.name }}
+              {{ genre.name }}
             </mat-chip>
           </mat-chip-set>
         </div>
@@ -48,17 +56,19 @@
         >
           <i class="fas fa-rss"></i> Subscribe
         </button>
+
         <button
           mat-icon-button
-          (click)="toJable(movieData?.props?.pageProps?.work?.work_id)"
+          (click)="toJable(movieData.props.pageProps.work.work_id)"
           matTooltip="Jable"
           aria-label="Jable"
         >
           <i class="fas fa-play-circle"></i> Jable
         </button>
+
         <button
           mat-icon-button
-          (click)="toMissAV(movieData?.props?.pageProps?.work?.work_id)"
+          (click)="toMissAV(movieData.props.pageProps.work.work_id)"
           matTooltip="MissAV"
           aria-label="MissAV"
         >
@@ -68,28 +78,30 @@
 
       <h2>Details</h2>
       <div class="other-info">
-        <p>
-          <strong>ID: </strong>{{ movieData?.props?.pageProps?.work?.work_id }}
-        </p>
+        <p><strong>ID: </strong>{{ movieData.props.pageProps.work.work_id }}</p>
         <p>
           <strong>Release Date: </strong
-          >{{ movieData?.props?.pageProps?.work?.min_date }}
+          >{{ movieData.props.pageProps.work.min_date || "N/A" }}
         </p>
         <p>
           <strong>Maker: </strong
-          >{{ movieData?.props?.pageProps?.work?.products?.[0]?.maker?.name }}
+          >{{ movieData.props.pageProps.work.products[0].maker?.name || "N/A" }}
         </p>
         <p>
           <strong>Label: </strong
-          >{{ movieData?.props?.pageProps?.work?.products?.[0]?.label?.name }}
+          >{{ movieData.props.pageProps.work.products[0].label?.name || "N/A" }}
         </p>
         <p>
           <strong>Price: </strong
-          >{{ movieData?.props?.pageProps?.work?.products?.[0]?.iteminfo?.price }}
+          >{{
+            movieData.props.pageProps.work.products[0].iteminfo?.price || "N/A"
+          }}
         </p>
         <p>
           <strong>Duration: </strong>
-          {{ movieData?.props?.pageProps?.work?.products?.[0]?.iteminfo?.volume }}
+          {{
+            movieData.props.pageProps.work.products[0].iteminfo?.volume || "N/A"
+          }}
           <span>minutes</span>
         </p>
       </div>
@@ -97,21 +109,21 @@
       <h2>Performers</h2>
       <div class="actors">
         <div
-          *ngFor="let cast of movieData?.props?.pageProps?.work?.casts"
+          *ngFor="let cast of movieData.props.pageProps.work.casts || []"
           class="actor-item"
         >
           <img
             loading="lazy"
-            [src]="cast?.actor?.image_url || 'assets/favicon.ico'"
-            alt="{{ cast?.actor?.name }}"
+            [src]="cast.actor.image_url || 'assets/favicon.ico'"
+            alt="{{ cast.actor.name || 'Unknown' }}"
             class="actor-avatar"
-            (click)="searchByActressName(cast?.actor?.name)"
+            (click)="searchByActressName(cast.actor.name || '')"
           />
           <div
             class="actor-name"
-            (click)="searchByActressName(cast?.actor?.name)"
+            (click)="searchByActressName(cast.actor.name || '')"
           >
-            {{ cast?.actor?.name }}
+            {{ cast.actor.name || "Unknown" }}
           </div>
         </div>
       </div>
@@ -120,13 +132,19 @@
 
   <div
     class="sample-images"
-    *ngIf="movieData?.props?.pageProps?.work?.products?.[0]?.sample_image_urls?.length"
+    *ngIf="
+      (movieData.props.pageProps.work.products[0]?.sample_image_urls || [])
+        .length
+    "
   >
     <div class="sample-image-list" (wheel)="onWheelScroll($event)">
       <img
         loading="lazy"
-        *ngFor="let sample of movieData?.props?.pageProps?.work?.products?.[0]?.sample_image_urls"
-        [src]="sample?.l"
+        *ngFor="
+          let sample of movieData.props.pageProps.work.products[0]
+            ?.sample_image_urls || []
+        "
+        [src]="sample['l'] || 'assets/placeholder.png'"
         alt="Sample Image"
         class="sample-image"
       />

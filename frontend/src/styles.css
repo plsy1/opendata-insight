@@ -100,3 +100,14 @@ button {
 }
 
 
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-soft);
+  padding-bottom: 6px;
+}
