@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonService } from '../../common.service';
-import { MovieInformation } from './models/movie-information.interface';
+import { MovieData } from './models/movie-data.interface';
 import { createDefaultMovieInformation } from './utils/default-movie-info';
 
 @Component({
@@ -26,7 +26,7 @@ import { createDefaultMovieInformation } from './utils/default-movie-info';
   styleUrl: './production-information.component.css',
 })
 export class ProductionInformationComponent implements OnInit {
-  movieData: MovieInformation = createDefaultMovieInformation();
+  movieData: MovieData = createDefaultMovieInformation();
   movieId: string = '';
   isLoading: boolean = false;
 
@@ -45,11 +45,11 @@ export class ProductionInformationComponent implements OnInit {
     });
   }
 
-  loadMovieData(movieUrl: string): void {
+  loadMovieData(work_id: string): void {
     this.isLoading = true;
 
     this.ProductionInformationService.getSingleProductionInformation(
-      encodeURIComponent(movieUrl)
+      encodeURIComponent(work_id)
     ).subscribe({
       next: (data) => {
         this.movieData = data;
@@ -66,35 +66,28 @@ export class ProductionInformationComponent implements OnInit {
     try {
       this.common.isJumpFromProductionPage = true;
       this.common.currentPerformer =
-        this.movieData?.props?.pageProps?.work?.casts
-          ?.map((cast: any) => cast?.actor?.name)
+        this.movieData.casts
+          ?.map((cast: any) => cast?.name)
           ?.filter((name: string) => !!name)
           ?.slice(0, 3)
           ?.join(',') || '';
-
-      this.router.navigate(
-        ['/torrents', this.movieData.props.pageProps.work.work_id],
-        {
-          queryParams: {
-            fullId: this.movieId,
-            Id: this.movieData.props.pageProps.work.work_id,
-          },
-        }
-      );
+      this.router.navigate(['/torrents', this.movieData.work_id], {
+        queryParams: {
+          fullId: this.movieId,
+          Id: this.movieData.work_id,
+        },
+      });
     } catch (error) {
       console.error('Failed:', error);
     }
   }
 
   subscribeToMovie(): void {
-    const work = this.movieData.props.pageProps.work;
-    const actorNames = work.casts
-      .map((c: { actor: { name: string } }) => c.actor.name)
-      .join(', ');
+    const actorNames = this.movieData.casts.map((c) => c.name).join(', ');
     this.ProductionInformationService.addProductionSubscribe(
       actorNames,
-      this.movieData.props.pageProps.work.work_id,
-      this.movieData.props.pageProps.work.products[0].image_url ?? '',
+      this.movieData.work_id,
+      this.movieData.products[0].image_url ?? '',
       this.movieId
     ).subscribe({
       next: (results) => {

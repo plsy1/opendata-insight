@@ -8,42 +8,37 @@ from sqlalchemy.orm import Session
 async def add_movie_feed(
     actors: str, keyword: str, img: str, link: str, db: Session
 ) -> bool:
-    existing_keyword = db.query(RSSItem).filter(RSSItem.keyword == keyword).first()
-    if existing_keyword:
-        try:
-            existing_keyword.downloaded = False
-            db.commit()
-            db.refresh(existing_keyword)
-            movie_info = await get_actors_from_work(link, changeImagePrefix=False)
-            movie_details = movieInformation(keyword, movie_info)
-            imgURL = str(movie_info.props.pageProps.work.products[0].image_url)
-            from modules.notification.telegram import _telegram_bot
+    from modules.notification.telegram import _telegram_bot
 
-            await _telegram_bot.send_message_with_image(imgURL, movie_details)
-            return True
-        except Exception as e:
-            LOG_ERROR(e)
-            db.rollback()
-            return False
-    else:
-        new_feed = RSSItem(
-            actors=actors, keyword=keyword, img=img, link=link, downloaded=False
-        )
-        try:
-            db.add(new_feed)
-            db.commit()
-            db.refresh(new_feed)
-            movie_info = await get_actors_from_work(link, changeImagePrefix=False)
-            movie_details = movieInformation(keyword, movie_info)
-            imgURL = str(movie_info.props.pageProps.work.products[0].image_url)
-            from modules.notification.telegram import _telegram_bot
+    try:
+        feed = db.query(RSSItem).filter(RSSItem.keyword == keyword).first()
+        if feed:
+            feed.downloaded = False
+        else:
+            feed = RSSItem(
+                actors=actors,
+                keyword=keyword,
+                img=img,
+                link=link,
+                downloaded=False
+            )
+            db.add(feed)
 
-            await _telegram_bot.send_message_with_image(imgURL, movie_details)
-            return True
-        except Exception as e:
-            db.rollback()
-            LOG_ERROR(e)
-            return False
+        db.commit()
+        db.refresh(feed)
+
+        movie_info = await get_information_by_work_id(link)
+        movie_details = movieInformation(keyword, movie_info)
+
+        imgURL = str(movie_info.products[0].image_url)
+        await _telegram_bot.send_message_with_image(imgURL, movie_details)
+
+        return True
+
+    except Exception as e:
+        db.rollback()
+        LOG_ERROR(e)
+        return False
 
 
 async def remove_movie_feed(

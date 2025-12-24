@@ -12,6 +12,32 @@ from core.system import encrypt_payload
 import time
 
 
+
+from typing import Optional
+
+def parse_min_date(date_str: Optional[str]) -> Optional[str]:
+    """
+    将日期字符串解析并转换为 'YYYY-MM-DD' 格式。
+    
+    示例输入：
+        'Wed Dec 25 1964 00:00:00 GMT+0000 (Coordinated Universal Time)'
+    返回：
+        '1964-12-25'
+    
+    如果输入为空或格式不正确，返回 None。
+    """
+    if not date_str:
+        return None
+
+    try:
+        # 去掉多余的 GMT 或括号
+        date_str = date_str.split(" (")[0].split(" GMT")[0]
+        dt = datetime.strptime(date_str, "%a %b %d %Y %H:%M:%S")
+        return dt.strftime("%Y-%m-%d")
+    except Exception:
+        return None
+
+
 async def get_movies(url: str, changeImagePrefix: bool = True) -> List[Movie]:
     try:
         content = await get_raw_html(url)

@@ -81,7 +81,7 @@ async def fetch_actress_ranking(page: int) -> list[Actress]:
         return actresses
 
 
-async def fetch_video_ranking(
+async def fetch_movie_ranking(
     page: int = 1, term: RankingType = RankingType.monthly
 ) -> list[Work]:
     url = term.url(page)

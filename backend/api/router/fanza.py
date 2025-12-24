@@ -22,7 +22,7 @@ async def fetch_dvd_ranking(
     term: RankingType = RankingType.monthly,
     isValid: str = Depends(tokenInterceptor),
 ):
-    from modules.metadata.fanza import fetch_video_ranking
+    from modules.metadata.fanza import fetch_movie_ranking
 
-    works = await fetch_video_ranking(page, term)
+    works = await fetch_movie_ranking(page, term)
     return works

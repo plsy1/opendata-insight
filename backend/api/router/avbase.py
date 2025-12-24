@@ -21,8 +21,13 @@ async def get_actress_information(name: str, isValid: str = Depends(tokenInterce
 
 
 @router.get("/movie/information")
-async def get_movie_information(url: str, isValid: str = Depends(tokenInterceptor)):
-    return await get_actors_from_work(url)
+async def get_information_by_work_id(
+    work_id: str, isValid: str = Depends(tokenInterceptor)
+):
+    from modules.metadata.avbase import get_information_by_work_id as func
+    from urllib.parse import unquote
+
+    return await func(unquote(work_id))
 
 
 @router.get("/keywords")
@@ -44,34 +49,71 @@ async def get_relesae(yyyymmdd: str, isValid: str = Depends(tokenInterceptor)):
 
     date_str = f"{yyyymmdd[:4]}-{yyyymmdd[4:6]}-{yyyymmdd[6:8]}"
 
-    record_date = datetime.strptime(date_str, "%Y-%m-%d").date()
+    from core.database import MovieData
+
+    from modules.metadata.avbase.model import AvbaseEverydayReleaseByPrefix
 
     db = next(get_db())
     try:
-        record = (
-            db.query(AvbaseReleaseEveryday)
-            .filter(AvbaseReleaseEveryday.date == record_date)
-            .first()
-        )
+        records = db.query(MovieData).filter(MovieData.min_date == date_str).all()
 
-        SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
+        if not records:
+            await get_release_by_date(date_str)
+            records = db.query(MovieData).filter(MovieData.min_date == date_str).all()
 
-        if record:
-            result = json.loads(record.data_json)
-            result = replace_domain_in_value(result, SYSTEM_IMAGE_PREFIX)
-            return result
+        from typing import Dict
 
-        result = await get_release_grouped_by_prefix(date_str, False)
+        categorized: Dict[str, List] = defaultdict(list)
 
-        json_data = json.dumps(
-            [r.model_dump() for r in result], ensure_ascii=False, default=str
-        )
+        for movie in records:
 
-        new_record = AvbaseReleaseEveryday(date=record_date, data_json=json_data)
-        db.add(new_record)
-        db.commit()
+            products = []
 
-        return replace_domain_in_value(result, SYSTEM_IMAGE_PREFIX)
+            products.append(
+                {
+                    "product_id": movie.products[0].product_id,
+                    "url": movie.products[0].url,
+                    "image_url": movie.products[0].image_url,
+                    "title": movie.products[0].title,
+                    "source": movie.products[0].source,
+                    "thumbnail_url": movie.products[0].thumbnail_url,
+                    "date": movie.products[0].date,
+                    "maker": movie.products[0].maker,
+                    "label": movie.products[0].label,
+                    "series": movie.products[0].series,
+                    "sample_image_urls": movie.products[0].sample_image_urls,
+                    "director": movie.products[0].director,
+                    "price": movie.products[0].price,
+                    "volume": movie.products[0].volume,
+                    "work_id": movie.products[0].work_id,
+                }
+            )
+
+            work_data = {
+                "id": movie.id,
+                "prefix": movie.prefix,
+                "work_id": movie.work_id,
+                "title": movie.title,
+                "min_date": movie.min_date,
+                "casts": movie.casts,
+                "actors": movie.actors,
+                "tags": movie.tags,
+                "genres": movie.genres,
+                "products": products,
+            }
+
+            makers = set(p["maker"] for p in products if p["maker"])
+            if not makers:
+                makers = {"Unknown"}
+
+            for maker in makers:
+                categorized[maker].append(work_data)
+
+        result = []
+        for maker_name, works in sorted(categorized.items(), key=lambda x: len(x[1]), reverse=True):
+            result.append({"prefixName": maker_name, "works": works})
+
+        return result
 
     except Exception as e:
         db.rollback()

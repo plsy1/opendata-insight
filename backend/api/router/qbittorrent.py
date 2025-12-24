@@ -159,11 +159,11 @@ async def add_torrent_url(
             )
 
             if keywords != "":
-                movie_info = await get_actors_from_work(
-                    movie_link, changeImagePrefix=False
+                movie_info = await get_information_by_work_id(
+                    movie_link
                 )
                 movie_details = DownloadInformation(keywords, movie_info)
-                imgURL = str(movie_info.props.pageProps.work.products[0].image_url)
+                imgURL = str(movie_info.products[0].image_url)
                 from modules.notification.telegram import _telegram_bot
                 await _telegram_bot.send_message_with_image(
                     imgURL,

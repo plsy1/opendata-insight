@@ -1,6 +1,7 @@
 
 from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Union
+from datetime import datetime
 
 class Talent(BaseModel):
     id: int = 0
@@ -86,35 +87,6 @@ class AvbaseEverydayReleaseByPrefix(BaseModel):
     prefixName: str
     works:List[Work] = []
 
-
-class PageProps(BaseModel):
-    work: Work = Work()
-    editors: List = []
-    comments: List = []
-    children: List = []
-    parents: List = []
-    noindex: bool = False
-    _sentryTraceData: Optional[str] = None
-    _sentryBaggage: Optional[str] = None
-
-
-class Props(BaseModel):
-    pageProps: PageProps = PageProps()
-    __N_SSP: bool = False
-
-
-class MovieInformation(BaseModel):
-    props: Props = Props()
-    page: str = ""
-    query: dict = {}
-    buildId: str = ""
-    runtimeConfig: dict = {}
-    isFallback: bool = False
-    isExperimentalCompile: bool = False
-    gssp: bool = False
-    scriptLoader: List = []
-
-
 class SocialMedia(BaseModel):
     platform: str = ""
     username: str = ""
@@ -146,3 +118,49 @@ class Movie(BaseModel):
     release_date: str
     img_url: str
     actors: List[str]
+
+
+
+
+
+
+
+
+
+
+class MovieProductOut(BaseModel):
+    product_id: str
+    url: str
+    image_url: Optional[str] = None
+    title: str
+    source: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    date: Optional[str] = None
+    maker: Optional[str] = None
+    label: Optional[str] = None
+    series: Optional[str] = None
+    sample_image_urls: List[dict] = []
+    director: Optional[str] = None
+    price: Optional[str] = None
+    volume: Optional[str] = None
+
+    model_config = {
+        "from_attributes": True
+    }
+
+
+class MovieDataOut(BaseModel):
+    work_id: str
+    prefix: Optional[str] = ""
+    title: str
+    min_date: Optional[str] = None
+    casts: List[dict] = []
+    actors: List[dict] = []
+    tags: List[dict] = []
+    genres: List[str] = []
+    created_at: Optional[datetime] = None
+    products: List[MovieProductOut] = []
+
+    model_config = {
+        "from_attributes": True
+    }

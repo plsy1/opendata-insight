@@ -1,39 +1,16 @@
-import { MovieInformation } from '../models/movie-information.interface';
+import { MovieData } from '../models/movie-data.interface';
 
-export function createDefaultMovieInformation(): MovieInformation {
+export function createDefaultMovieInformation(): MovieData {
   return {
-    props: {
-      pageProps: {
-        work: {
-          id: 0,
-          prefix: '',
-          work_id: '',
-          title: '',
-          min_date: undefined,
-          note: undefined,
-          casts: [],
-          actors: [],
-          tags: [],
-          genres: [],
-          products: [],
-        },
-        editors: [],
-        comments: [],
-        children: [],
-        parents: [],
-        noindex: false,
-        _sentryTraceData: undefined,
-        _sentryBaggage: undefined,
-      },
-      __N_SSP: false,
-    },
-    page: '',
-    query: {},
-    buildId: '',
-    runtimeConfig: {},
-    isFallback: false,
-    isExperimentalCompile: false,
-    gssp: false,
-    scriptLoader: [],
+    work_id: '',
+    prefix: '',
+    title: '',
+    min_date: null,
+    casts: [],
+    actors: [],
+    tags: [],
+    genres: [],
+    created_at: null,
+    products: [],
   };
 }

@@ -91,13 +91,11 @@ async def refresh_movies_feeds():
                     keyword_feed.downloaded = True
                     db.commit()
 
-                movie_info = await get_actors_from_work(
-                    movie_link, changeImagePrefix=False
-                )
+                movie_info = await get_information_by_work_id(movie_link)
                 movie_details = DownloadInformation(keyword, movie_info)
 
                 await _telegram_bot.send_message_with_image(
-                    str(movie_info.props.pageProps.work.products[0].image_url),
+                    str(movie_info.products[0].image_url),
                     movie_details,
                 )
 
@@ -158,9 +156,7 @@ async def refresh_actress_feeds():
                 db.commit()
                 db.refresh(rss_item)
                 if not isExist:
-                    movie_info = await get_actors_from_work(
-                        rss_item.link, changeImagePrefix=False
-                    )
+                    movie_info = await get_information_by_work_id(rss_item.link)
                     movie_details = movieInformation(rss_item.keyword, movie_info)
 
                     await _telegram_bot.send_message_with_image(

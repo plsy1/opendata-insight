@@ -8,9 +8,9 @@ import { Observable } from 'rxjs';
 export class ProductionInformationService {
   constructor(private common: CommonService) {}
 
-  getSingleProductionInformation(movie_url: string): Observable<any> {
+  getSingleProductionInformation(work_id: string): Observable<any> {
     return this.common.request<any>('GET', 'avbase/movie/information', {
-      params: { url: movie_url },
+      params: { work_id: work_id },
     });
   }
 
