@@ -90,9 +90,9 @@ export class AvbaseComponent implements OnInit {
     }
   }
 
-  async posterClick(name: string) {
+  async posterClick(prefix: string, work_id: string) {
     try {
-      this.router.navigate(['keywords', name]);
+      this.router.navigate(['/production', prefix + ':' + work_id]);
     } catch (error) {
       console.error('Failed:', error);
     }

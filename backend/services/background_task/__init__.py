@@ -207,33 +207,16 @@ def update_emby_movies_in_db():
 
 async def update_avbase_release_everyday():
     """
-    异步抓取当天作品列表，并写入数据库
-    数据库操作同步执行（db = next(get_db())）
+    抓取当天作品列表，并写入数据库
     """
-    date_str = datetime.today().strftime("%Y-%m-%d")
 
-    record_date = datetime.strptime(date_str, "%Y-%m-%d").date()
-
-    db = next(get_db())
+    from modules.metadata.avbase import get_release_by_date
 
     try:
-        result = await get_release_grouped_by_prefix(date_str, False)
-        json_data = json.dumps(
-            [r.model_dump() for r in result], ensure_ascii=False, default=str
-        )
-        db.query(AvbaseReleaseEveryday).filter(
-            AvbaseReleaseEveryday.date == record_date
-        ).delete()
-        db.commit()
-
-        record = AvbaseReleaseEveryday(date=record_date, data_json=json_data)
-        db.add(record)
-        db.commit()
-
+        date_str = datetime.today().strftime("%Y-%m-%d")
+        await get_release_by_date(date_str)
     except Exception as e:
-        db.rollback()
-    finally:
-        db.close()
+        LOG_ERROR(e)
 
 
 def clean_cache_dir(max_image_cache_hours=48, max_avbase_release_days: int = 7):

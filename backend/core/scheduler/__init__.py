@@ -7,7 +7,7 @@ from services.background_task import (
     refresh_feeds,
     update_emby_movies_in_db,
     clean_cache_dir,
-    update_avbase_release_everyday
+    update_avbase_release_everyday,
 )
 
 

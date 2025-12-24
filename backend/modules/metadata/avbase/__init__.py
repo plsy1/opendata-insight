@@ -1,14 +1,12 @@
 import json
 from bs4 import BeautifulSoup
 from typing import List
-from collections import defaultdict
 from .model import *
 from .helper import *
 from core.config import _config
 from core.system import replace_domain_in_value, encrypt_payload
 from core.system.model import DecryptedImagePayload
 import time
-from sqlalchemy import insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 
@@ -102,68 +100,6 @@ async def get_index():
         "newbie_talents": newbie_talents,
         "popular_talents": popular_talents,
     }
-
-
-async def get_release_grouped_by_prefix(
-    date_str: str, changeImagePrefix: bool = True
-) -> List[AvbaseEverydayReleaseByPrefix]:
-    """
-    获取指定日期的作品列表，并按 prefix 分组
-    date_str: 'YYYY-MM-DD'
-    """
-    SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-
-    all_works = []
-
-    page = 1
-    while True:
-        url = f"https://www.avbase.net/works/date/{date_str}?page={page}"
-        data = await get_next_data(url)
-
-        works_data = data.get("props", {}).get("pageProps", {}).get("works", [])
-
-        if changeImagePrefix:
-            works_data = replace_domain_in_value(works_data, SYSTEM_IMAGE_PREFIX)
-        if not works_data:
-            break
-
-        all_works.extend(works_data)
-        page += 1
-
-    grouped: defaultdict[str, List[Work]] = defaultdict(list)
-
-    for work_dict in all_works:
-        products = work_dict.get("products", [])
-        prefix = next(
-            (
-                p.get("maker", {}).get("name")
-                for p in products
-                if p.get("maker", {}).get("name")
-            ),
-            "Unknown",
-        )
-
-        try:
-            work = Work(**work_dict)
-            grouped[prefix].append(work)
-        except Exception as e:
-            continue
-
-    groups_list: List[AvbaseEverydayReleaseByPrefix] = [
-        AvbaseEverydayReleaseByPrefix(prefixName=prefix or "Unknown", works=works)
-        for prefix, works in grouped.items()
-    ]
-
-    normal_groups = [g for g in groups_list if g.prefixName != "Unknown"]
-    no_prefix_group = [g for g in groups_list if g.prefixName == "Unknown"]
-
-    normal_groups_sorted = sorted(
-        normal_groups, key=lambda x: len(x.works), reverse=True
-    )
-
-    result = normal_groups_sorted + no_prefix_group
-
-    return result
 
 
 async def get_information_by_work_id(canonical_id: str) -> MovieDataOut:

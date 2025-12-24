@@ -50,7 +50,7 @@
       [title]="work.title"
       [imgUrl]="work.products[0].image_url || ''"
       [actors]="getActorNames(work.actors)"
-      (movieClick)="posterClick(work.work_id)"
+      (movieClick)="posterClick(work.prefix,work.work_id)"
       [enableBlur]="PageExploreService.isEnableBlur$() | async"
     ></app-movie-card>
   </div>

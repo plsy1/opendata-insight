@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends
 from core.auth import tokenInterceptor
-from core.config import _config
 from modules.metadata.avbase import *
-from core.database import get_db, AvbaseReleaseEveryday
+
 
 router = APIRouter()
 
@@ -49,9 +48,7 @@ async def get_relesae(yyyymmdd: str, isValid: str = Depends(tokenInterceptor)):
 
     date_str = f"{yyyymmdd[:4]}-{yyyymmdd[4:6]}-{yyyymmdd[6:8]}"
 
-    from core.database import MovieData
-
-    from modules.metadata.avbase.model import AvbaseEverydayReleaseByPrefix
+    from core.database import MovieData, get_db
 
     db = next(get_db())
     try:
@@ -62,6 +59,7 @@ async def get_relesae(yyyymmdd: str, isValid: str = Depends(tokenInterceptor)):
             records = db.query(MovieData).filter(MovieData.min_date == date_str).all()
 
         from typing import Dict
+        from collections import defaultdict
 
         categorized: Dict[str, List] = defaultdict(list)
 
@@ -110,7 +108,9 @@ async def get_relesae(yyyymmdd: str, isValid: str = Depends(tokenInterceptor)):
                 categorized[maker].append(work_data)
 
         result = []
-        for maker_name, works in sorted(categorized.items(), key=lambda x: len(x[1]), reverse=True):
+        for maker_name, works in sorted(
+            categorized.items(), key=lambda x: len(x[1]), reverse=True
+        ):
             result.append({"prefixName": maker_name, "works": works})
 
         return result
