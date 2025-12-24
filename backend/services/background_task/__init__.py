@@ -8,7 +8,7 @@ from modules.notification.telegram.text import *
 from modules.metadata.avbase import *
 from core.database import get_db, EmbyMovie
 from modules.mediaServer.emby import emby_get_all_movies
-from core.logs import LOG_ERROR
+from core.logs import LOG_ERROR, LOG_INFO
 from datetime import datetime, timedelta
 
 
@@ -261,3 +261,86 @@ def clean_cache_dir(max_image_cache_hours=48, max_avbase_release_days: int = 7):
         db.commit()
     except Exception as e:
         db.rollback()
+
+
+async def update_fc2_ranking_in_db():
+    from core.database import FC2Metadata
+    from modules.metadata.fc2 import RankingType, get_ranking
+
+    db = next(get_db())
+
+    try:
+        for term in RankingType:
+            for page in range(1, 2):
+                LOG_INFO(f"[FC2] Updating term={term.value} page={page}")
+
+                items = await get_ranking(page=page, term=term)
+                if not items:
+                    LOG_ERROR(f"[FC2] No items found for term={term.value} page={page}")
+                    continue
+
+                current_ids = {item.article_id for item in items}
+
+                existing_records = (
+                    db.query(FC2Metadata)
+                    .filter(
+                        FC2Metadata.term == term.value,
+                        FC2Metadata.page == page,
+                    )
+                    .all()
+                )
+
+                existing_map = {r.article_id: r for r in existing_records}
+
+                for record in existing_records:
+                    if record.article_id not in current_ids:
+                        db.delete(record)
+
+                for item in items:
+                    old = existing_map.get(item.article_id)
+
+                    if old is None:
+                        db.add(
+                            FC2Metadata(
+                                term=term.value,
+                                article_id=item.article_id,
+                                page=page,
+                                rank=item.rank,
+                                title=item.title,
+                                url=str(item.url),
+                                cover=str(item.cover) if item.cover else None,
+                                owner=item.owner,
+                                rating=item.rating,
+                                comment_count=item.comment_count,
+                                hot_comments=item.hot_comments,
+                                crawled_at=datetime.now(),
+                            )
+                        )
+                    else:
+                        # 🔁 只在变化时更新
+                        changed = False
+
+                        def set_if_changed(field, new_value):
+                            nonlocal changed
+                            if getattr(old, field) != new_value:
+                                setattr(old, field, new_value)
+                                changed = True
+
+                        set_if_changed("rank", item.rank)
+                        set_if_changed("title", item.title)
+                        set_if_changed("rating", item.rating)
+                        set_if_changed("comment_count", item.comment_count)
+                        set_if_changed("hot_comments", item.hot_comments)
+
+                        if changed:
+                            old.crawled_at = datetime.now()
+
+                db.commit()
+                await asyncio.sleep(2)
+
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+        LOG_INFO("[FC2] FC2 ranking update task completed")

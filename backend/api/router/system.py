@@ -13,6 +13,7 @@ router = APIRouter()
 from core.config import _config
 import time
 
+
 @router.get("/get_image")
 async def get_image(token: str = Query(...)):
     """
@@ -30,7 +31,6 @@ async def get_image(token: str = Query(...)):
     # allowed_prefix = _config.get("EMBY_URL")
     # if not payload.url.startswith(allowed_prefix):
     #     raise HTTPException(status_code=403, detail="Invalid image source")
-
 
     content, headers = await fetch_and_cache_image(payload.url)
 
@@ -77,6 +77,16 @@ async def refresh_actress(
     try:
         background_tasks.add_task(refresh_actress_feeds)
         return {"message": "Actress Feeds refreshed successfully"}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error occurred: {str(e)}")
+
+
+@router.post("/refreshFC2Metadata")
+async def refresh_actress(background_tasks: BackgroundTasks = None):
+    try:
+        background_tasks.add_task(update_fc2_ranking_in_db)
+        return {"message": "Fc2 Metadata refresh started"}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error occurred: {str(e)}")

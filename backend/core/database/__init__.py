@@ -1,6 +1,14 @@
 # database.py
 
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, Boolean
+from sqlalchemy import (
+    create_engine,
+    Column,
+    Integer,
+    String,
+    DateTime,
+    Boolean,
+    UniqueConstraint,
+)
 from sqlalchemy import Date, JSON
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
@@ -72,6 +80,34 @@ class AvbaseReleaseEveryday(Base):
     data_json = Column(JSON, nullable=False)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+
+
+class FC2Metadata(Base):
+    __tablename__ = "fc2_metadata"
+
+    id = Column(Integer, primary_key=True)
+
+    term = Column(String, nullable=False, index=True)
+    article_id = Column(String, nullable=False, index=True)
+
+    page = Column(Integer)
+    rank = Column(Integer)
+
+    title = Column(String)
+    url = Column(String)
+    cover = Column(String)
+    owner = Column(String)
+
+    rating = Column(Integer)
+    comment_count = Column(Integer)
+    hot_comments = Column(JSON)
+
+    is_active = Column(Boolean, default=True, index=True)
+    crawled_at = Column(DateTime, default=datetime.now)
+
+    __table_args__ = (
+        UniqueConstraint("term", "article_id", "rank", name="uix_fc2_term_article"),
+    )
 
 
 def get_db() -> Generator[Session, None, None]:
