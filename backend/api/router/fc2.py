@@ -1,29 +1,18 @@
-import httpx, re
 from fastapi import APIRouter, Depends
 from core.auth import tokenInterceptor
-from enum import Enum
-from core.config import _config
-from core.system import replace_domain_in_value
-
-from modules.metadata.fc2 import get_ranking
-
-
-class RankingType(Enum):
-    realtime = "realtime"
-    daily = "daily"
-    weekly = "weekly"
-    monthly = "monthly"
-    annual = "annual"
+from modules.metadata.fc2.model import RankingType
 
 
 router = APIRouter()
 
 
 @router.get("/ranking")
-async def fetch_dvd_ranking(
+async def fetch_ranking(
     page: int = 1,
     term: RankingType = RankingType.monthly,
 ):
+    from modules.metadata.fc2 import get_ranking
+
     ranking = await get_ranking(page, term)
     return ranking
 
