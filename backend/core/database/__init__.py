@@ -9,7 +9,7 @@ from sqlalchemy import (
     Boolean,
     UniqueConstraint,
 )
-from sqlalchemy import Date, JSON, ForeignKey
+from sqlalchemy import JSON, ForeignKey
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
@@ -73,16 +73,6 @@ class EmbyMovie(Base):
     ProductionYear = Column(Integer)
 
 
-class AvbaseReleaseEveryday(Base):
-    __tablename__ = "avbase_release_everyday"
-
-    id = Column(Integer, primary_key=True, index=True)
-    date = Column(Date, unique=True, index=True)
-    data_json = Column(JSON, nullable=False)
-    created_at = Column(DateTime, default=datetime.now)
-    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
-
-
 class FC2Metadata(Base):
     __tablename__ = "fc2_metadata"
 
@@ -109,7 +99,6 @@ class FC2Metadata(Base):
     __table_args__ = (
         UniqueConstraint("term", "article_id", "rank", name="uix_fc2_term_article"),
     )
-
 
 
 class MovieData(Base):

@@ -1,18 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { AvbaseComponent } from './component/avbase/avbase.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { AvbaseComponent } from './component/avbase/avbase.component';
 import { FanzaComponent } from './component/fanza/fanza.component';
-import { JavtrailersComponent } from './component/javtrailers/javtrailers.component';
+import { Fc2Component } from './component/fc2/fc2/fc2.component';
 
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [
-    AvbaseComponent,
-    MatTabsModule,
-    FanzaComponent,
-    JavtrailersComponent,
-  ],
+  imports: [AvbaseComponent, MatTabsModule, FanzaComponent, Fc2Component],
   templateUrl: './explore.component.html',
   styleUrls: ['./explore.component.css'],
 })

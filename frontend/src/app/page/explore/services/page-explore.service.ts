@@ -11,6 +11,9 @@ import {
   AvbaseIndexData,
 } from '../models/page-explore';
 
+import { RankingType as fc2RankingType } from '../models/fc2.interface';
+import { fc2RankingItem } from '../models/fc2.interface';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -24,6 +27,8 @@ export class PageExploreServiceService {
   private AvbaseIndexData: AvbaseIndexData | null = null;
   private avbaseEverydayReleaseData: AvbaseEverydayReleaseByPrefix[] | null =
     null;
+
+  private fc2RankingData: fc2RankingItem[] | null = null;
 
   getJavtrailersData(): JavtrailersDailyRelease | null {
     return this.CalenderData;
@@ -48,6 +53,14 @@ export class PageExploreServiceService {
 
   setAvbaseIndexData(data: AvbaseIndexData): void {
     this.AvbaseIndexData = data;
+  }
+
+  getfc2RankingData(): fc2RankingItem[] | null {
+    return this.fc2RankingData;
+  }
+
+  setfc2RankingData(data: fc2RankingItem[]): void {
+    this.fc2RankingData = data;
   }
 
   setRankingData(data: ActressRanking[], page: number): void {
@@ -110,6 +123,15 @@ export class PageExploreServiceService {
   getAvbaseReleaseByDate(yyyymmdd: string): Observable<any> {
     return this.common.request<any>('GET', 'avbase/get_release_by_date', {
       params: { yyyymmdd },
+    });
+  }
+
+  getFC2Ranking(
+    page: number,
+    term: fc2RankingType
+  ): Observable<fc2RankingItem[]> {
+    return this.common.request<fc2RankingItem[]>('GET', 'fc2/ranking', {
+      params: { page, term },
     });
   }
 

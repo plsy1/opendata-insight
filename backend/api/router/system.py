@@ -1,17 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends, Body, BackgroundTasks
-from fastapi import Depends
+from fastapi import APIRouter, HTTPException, Depends, Body, Query, BackgroundTasks
 from core.auth import tokenInterceptor
 from fastapi.responses import StreamingResponse
-from fastapi import Query
-import asyncio
 from services.background_task import *
 from core.system import *
-from core.system import decrypt_payload
-from core.system.model import DecryptedImagePayload
+from core.config import _config
 
 router = APIRouter()
-from core.config import _config
-import time
 
 
 @router.get("/get_image")
@@ -19,10 +13,13 @@ async def get_image(token: str = Query(...)):
     """
     token: 加密后的图片访问 token
     """
+
     try:
         payload: DecryptedImagePayload = decrypt_payload(token)
     except ValueError:
         raise HTTPException(status_code=403, detail="Invalid token")
+
+    import time
 
     if payload.exp < int(time.time()):
         raise HTTPException(status_code=403, detail="Token expired")
@@ -63,7 +60,7 @@ async def refresh_keywords(
     isValid: str = Depends(tokenInterceptor), background_tasks: BackgroundTasks = None
 ):
     try:
-        background_tasks.add_task(refresh_actress_feeds)
+        background_tasks.add_task(refresh_movies_feeds)
         return {"message": "Feeds refreshed and torrents added successfully"}
 
     except Exception as e:

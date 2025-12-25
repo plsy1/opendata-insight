@@ -1,0 +1,9 @@
+<div class="poster-grid">
+  <app-movie-card
+    *ngFor="let work of rankingData"
+    [id]="work.article_id"
+    [title]="work.title"
+    [imgUrl]="work.cover || ''"
+    (movieClick)="posterClick(work.article_id)"
+  ></app-movie-card>
+</div>

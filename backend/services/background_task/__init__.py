@@ -1,5 +1,5 @@
 import uuid, asyncio
-from core.database import get_db, RSSItem, RSSFeed, AvbaseReleaseEveryday
+from core.database import get_db, RSSItem, RSSFeed
 from modules.metadata.prowlarr import Prowlarr
 from modules.downloader.qbittorrent import QB
 from core.config import _config
@@ -219,7 +219,7 @@ async def update_avbase_release_everyday():
         LOG_ERROR(e)
 
 
-def clean_cache_dir(max_image_cache_hours=48, max_avbase_release_days: int = 7):
+def clean_cache_dir(max_image_cache_hours=48):
     from pathlib import Path
 
     CACHE_DIR = _config.get("CACHE_DIR")
@@ -230,17 +230,6 @@ def clean_cache_dir(max_image_cache_hours=48, max_avbase_release_days: int = 7):
         ):
             f.unlink()
 
-    cutoff_date = datetime.today().date() - timedelta(days=max_avbase_release_days)
-    db = next(get_db())
-
-    try:
-        db.query(AvbaseReleaseEveryday).filter(
-            AvbaseReleaseEveryday.date < cutoff_date
-        ).delete(synchronize_session=False)
-        db.commit()
-    except Exception as e:
-        db.rollback()
-
 
 async def update_fc2_ranking_in_db():
     from core.database import FC2Metadata
@@ -250,7 +239,7 @@ async def update_fc2_ranking_in_db():
 
     try:
         for term in RankingType:
-            for page in range(1, 2):
+            for page in range(1, 6):
                 LOG_INFO(f"[FC2] Updating term={term.value} page={page}")
 
                 items = await get_ranking(page=page, term=term)
@@ -296,7 +285,6 @@ async def update_fc2_ranking_in_db():
                             )
                         )
                     else:
-                        # 🔁 只在变化时更新
                         changed = False
 
                         def set_if_changed(field, new_value):

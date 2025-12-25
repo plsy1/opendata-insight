@@ -1,43 +1,68 @@
 from .model import RankingType, FC2RankingItem, FC2VideoInformation
 from .helper import parse_ranking
-from core.logs import LOG_ERROR
+from core.logs import LOG_ERROR,LOG_INFO
 
 import asyncio
+
+import random
+import httpx
+
 
 base_url = "https://adult.contents.fc2.com/ranking/article"
 
 
 async def get_ranking(
-    page: int = 1, term: RankingType = RankingType.monthly, retries: int = 3
+    page: int = 1,
+    term: RankingType = RankingType.monthly,
+    retries: int = 3,
 ) -> list[FC2RankingItem]:
-    from core.playwright import _playwright_service
+    url = f"{base_url}/{term.value}?page={page}"
 
-    context = await _playwright_service.get_context()
-    pw_page = await context.new_page()
+    headers = {
+        "User-Agent": (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/122.0 Safari/537.36"
+        ),
+        "Accept": (
+            "text/html,application/xhtml+xml,application/xml;"
+            "q=0.9,image/avif,image/webp,*/*;q=0.8"
+        ),
+        "Accept-Language": "ja,en-US;q=0.9,en;q=0.8",
+        "Referer": "https://adult.contents.fc2.com/",
+        "Connection": "keep-alive",
+    }
 
-    try:
-        url = f"{base_url}/{term.value}?page={page}"
-        attempt = 0
-        while attempt < retries:
+    async with httpx.AsyncClient(
+        headers=headers,
+        timeout=20,
+        follow_redirects=True,
+    ) as client:
+        for attempt in range(1, retries + 1):
             try:
-                await pw_page.goto(url, timeout=10000)
-                await pw_page.wait_for_selector("div.c-rankbox-100", timeout=10000)
-                html = await pw_page.content()
+                # 👤 模拟真人间隔
+                await asyncio.sleep(random.uniform(1.2, 2.5))
+
+                r = await client.get(url)
+                r.raise_for_status()
+
+                html = r.text
                 result = parse_ranking(html, page, term)
+
                 if result:
                     return result
-                else:
-                    raise ValueError("Parsed empty result")
+
+                raise ValueError("Parsed empty ranking")
+
             except Exception as e:
-                attempt += 1
-                LOG_ERROR(f"Attempt {attempt} failed to load page {url}: {e}")
+                LOG_ERROR(
+                    f"[FC2][HTTP] Attempt {attempt} failed "
+                    f"(term={term.value}, page={page}): {e}"
+                )
                 if attempt < retries:
                     await asyncio.sleep(2)
                 else:
                     return []
-    finally:
-        await pw_page.close()
-
 
 async def get_information_by_number(number: str) -> FC2VideoInformation:
     from core.playwright import _playwright_service

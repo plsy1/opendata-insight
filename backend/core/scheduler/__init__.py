@@ -34,7 +34,6 @@ class AppScheduler:
         logging.info("Scheduler started")
 
     def add_job(self, func, trigger=None, job_id=None, name=None, **trigger_args):
-        """func 可以是同步函数或协程函数"""
         trigger = trigger(**trigger_args) if trigger else IntervalTrigger(seconds=60)
         self.scheduler.add_job(func, trigger, id=job_id, name=name)
         logging.info(f"Added job: {job_id or name}")
@@ -47,9 +46,6 @@ class AppScheduler:
 
 
 def init_app_scheduler() -> AppScheduler:
-    """
-    初始化调度器并添加默认任务
-    """
     app_scheduler = AppScheduler()
     app_scheduler.init()
 

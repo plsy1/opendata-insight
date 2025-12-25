@@ -3,7 +3,7 @@ from io import IOBase
 from datetime import datetime, timedelta
 import os
 import httpx
-from urllib.parse import urlparse, quote
+from urllib.parse import urlparse
 from typing import Any, List
 from core.config import _config
 from core.system.model import DecryptedImagePayload
