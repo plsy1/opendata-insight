@@ -1,0 +1,58 @@
+<div class="thetop" *ngIf="data">
+  <div class="movie-card">
+    <div class="movie-cover">
+      <img [src]="data.cover" alt="cover" />
+    </div>
+
+    <div class="movie-card-content">
+      <h2 class="movie-title">{{ data.product_id }} - {{ data.title }}</h2>
+
+      <div class="info-meta">
+        <span *ngIf="data.author">
+          <mat-icon inline>person</mat-icon>
+          {{ data.author }}
+        </span>
+
+        <span *ngIf="data.sale_day">
+          <mat-icon inline>event</mat-icon>
+          {{ data.sale_day }}
+        </span>
+
+        <span *ngIf="data.duration">
+          <mat-icon inline>schedule</mat-icon>
+          {{ data.duration }}
+        </span>
+      </div>
+
+      <div class="movie-actions">
+        <button mat-icon-button matTooltip="搜索" (click)="onSearchClick()">
+          <i class="fas fa-search"></i> Search
+        </button>
+        <button mat-icon-button matTooltip="订阅" (click)="onSubscribeClick()">
+          <i class="fas fa-rss"></i> Subscribe
+        </button>
+        <button mat-icon-button matTooltip="Supjav" (click)="toSupjav()">
+          <i class="fas fa-play-circle"></i> Supjav
+        </button>
+        <button mat-icon-button matTooltip="MissAV" (click)="toMissAV()">
+          <i class="fas fa-video"></i> MissAV
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-images">
+    <div
+      *ngIf="data.sample_images as images"
+      class="sample-image-list"
+      (wheel)="onWheelScroll($event)"
+    >
+      <img
+        loading="lazy"
+        *ngFor="let image of images"
+        [src]="image"
+        class="sample-image"
+      />
+    </div>
+  </div>
+</div>

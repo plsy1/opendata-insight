@@ -1,21 +1,21 @@
 from modules.metadata.avbase.model import Actress, MovieDataOut
 
 
-def actressInformation(name, actress_info: Actress):
-    actress_details = f"*【添加订阅】*: {name}\n"
+def actressInformation(info: Actress):
+    actress_details = f"*【添加订阅】*: {info.name}\n"
 
-    if actress_info.birthday:
-        actress_details += f"**出生日期**: {actress_info.birthday}\n"
-    if actress_info.prefectures:
-        actress_details += f"**出生地**: {actress_info.prefectures}\n"
-    if actress_info.height:
-        actress_details += f"**身高**: {actress_info.height}\n"
-    if actress_info.hobby:
-        actress_details += f"**兴趣爱好**: {actress_info.hobby}\n"
-    if actress_info.blood_type:
-        actress_details += f"**血型**: {actress_info.blood_type}\n"
-    if actress_info.aliases:
-        aliases = ", ".join(actress_info.aliases)
+    if info.birthday:
+        actress_details += f"**出生日期**: {info.birthday}\n"
+    if info.prefectures:
+        actress_details += f"**出生地**: {info.prefectures}\n"
+    if info.height:
+        actress_details += f"**身高**: {info.height}\n"
+    if info.hobby:
+        actress_details += f"**兴趣爱好**: {info.hobby}\n"
+    if info.blood_type:
+        actress_details += f"**血型**: {info.blood_type}\n"
+    if info.aliases:
+        aliases = ", ".join(info.aliases)
         actress_details += f"**别名**: {aliases}\n"
     return actress_details
 

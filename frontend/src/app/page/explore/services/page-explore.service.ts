@@ -28,6 +28,7 @@ export class PageExploreServiceService {
   private avbaseEverydayReleaseData: AvbaseEverydayReleaseByPrefix[] | null =
     null;
 
+  private fc2CurrentPage: number = 1;
   private fc2RankingData: fc2RankingItem[] | null = null;
 
   getJavtrailersData(): JavtrailersDailyRelease | null {
@@ -35,6 +36,14 @@ export class PageExploreServiceService {
   }
   setJavtrailersData(data: JavtrailersDailyRelease): void {
     this.CalenderData = data;
+  }
+
+  getfc2CurrentPage(): number {
+    return this.fc2CurrentPage;
+  }
+
+  setfc2CurrentPage(page: number): void {
+    this.fc2CurrentPage = page;
   }
 
   // ===== Avbase =====

@@ -108,7 +108,7 @@ def parse_information(html: str) -> FC2VideoInformation:
         if text.startswith("商品ID") or text.startswith("Product ID"):
             product_id = text.split(":")[-1].strip().replace(" ", "-")
             info.product_id = product_id
-            info.product_number = product_id.split("-")[-1]
+            info.article_id = product_id.split("-")[-1]
 
     sectionSampleImages = soup.find("section", class_="items_article_SampleImages")
     if sectionSampleImages:

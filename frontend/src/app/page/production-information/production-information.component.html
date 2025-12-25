@@ -90,7 +90,7 @@
 
       <h2>Performers</h2>
       <div class="actors">
-        <div *ngFor="let cast of movieData.casts || []" class="actor-item">
+        <div *ngFor="let cast of actors || []" class="actor-item">
           <img
             loading="lazy"
             [src]="cast.image_url || 'assets/favicon.ico'"

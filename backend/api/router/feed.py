@@ -51,8 +51,11 @@ async def add_rss_feed(
     db: Session = Depends(get_db),
     isValid: str = Depends(tokenInterceptor),
 ):
+    import urllib.parse
 
-    r = await add_performer_feed(avatar_img_url, actor_name, description, db)
+    actor_name = urllib.parse.unquote(actor_name)
+
+    r = await add_performer_feed(actor_name, db)
 
     if r:
         return Response(status_code=status.HTTP_200_OK)

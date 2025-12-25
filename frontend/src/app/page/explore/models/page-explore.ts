@@ -58,7 +58,6 @@ export interface Product {
   };
 }
 
-
 export interface Talent {
   primary: Primary;
   profile: any | null;
@@ -113,15 +112,6 @@ export interface ImageURL {
   small: string;
 }
 
-
-
-export interface AvbaseIndexData {
-  products: Product[];
-  newbie_talents: Talent[];
-  popular_talents: Talent[];
-}
-
-
 export interface JavtrailersVideo {
   contentId: string;
   dvdId: string;
@@ -144,4 +134,15 @@ export interface JavtrailersDailyRelease {
   day: number;
   totalVideos: number;
   studios: JavtrailersStudio[];
+}
+
+export interface AvbaseIndexData {
+  newbie_talents: avbaseIndexTalent[];
+  popular_talents: avbaseIndexTalent[];
+}
+
+export interface avbaseIndexTalent {
+  name: string;
+  id: number;
+  avatar_url: string;
 }

@@ -94,21 +94,24 @@ class SocialMedia(BaseModel):
 
 
 class Actress(BaseModel):
-    name: str = ""
-    birthday: str = ""
-    height: str = ""
-    bust: str = ""
-    waist: str = ""
-    hip: str = ""
-    cup: str = ""
-    hobby: str = ""
-    prefectures: str = ""
-    blood_type: str = ""
-    aliases: List[str] = Field(default_factory=list)
-    avatar_url: str = ""
-    raw_avatar_url: str = ""
-    social_media: List[SocialMedia] = Field(default_factory=list)
-    
+    name: Optional[str] = None
+    birthday: Optional[str] = None
+    height: Optional[str] = None
+    bust: Optional[str] = None
+    waist: Optional[str] = None
+    hip: Optional[str] = None
+    cup: Optional[str] = None
+    hobby: Optional[str] = None
+    prefectures: Optional[str] = None
+    blood_type: Optional[str] = None
+    aliases: Optional[List[str]] = Field(default_factory=list)
+    avatar_url: Optional[str] = None
+    raw_avatar_url: Optional[str] = None
+    social_media: Optional[List[SocialMedia]] = Field(default_factory=list)
+
+    model_config = {
+        "from_attributes": True
+    }
     
 
 class Movie(BaseModel):

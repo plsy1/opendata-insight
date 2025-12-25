@@ -109,7 +109,6 @@ def encrypt_payload(payload: DecryptedImagePayload) -> str:
     key = _config.get_image_token_key()
     aesgcm = AESGCM(key)
 
-
     plaintext = json.dumps(
         payload.model_dump(), separators=(",", ":"), ensure_ascii=False
     ).encode("utf-8")

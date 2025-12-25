@@ -8,6 +8,8 @@ from services.background_task import (
     update_emby_movies_in_db,
     clean_cache_dir,
     update_avbase_release_everyday,
+    update_fc2_ranking_in_db,
+    fetch_avbase_index_actor_list,
 )
 
 
@@ -79,6 +81,22 @@ def init_app_scheduler() -> AppScheduler:
         job_id="avbase_release_everyday",
         name="Update avbase release everyday",
         hours=7,
+    )
+
+    app_scheduler.add_job(
+        update_fc2_ranking_in_db,
+        trigger=IntervalTrigger,
+        job_id="update_fc2_ranking_in_db",
+        name="Update fc2_ranking_in_db",
+        hours=3,
+    )
+
+    app_scheduler.add_job(
+        fetch_avbase_index_actor_list,
+        trigger=IntervalTrigger,
+        job_id="fetch_avbase_index_actor_list",
+        name="fetch_avbase_index_actor_list",
+        hours=12,
     )
 
     logging.info("AppScheduler initialized with default jobs")

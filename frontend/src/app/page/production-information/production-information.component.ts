@@ -132,4 +132,19 @@ export class ProductionInformationComponent implements OnInit {
       console.error('Failed:', error);
     }
   }
+
+  get actors() {
+    const casts = this.movieData?.casts;
+    const actors = this.movieData?.actors;
+
+    if (Array.isArray(casts) && casts.length > 0) {
+      return casts;
+    }
+
+    if (Array.isArray(actors) && actors.length > 0) {
+      return actors;
+    }
+
+    return [];
+  }
 }

@@ -232,7 +232,7 @@ def clean_cache_dir(max_image_cache_hours=48):
 
 
 async def update_fc2_ranking_in_db():
-    from core.database import FC2Metadata
+    from core.database import FC2Ranking
     from modules.metadata.fc2 import RankingType, get_ranking
 
     db = next(get_db())
@@ -250,10 +250,10 @@ async def update_fc2_ranking_in_db():
                 current_ids = {item.article_id for item in items}
 
                 existing_records = (
-                    db.query(FC2Metadata)
+                    db.query(FC2Ranking)
                     .filter(
-                        FC2Metadata.term == term.value,
-                        FC2Metadata.page == page,
+                        FC2Ranking.term == term.value,
+                        FC2Ranking.page == page,
                     )
                     .all()
                 )
@@ -269,7 +269,7 @@ async def update_fc2_ranking_in_db():
 
                     if old is None:
                         db.add(
-                            FC2Metadata(
+                            FC2Ranking(
                                 term=term.value,
                                 article_id=item.article_id,
                                 page=page,

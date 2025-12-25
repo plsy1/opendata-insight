@@ -73,8 +73,8 @@ class EmbyMovie(Base):
     ProductionYear = Column(Integer)
 
 
-class FC2Metadata(Base):
-    __tablename__ = "fc2_metadata"
+class FC2Ranking(Base):
+    __tablename__ = "fc2_ranking"
 
     id = Column(Integer, primary_key=True)
 
@@ -98,6 +98,35 @@ class FC2Metadata(Base):
 
     __table_args__ = (
         UniqueConstraint("term", "article_id", "rank", name="uix_fc2_term_article"),
+    )
+
+
+class FC2Product(Base):
+    __tablename__ = "fc2_products"
+
+    id = Column(Integer, primary_key=True)
+
+    article_id = Column(String, nullable=False, index=True)
+
+    product_id = Column(String, index=True)
+
+    title = Column(String)
+    author = Column(String)
+
+    cover = Column(String)
+    duration = Column(String)
+    sale_day = Column(String)
+
+    sample_images = Column(JSON, default=list)
+
+    crawled_at = Column(DateTime, default=datetime.now, index=True)
+
+    __table_args__ = (
+        UniqueConstraint(
+            "article_id",
+            "product_id",
+            name="uix_fc2_article_product",
+        ),
     )
 
 
@@ -146,6 +175,45 @@ class MovieProduct(Base):
     __table_args__ = (
         UniqueConstraint("work_id", "product_id", name="uix_work_product"),
     )
+
+
+class ActorData(Base):
+    __tablename__ = "actor_data"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(100), nullable=False)
+    birthday = Column(String(20), nullable=True)
+    height = Column(String(10), nullable=True)
+    bust = Column(String(10), nullable=True)
+    waist = Column(String(10), nullable=True)
+    hip = Column(String(10), nullable=True)
+    cup = Column(String(10), nullable=True)
+    hobby = Column(String, nullable=True)
+    prefectures = Column(String(50), nullable=True)
+    blood_type = Column(String(5), nullable=True)
+    aliases = Column(JSON, nullable=True)
+    avatar_url = Column(String, nullable=True)
+    social_media = Column(JSON, nullable=True)
+    isSubscribe = Column(Boolean, default=False, nullable=False)
+    isCollect = Column(Boolean, default=False, nullable=False)
+
+
+class avbaseNewbie(Base):
+    __tablename__ = "avbase_newbie"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(100), nullable=False)
+    avatar_url = Column(String, nullable=True)
+    isActive = Column(Boolean, default=False, nullable=False)
+
+
+class avbasePopular(Base):
+    __tablename__ = "avbase_popular"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(100), nullable=False)
+    avatar_url = Column(String, nullable=True)
+    isActive = Column(Boolean, default=False, nullable=False)
 
 
 def get_db() -> Generator[Session, None, None]:

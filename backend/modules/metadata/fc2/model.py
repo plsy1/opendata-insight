@@ -28,11 +28,11 @@ class FC2RankingItem(BaseModel):
 
 
 class FC2VideoInformation(BaseModel):
+    article_id: Optional[str] = None
+    product_id: Optional[str] = None
     cover: Optional[str] = None
     duration: Optional[str] = None
     title: Optional[str] = None
     author: Optional[str] = None
     sale_day: Optional[str] = None
-    product_id: Optional[str] = None
-    product_number: Optional[str] = None
     sample_images: list[str] = []

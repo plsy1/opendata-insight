@@ -10,9 +10,7 @@ import time
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 
-async def get_actress_info_by_actress_name(
-    name: str, changeImagePrefix: bool = True
-) -> Actress:
+async def get_actress_info_by_actress_name(name: str) -> Actress:
     actress = Actress(name=name)
 
     url = f"https://www.avbase.net/talents/{name}"
@@ -27,25 +25,7 @@ async def get_actress_info_by_actress_name(
 
         primary = talent.get("primary", {})
 
-        if changeImagePrefix:
-            real_image_url = primary.get("image_url", "")
-            SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-
-            image_payload = DecryptedImagePayload(
-                url=real_image_url,
-                exp=(
-                    (int(time.time()) // 3600)
-                    + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS")
-                )
-                * 3600,
-                src="avbase",
-            )
-
-            image_token = encrypt_payload(image_payload)
-            actress.raw_avatar_url = real_image_url
-            actress.avatar_url = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
-        else:
-            actress.avatar_url = f'{primary.get("image_url")}'
+        actress.avatar_url = f'{primary.get("image_url")}'
 
         fanza = (primary.get("meta") or {}).get("fanza") or {}
         for k, v in fanza.items():
@@ -72,34 +52,56 @@ async def get_movie_info_by_keywords(keywords: str, page: int) -> List[Movie]:
     return await get_movies(url)
 
 
-async def get_index():
+async def fetch_avbase_index_actor_list():
+
+    from core.database import get_db, avbaseNewbie, avbasePopular
+
     url = f"https://www.avbase.net"
     data = await get_next_data(url)
     data = data.get("props").get("pageProps")
-    works = data.get("works")
-    products = [p for work in works for p in work.get("products", [])]
+
     newbie_talents = data.get("newbie_talents")
     popular_talents = data.get("popular_talents")
-    SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-    newbie_talents = replace_domain_in_value(newbie_talents, SYSTEM_IMAGE_PREFIX)
-    popular_talents = replace_domain_in_value(popular_talents, SYSTEM_IMAGE_PREFIX)
 
-    seen_titles = set()
-    unique_products = []
-    for p in products:
-        title = p.get("title")
-        if not title or title in seen_titles:
+    db = next(get_db())
+
+    db.query(avbaseNewbie).update({avbaseNewbie.isActive: False})
+    db.query(avbasePopular).update({avbasePopular.isActive: False})
+    db.commit()
+
+    for item in newbie_talents:
+        for actor in item.get("actors", []):
+            name = actor.get("name")
+            avatar_url = actor.get("image_url")
+
+            record = db.query(avbaseNewbie).filter_by(name=name).first()
+
+            if record:
+                record.avatar_url = avatar_url
+                record.isActive = True
+            else:
+                record = avbaseNewbie(name=name, avatar_url=avatar_url, isActive=True)
+                db.add(record)
+
+    for item in popular_talents:
+        actors = item.get("actors", [])
+        if not actors:
             continue
-        seen_titles.add(title)
 
-        p = replace_domain_in_value(p, SYSTEM_IMAGE_PREFIX)
-        unique_products.append(p)
+        actor = actors[0]
+        name = actor.get("name")
+        avatar_url = actor.get("image_url")
 
-    return {
-        "products": unique_products,
-        "newbie_talents": newbie_talents,
-        "popular_talents": popular_talents,
-    }
+        record = db.query(avbasePopular).filter_by(name=name).first()
+
+        if record:
+            record.avatar_url = avatar_url
+            record.isActive = True
+        else:
+            record = avbasePopular(name=name, avatar_url=avatar_url, isActive=True)
+            db.add(record)
+
+    db.commit()
 
 
 async def get_information_by_work_id(canonical_id: str) -> MovieDataOut:

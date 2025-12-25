@@ -12,6 +12,7 @@ import { DownloadComponent } from './page/download/download.component';
 import { KeywordsSearchComponent } from './page/keywords-search/keywords-search.component';
 import { PerformerInformationComponent } from './page/performer-information/performer-information.component';
 import { ProductionInformationComponent } from './page/production-information/production-information.component';
+import { Fc2ProductionInformationComponent } from './page/fc2-production-information/fc2-production-information.component';
 
 export const routes: Routes = [
   {
@@ -77,6 +78,11 @@ export const routes: Routes = [
       {
         path: 'production/:id',
         component: ProductionInformationComponent,
+        canActivate: [authGuard],
+      },
+      {
+        path: 'production/fc2/:id',
+        component: Fc2ProductionInformationComponent,
         canActivate: [authGuard],
       },
     ],

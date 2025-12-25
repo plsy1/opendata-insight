@@ -3,16 +3,16 @@
   <div
     *ngFor="let actress of avbaseIndexData?.newbie_talents"
     class="actress-card"
-    (click)="cardClick(actress.primary.name)"
+    (click)="cardClick(actress.name)"
   >
     <img
-      [src]="actress.primary.image_url || 'assets/favicon.ico'"
-      [alt]="actress.primary.name"
+      [src]="actress.avatar_url || 'assets/favicon.ico'"
+      [alt]="actress.name"
       class="avatar-img"
       loading="lazy"
       [class.blurred]="PageExploreService.isEnableBlur$() | async"
     />
-    <div>{{ actress.primary.name }}</div>
+    <div>{{ actress.name }}</div>
   </div>
 </div>
 
@@ -21,16 +21,16 @@
   <div
     *ngFor="let actress of avbaseIndexData?.popular_talents"
     class="actress-card"
-    (click)="cardClick(actress.primary.name)"
+    (click)="cardClick(actress.name)"
   >
     <img
-      [src]="actress.primary.image_url || 'assets/favicon.ico'"
-      [alt]="actress.primary.name"
+      [src]="actress.avatar_url"
+      [alt]="actress.name"
       class="avatar-img"
       loading="lazy"
             [class.blurred]="PageExploreService.isEnableBlur$() | async"
     />
-    <div>{{ actress.primary.name }}</div>
+    <div>{{ actress.name }}</div>
   </div>
 </div>
 

@@ -34,7 +34,7 @@ export interface MovieData {
   title: string;
   min_date?: string | null;
   casts: Cast[];
-  actors: { [key: string]: any }[];
+  actors: Cast[];
   tags: string[];
   genres: string[];
   created_at?: string | null;
