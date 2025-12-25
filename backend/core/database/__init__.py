@@ -30,17 +30,6 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     password = Column(String)
 
-
-class RSSFeed(Base):
-    __tablename__ = "rss_feeds"
-
-    id = Column(Integer, primary_key=True, index=True)
-    url = Column(String, unique=True, index=True)
-    title = Column(String, index=True)
-    description = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.now)
-
-
 class RSSItem(Base):
     __tablename__ = "rss_items"
 
@@ -51,16 +40,6 @@ class RSSItem(Base):
     img = Column(String)
     link = Column(String)
     downloaded = Column(Boolean)
-
-
-class ActressCollect(Base):
-    __tablename__ = "actress_collect"
-
-    id = Column(Integer, primary_key=True, index=True)
-    avatar_url = Column(String, unique=True, index=True)
-    name = Column(String, index=True)
-    created_at = Column(DateTime, default=datetime.now)
-
 
 class EmbyMovie(Base):
     __tablename__ = "emby_movies"

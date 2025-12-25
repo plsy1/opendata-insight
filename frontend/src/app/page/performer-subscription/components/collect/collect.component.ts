@@ -7,13 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
-interface performerList {
-  name: string;
-  created_at: string;
-  avatar_url: string;
-  id: number;
-}
+import { Actress } from '../../model/actor-information.interface';
 
 @Component({
   selector: 'app-list-performer-collect',
@@ -29,7 +23,7 @@ interface performerList {
   styleUrl: './collect.component.css',
 })
 export class PerformerCollectionListComponent {
-  ActressList: performerList[] = [];
+  ActressList: Actress[] = [];
   constructor(
     public PerformerSubscriptionService: PerformerSubscriptionService,
     private router: Router,
@@ -42,7 +36,7 @@ export class PerformerCollectionListComponent {
 
   loadActressCollect(): void {
     this.PerformerSubscriptionService.getActressCollect().subscribe({
-      next: (data: performerList[]) => {
+      next: (data: Actress[]) => {
         this.ActressList = data;
       },
       error: (error) => {

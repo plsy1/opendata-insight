@@ -1,5 +1,5 @@
 import uuid, asyncio
-from core.database import get_db, RSSItem, RSSFeed
+from core.database import get_db, RSSItem,ActorData
 from modules.metadata.prowlarr import Prowlarr
 from modules.downloader.qbittorrent import QB
 from core.config import _config
@@ -111,13 +111,13 @@ async def refresh_actress_feeds():
     try:
         db = next(get_db())
 
-        feeds = db.query(RSSFeed).all()
+        feeds = db.query(ActorData).where(ActorData.isSubscribe == True).all()
         if not feeds:
             return
 
         for feed in feeds:
             isExist = False
-            name = feed.title
+            name = feed.name
             items = await get_movie_info_by_actress_name(
                 name, 1, changeImagePrefix=False
             )

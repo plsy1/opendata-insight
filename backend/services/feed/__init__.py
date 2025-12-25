@@ -1,4 +1,4 @@
-from core.database import RSSItem, RSSFeed, ActorData, ActressCollect, get_db
+from core.database import RSSItem, ActorData, get_db
 from core.logs import LOG_ERROR
 from modules.metadata.avbase import *
 from modules.notification.telegram.text import *
