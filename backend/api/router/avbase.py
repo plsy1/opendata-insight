@@ -200,6 +200,15 @@ async def get_relesae(yyyymmdd: str, isValid: str = Depends(tokenInterceptor)):
             categorized.items(), key=lambda x: len(x[1]), reverse=True
         ):
             result.append({"prefixName": maker_name, "works": works})
+            for work in works:
+                products = work.get("products", [])
+                if products:
+                    if not products[0].get("image_url"):
+                        products[0]["image_url"] = (
+                            products[0]
+                            .get("thumbnail_url", "")
+                            .replace("ps.jpg", "pl.jpg")
+                        )
 
         return replace_domain_in_value(result, _config.get("SYSTEM_IMAGE_PREFIX"))
 

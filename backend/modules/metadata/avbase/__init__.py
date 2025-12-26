@@ -187,6 +187,8 @@ async def get_information_by_work_id(canonical_id: str) -> MovieDataOut:
         movie_out_dict["products"] = [merged_product]
 
     movie_out = MovieDataOut(**movie_out_dict)
+    if not movie_out.products[0].image_url:
+        movie_out.products[0].image_url = movie_out.products[0].thumbnail_url.replace("ps.jpg","pl.jpg")
     return movie_out
 
 
