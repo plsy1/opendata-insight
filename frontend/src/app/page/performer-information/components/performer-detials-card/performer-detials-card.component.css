@@ -6,6 +6,7 @@
   margin-bottom: 16px;
   width: 100%;
   background-color: var(--app-background);
+    border: var(--border-color) 1px solid;
 }
 
 .performer-content-wrapper {
@@ -114,6 +115,7 @@ button[mat-icon-button] {
   justify-content: center;
   align-items: center;
   transition: transform 0.2s;
+    border: none
 }
 
 button[mat-icon-button]:hover {

@@ -1,9 +1,8 @@
 .movie-card {
   position: relative;
-  border: 1px solid #ddd;
+  border: var(--border-color) 1px solid;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-sizing: border-box;
   position: relative;
@@ -59,7 +58,7 @@
   left: 0;
   right: 0;
   padding: 8px;
-  background: linear-gradient(to top, rgba(0, 0, 0, 1), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
   color: #fff;
   z-index: 2;
 }
@@ -72,8 +71,7 @@
   bottom: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  border-bottom: 1px solid #ddd;
+  object-fit: cover;
 }
 
 .movie-img.blurred {

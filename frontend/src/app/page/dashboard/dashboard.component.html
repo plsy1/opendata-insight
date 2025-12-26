@@ -1,26 +1,21 @@
 <mat-tab-group>
   <mat-tab label="Library">
     <ng-template matTabContent>
-
       <div class="top-row">
-  <div class="left">
-    <app-library-statistic></app-library-statistic>
-  </div>
-  <div class="right">
-    <app-library-view></app-library-view>
-  </div>
-</div>
-<div class="section"><app-recently-added></app-recently-added></div>
-<div class="section"><app-resume-watching></app-resume-watching></div>
-
+        <div class="left">
+          <app-library-statistic></app-library-statistic>
+        </div>
+        <div class="right">
+          <app-library-view></app-library-view>
+        </div>
+      </div>
+      <div class="section"><app-recently-added></app-recently-added></div>
+      <div class="section"><app-resume-watching></app-resume-watching></div>
     </ng-template>
   </mat-tab>
   <mat-tab label="Statistic">
     <ng-template matTabContent>
-<app-download-statistic></app-download-statistic>
+      <app-download-statistic></app-download-statistic>
     </ng-template>
   </mat-tab>
-
 </mat-tab-group>
-
-

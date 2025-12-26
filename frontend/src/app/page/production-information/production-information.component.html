@@ -11,7 +11,7 @@
       <div class="movie-cover">
         <img
           loading="eager"
-          [src]="movieData.products[0].image_url || 'assets/placeholder.png'"
+          [src]="movieData.products[0].image_url || 'assets/favicon.ico'"
           alt="Movie Cover"
           class="movie-cover-img"
         />
@@ -117,7 +117,7 @@
       <img
         loading="lazy"
         *ngFor="let sample of movieData.products[0]?.sample_image_urls || []"
-        [src]="sample['l'] || 'assets/placeholder.png'"
+        [src]="sample['l'] || 'assets/favicon.ico'"
         alt="Sample Image"
         class="sample-image"
       />

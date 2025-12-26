@@ -171,6 +171,22 @@ async def get_information_by_work_id(canonical_id: str) -> MovieDataOut:
         db.refresh(movie)
 
     movie_out = MovieDataOut.model_validate(movie)
+    movie_out_dict = movie_out.model_dump()
+
+    def merge_products(products: list[dict]) -> dict:
+        merged = {}
+        for p in products:
+            for key, value in p.items():
+                if (value is not None and not (isinstance(value, list) and len(value) == 0)) and key not in merged:
+                    merged[key] = value
+        return merged
+
+    if "products" in movie_out_dict and isinstance(movie_out_dict["products"], list):
+        merged_product = merge_products(movie_out_dict["products"])
+        # 这里注意要用列表包起来
+        movie_out_dict["products"] = [merged_product]
+
+    movie_out = MovieDataOut(**movie_out_dict)
     return movie_out
 
 
