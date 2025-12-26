@@ -1,9 +1,8 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 
 class DecryptedImagePayload(BaseModel):
     url: str
     exp: int
-    src: str
 
     @property
     def expired(self) -> bool:

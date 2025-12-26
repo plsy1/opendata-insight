@@ -90,14 +90,7 @@ def emby_get_latest_items() -> List[Dict]:
 
         real_image_url = f"{EMBY_URL}/Items/{item_id}/Images/Primary"
 
-        image_payload = DecryptedImagePayload(
-            url=real_image_url,
-            exp=((int(time.time()) // 3600) + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS"))
-            * 3600,
-            src="emby",
-        )
-
-        image_token = encrypt_payload(image_payload)
+        image_token = encrypt_payload(real_image_url)
 
         primary = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
 
@@ -144,17 +137,9 @@ def emby_get_resume_items() -> List[Dict]:
             serverId = item.get("ServerId")
 
             real_image_url = f"{EMBY_URL}/Items/{item_id}/Images/Primary"
-            image_payload = DecryptedImagePayload(
-                url=real_image_url,
-                exp=(
-                    (int(time.time()) // 3600)
-                    + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS")
-                )
-                * 3600,
-                src="emby",
-            )
 
-            image_token = encrypt_payload(image_payload)
+
+            image_token = encrypt_payload(real_image_url)
 
             primary = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
 
@@ -192,17 +177,9 @@ def emby_get_views() -> List[Dict]:
             ServerId = item.get("ServerId")
 
             real_image_url = f"{EMBY_URL}/Items/{item_id}/Images/Primary"
-            image_payload = DecryptedImagePayload(
-                url=real_image_url,
-                exp=(
-                    (int(time.time()) // 3600)
-                    + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS")
-                )
-                * 3600,
-                src="emby",
-            )
 
-            image_token = encrypt_payload(image_payload)
+
+            image_token = encrypt_payload(real_image_url)
 
             primary = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
 

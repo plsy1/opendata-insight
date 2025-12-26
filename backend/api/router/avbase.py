@@ -35,7 +35,15 @@ async def get_actress_information(name: str, isValid: str = Depends(tokenInterce
                 if not k.startswith("_sa_instance_state")
             }
             new_result = replace_domain_in_value(
-                result_dict, _config.get("SYSTEM_IMAGE_PREFIX"),['x.com','www.instagram.com','www.avbase.net','ja.wikipedia.org','www.tiktok.com']
+                result_dict,
+                _config.get("SYSTEM_IMAGE_PREFIX"),
+                [
+                    "x.com",
+                    "www.instagram.com",
+                    "www.avbase.net",
+                    "ja.wikipedia.org",
+                    "www.tiktok.com",
+                ],
             )
             return new_result
 

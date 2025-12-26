@@ -12,18 +12,18 @@ from core.system import encrypt_payload
 import time
 
 
-
 from typing import Optional
+
 
 def parse_min_date(date_str: Optional[str]) -> Optional[str]:
     """
     将日期字符串解析并转换为 'YYYY-MM-DD' 格式。
-    
+
     示例输入：
         'Wed Dec 25 1964 00:00:00 GMT+0000 (Coordinated Universal Time)'
     返回：
         '1964-12-25'
-    
+
     如果输入为空或格式不正确，返回 None。
     """
     if not date_str:
@@ -77,17 +77,7 @@ async def get_movies(url: str, changeImagePrefix: bool = True) -> List[Movie]:
                 if changeImagePrefix:
                     SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
 
-                    image_payload = DecryptedImagePayload(
-                        url=img_url,
-                        exp=(
-                            (int(time.time()) // 3600)
-                            + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS")
-                        )
-                        * 3600,
-                        src="avbase",
-                    )
-
-                    image_token = encrypt_payload(image_payload)
+                    image_token = encrypt_payload(img_url)
 
                     img_url = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
 

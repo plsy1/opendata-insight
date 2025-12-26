@@ -10,7 +10,6 @@ from core.system.model import DecryptedImagePayload
 import aiofiles
 import json
 import base64
-import time
 import hashlib
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.exceptions import InvalidTag
@@ -20,6 +19,16 @@ CACHE_EXPIRE_HOURS = _config.get("CACHE_EXPIRE_HOURS")
 CACHE_DIR = _config.get("CACHE_DIR")
 
 os.makedirs(CACHE_DIR, exist_ok=True)
+
+
+def next_monday_timestamp():
+    today = datetime.now()
+    days_ahead = 0 - today.weekday()
+    if days_ahead <= 0:
+        days_ahead += 7
+    next_monday = today + timedelta(days=days_ahead)
+    next_monday = next_monday.replace(hour=0, minute=0, second=0, microsecond=0)
+    return int(next_monday.timestamp())
 
 
 def replace_domain_in_value(value: Any, prefix: str, exclude: List[str] = None) -> Any:
@@ -42,16 +51,7 @@ def replace_domain_in_value(value: Any, prefix: str, exclude: List[str] = None) 
                 parsed = urlparse(value)
                 if parsed.netloc in exclude:
                     return value
-                payload = DecryptedImagePayload(
-                    url=value,
-                    exp=(
-                        (int(time.time()) // 3600)
-                        + _config.get("SYSTEM_IMAGE_EXPIRE_HOURS")
-                    )
-                    * 3600,
-                    src="auto",
-                )
-                token = encrypt_payload(payload)
+                token = encrypt_payload(value)
                 return f"{prefix}{token}"
             except Exception:
                 return value
@@ -101,11 +101,13 @@ async def fetch_and_cache_image(url: str) -> tuple[IOBase, dict]:
     return open(cache_path, "rb"), headers
 
 
-def encrypt_payload(payload: DecryptedImagePayload) -> str:
+def encrypt_payload(url) -> str:
     """
     payload: DecryptedImagePayload 实例
     返回：URL-safe base64 字符串
     """
+    payload = DecryptedImagePayload(url=url, exp=next_monday_timestamp())
+
     key = _config.get_image_token_key()
     aesgcm = AESGCM(key)
 
