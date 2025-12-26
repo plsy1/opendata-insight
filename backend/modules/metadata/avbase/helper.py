@@ -30,7 +30,6 @@ def parse_min_date(date_str: Optional[str]) -> Optional[str]:
         return None
 
     try:
-        # 去掉多余的 GMT 或括号
         date_str = date_str.split(" (")[0].split(" GMT")[0]
         dt = datetime.strptime(date_str, "%a %b %d %Y %H:%M:%S")
         return dt.strftime("%Y-%m-%d")

@@ -93,7 +93,7 @@ class SocialMedia(BaseModel):
     link: str = ""
 
 
-class Actress(BaseModel):
+class ActorDataResponse(BaseModel):
     name: Optional[str] = None
     birthday: Optional[str] = None
     height: Optional[str] = None
@@ -106,7 +106,6 @@ class Actress(BaseModel):
     blood_type: Optional[str] = None
     aliases: Optional[List[str]] = Field(default_factory=list)
     avatar_url: Optional[str] = None
-    raw_avatar_url: Optional[str] = None
     social_media: Optional[List[SocialMedia]] = Field(default_factory=list)
 
     model_config = {

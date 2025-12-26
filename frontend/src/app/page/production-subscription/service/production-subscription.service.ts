@@ -10,19 +10,13 @@ export class ProductionSubscriptionService {
   constructor(private common: CommonService) {}
 
   getKeywordFeeds(): Observable<KeywordFeed[]> {
-    return this.common.request<KeywordFeed[]>(
-      'GET',
-      'feed/getKeywordsFeedList'
-    );
+    return this.common.request<KeywordFeed[]>('GET', 'feed/movieSubscribe');
   }
 
   getDownloadedKeywordsFeedListGet(): Observable<KeywordFeed[]> {
-    return this.common.request<KeywordFeed[]>(
-      'GET',
-      'feed/getDownloadedKeywordsFeedList'
-    );
+    return this.common.request<KeywordFeed[]>('GET', 'feed/movieDownloaded');
   }
-      isEnableBlur$(): Observable<boolean> {
+  isEnableBlur$(): Observable<boolean> {
     return this.common.enableBlur$;
   }
 

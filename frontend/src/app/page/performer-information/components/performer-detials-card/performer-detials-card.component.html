@@ -1,27 +1,23 @@
-<div *ngIf="isLoading" class="loading">
-  Loading...
-</div>
-<mat-card class="performer-card" *ngIf="!isLoading">
+<div *ngIf="isLoading" class="loading">Loading...</div>
+<mat-card class="performer-card" *ngIf="!isLoading && performerInformation">
   <div class="performer-content-wrapper">
-    <!-- 左侧头像 -->
     <div class="avatar-section">
       <img
-        [src]="performerInformation?.avatar_url || 'assets/favicon.ico'"
+        [src]="performerInformation.avatar_url || 'assets/favicon.ico'"
         alt="Actress Avatar"
         class="actress-avatar-img"
       />
-      <!-- 操作按钮 -->
       <div class="action-icons">
         <button
           mat-icon-button
-          (click)="subscribeActress(performerInformation?.raw_avatar_url)"
+          (click)="subscribeActor()"
           matTooltip="Add to Feed"
         >
           <i class="fas fa-rss"></i>
         </button>
         <button
           mat-icon-button
-          (click)="collectActress(performerInformation?.raw_avatar_url)"
+          (click)="collectActor()"
           matTooltip="Add to Collection"
         >
           <i class="fas fa-heart"></i>
@@ -36,15 +32,11 @@
       </div>
     </div>
 
-    <!-- 右侧信息 -->
     <div class="performer-info-section">
-      <!-- 名字 -->
       <h2 class="actress-name">{{ name || "N/A" }}</h2>
-
-      <!-- 社交媒体标题 + 图标 -->
       <div class="social-title"><strong>Social Media</strong></div>
       <div class="social-icons">
-        <div *ngFor="let platform of performerInformation?.social_media">
+        <div *ngFor="let platform of performerInformation.social_media">
           <a
             *ngIf="platform.platform !== 'RSS'"
             [href]="platform.link"
@@ -57,26 +49,25 @@
         </div>
       </div>
 
-      <!-- 个人信息 -->
       <div class="actress-info">
-        <p *ngIf="performerInformation?.aliases?.length">
+        <p *ngIf="performerInformation.aliases.length">
           <strong>Alias:</strong> {{ performerInformation.aliases.join(", ") }}
         </p>
-        <p *ngIf="performerInformation?.hobby">
+        <p *ngIf="performerInformation.hobby">
           <strong>Hobbies:</strong> {{ performerInformation.hobby }}
         </p>
-        <p *ngIf="performerInformation?.birthday">
+        <p *ngIf="performerInformation.birthday">
           <strong>Birth:</strong> {{ performerInformation.birthday }}
         </p>
-        <p *ngIf="performerInformation?.height">
+        <p *ngIf="performerInformation.height">
           <strong>Height:</strong> {{ performerInformation.height }} cm
         </p>
         <p
           *ngIf="
-            performerInformation?.bust ||
-            performerInformation?.waist ||
-            performerInformation?.hip ||
-            performerInformation?.cup
+            performerInformation.bust ||
+            performerInformation.waist ||
+            performerInformation.hip ||
+            performerInformation.cup
           "
         >
           <strong>Measurements:</strong>
@@ -95,10 +86,10 @@
           }}
           {{ performerInformation.cup ? "/ " + performerInformation.cup : "" }}
         </p>
-        <p *ngIf="performerInformation?.prefectures">
+        <p *ngIf="performerInformation.prefectures">
           <strong>Region:</strong> {{ performerInformation.prefectures }}
         </p>
-        <p *ngIf="performerInformation?.blood_type">
+        <p *ngIf="performerInformation.blood_type">
           <strong>Blood Type:</strong> {{ performerInformation.blood_type }}
         </p>
       </div>

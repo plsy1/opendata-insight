@@ -23,7 +23,7 @@ export class ActressInformationComponent {
     private service: PerformerService,
     private snackBar: MatSnackBar,
     private common: CommonService,
-        private router: Router,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -34,14 +34,14 @@ export class ActressInformationComponent {
         this.performerInformation = this.service.performerInformation;
       } else {
         this.service.saveName(this.name);
-        this.loadActressInformation(this.name);
+        this.loadActorInformation(this.name);
       }
     });
   }
 
-  loadActressInformation(name: string): void {
+  loadActorInformation(name: string): void {
     this.isLoading = true;
-    this.service.getActressInformation(encodeURIComponent(name)).subscribe({
+    this.service.getActorInformation(name).subscribe({
       next: (data) => {
         this.performerInformation = data;
         this.service.savePerformerInformation(data);
@@ -54,8 +54,8 @@ export class ActressInformationComponent {
     });
   }
 
-  subscribeActress(rssLink: string): void {
-    this.service.addFeedsRSS(rssLink, this.name, '').subscribe({
+  subscribeActor(): void {
+    this.service.addActorSubscribe(this.name).subscribe({
       next: (response) => {
         this.snackBar.open('Added successfully', 'Close', { duration: 2000 });
       },
@@ -65,8 +65,8 @@ export class ActressInformationComponent {
     });
   }
 
-  collectActress(rssLink: string): void {
-    this.service.addActressCollect(rssLink, this.name).subscribe({
+  collectActor(): void {
+    this.service.addActorCollect(this.name).subscribe({
       next: (response) => {
         this.snackBar.open('Added successfully', 'Close', { duration: 2000 });
       },
@@ -77,7 +77,7 @@ export class ActressInformationComponent {
   }
 
   searchByName(): void {
-          this.router.navigate(['/torrents', this.name]);
+    this.router.navigate(['/torrents', this.name]);
   }
 
   getFaIcon(platform: string): string {

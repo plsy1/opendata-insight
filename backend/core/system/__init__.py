@@ -31,13 +31,42 @@ def next_monday_timestamp():
     return int(next_monday.timestamp())
 
 
+def _to_plain(value: Any) -> Any:
+    """
+    将 ORM / Pydantic / dataclass 转为 dict
+    """
+    # Pydantic v2
+    if hasattr(value, "model_dump"):
+        return value.model_dump()
+
+    # Pydantic v1
+    if hasattr(value, "dict"):
+        return value.dict()
+
+    # SQLAlchemy ORM
+    if hasattr(value, "__dict__"):
+        return {k: v for k, v in value.__dict__.items() if not k.startswith("_")}
+
+    return value
+
+
 def replace_domain_in_value(value: Any, prefix: str, exclude: List[str] = None) -> Any:
     """
     递归替换 dict/list 结构中的所有 URL 为 prefix + encrypt_payload(DecryptedImagePayload)
     排除域名列表中的 URL 不做替换
     """
     if exclude is None:
-        exclude = ["www.mgstage.com", "al.dmm.co.jp"]
+        exclude = [
+            "www.mgstage.com",
+            "al.dmm.co.jp",
+            "x.com",
+            "www.instagram.com",
+            "www.avbase.net",
+            "ja.wikipedia.org",
+            "www.tiktok.com",
+        ]
+
+    value = _to_plain(value)
 
     if isinstance(value, dict):
         return {

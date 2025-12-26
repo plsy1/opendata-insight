@@ -9,29 +9,26 @@ export class PerformerSubscriptionService {
   constructor(private common: CommonService) {}
 
   getActressCollect(): Observable<any> {
-    return this.common.request<any>('GET', 'feed/getCollectList');
+    return this.common.request<any>('GET', 'feed/actorCollect');
   }
 
-  removeActressCollect(nameParam: string): Observable<any> {
-    return this.common.request<any>('DELETE', 'feed/delActressCollect', {
-
-      body: new URLSearchParams({ name: nameParam }).toString(),
-      acceptJson: true,
+  removeActressCollect(name: string): Observable<any> {
+    return this.common.request<any>('DELETE', 'feed/actorCollect', {
+      params: { name: name },
     });
   }
 
   getActressFeed(): Observable<any> {
-    return this.common.request<any>('GET', 'feed/getFeedsList');
+    return this.common.request<any>('GET', 'feed/actorSubscribe');
   }
 
   removeFeedsRSS(urlParam: string): Observable<any> {
-    return this.common.request<any>('DELETE', 'feed/delFeeds', {
-      body: new URLSearchParams({ title: urlParam }).toString(),
-      acceptJson: true,
+    return this.common.request<any>('DELETE', 'feed/actorSubscribe', {
+      params: { name: urlParam },
     });
   }
 
-      isEnableBlur$(): Observable<boolean> {
+  isEnableBlur$(): Observable<boolean> {
     return this.common.enableBlur$;
   }
 

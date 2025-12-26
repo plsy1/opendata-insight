@@ -4,52 +4,72 @@ from typing import List
 from .model import *
 from .helper import *
 from core.config import _config
-from core.system import replace_domain_in_value, encrypt_payload
-from core.system.model import DecryptedImagePayload
-import time
+from core.system import replace_domain_in_value
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 
 
-async def get_actress_info_by_actress_name(name: str) -> Actress:
-    actress = Actress(name=name)
+async def get_actress_info_by_actress_name(
+    name: str, changeImagePrefix: bool = False
+) -> ActorDataResponse:
 
-    url = f"https://www.avbase.net/talents/{name}"
-    content = await get_raw_html(url)
+    from core.database import get_db, ActorData
 
-    soup = BeautifulSoup(content, "html.parser")
-    script_tag = soup.find("script", id="__NEXT_DATA__")
-    if script_tag:
-        data = json.loads(script_tag.string)
-        page_props = data["props"]["pageProps"]
-        talent = page_props.get("talent", {})
+    db = next(get_db())
 
-        primary = talent.get("primary", {})
+    records = db.query(ActorData).where(ActorData.name == name).first()
 
-        actress.avatar_url = f'{primary.get("image_url")}'
+    if not records:
+        data = ActorDataResponse(name=name)
 
-        fanza = (primary.get("meta") or {}).get("fanza") or {}
-        for k, v in fanza.items():
-            if hasattr(actress, k):
-                setattr(actress, k, v)
+        url = f"https://www.avbase.net/talents/{name}"
+        content = await get_raw_html(url)
 
-        actors = talent.get("actors", [])
-        actress.aliases = [actor.get("name") for actor in actors if actor.get("name")]
+        soup = BeautifulSoup(content, "html.parser")
+        script_tag = soup.find("script", id="__NEXT_DATA__")
+        if script_tag:
+            tmp = json.loads(script_tag.string)
+            page_props = tmp["props"]["pageProps"]
+            talent = page_props.get("talent", {})
+            primary = talent.get("primary", {})
+            data.avatar_url = f'{primary.get("image_url")}'
+            fanza = (primary.get("meta") or {}).get("fanza") or {}
+            for k, v in fanza.items():
+                if hasattr(data, k):
+                    setattr(data, k, v)
 
-    actress.social_media = get_social_media_links(soup)
+            actors = talent.get("actors", [])
+            data.aliases = [actor.get("name") for actor in actors if actor.get("name")]
 
-    return actress
+        data.social_media = get_social_media_links(soup)
+
+        new_actor = ActorData(
+            **data.model_dump(),
+            isSubscribe=False,
+            isCollect=False,
+        )
+        db.add(new_actor)
+        db.commit()
+        db.refresh(new_actor)
+
+        records = new_actor
+
+    if changeImagePrefix:
+        records = replace_domain_in_value(records, _config.get("SYSTEM_IMAGE_PREFIX"))
+    return ActorDataResponse.model_validate(records)
 
 
 async def get_movie_info_by_actress_name(
-    name: str, page: int, changeImagePrefix: bool = True
+    name: str, page: int, changeImagePrefix: bool = False
 ) -> List[Movie]:
     url = f"https://www.avbase.net/talents/{name}?q=&page={page}"
     return await get_movies(url, changeImagePrefix=changeImagePrefix)
 
 
-async def get_movie_info_by_keywords(keywords: str, page: int) -> List[Movie]:
+async def get_movie_info_by_keywords(
+    keywords: str, page: int, changeImagePrefix: bool = False
+) -> List[Movie]:
     url = f"https://www.avbase.net/works?q={keywords}&page={page}"
-    return await get_movies(url)
+    return await get_movies(url, changeImagePrefix=changeImagePrefix)
 
 
 async def fetch_avbase_index_actor_list():
@@ -104,7 +124,9 @@ async def fetch_avbase_index_actor_list():
     db.commit()
 
 
-async def get_information_by_work_id(canonical_id: str) -> MovieDataOut:
+async def get_information_by_work_id(
+    canonical_id: str, changeImagePrefix: bool = False
+) -> MovieDataOut:
 
     from core.database import MovieData, MovieProduct, get_db
 
@@ -124,7 +146,7 @@ async def get_information_by_work_id(canonical_id: str) -> MovieDataOut:
 
         work = data.get("props", {}).get("pageProps", {}).get("work", {})
 
-        min_date = parse_min_date(work.get("date"))
+        min_date = parse_min_date(work.get("min_date"))
 
         movie = MovieData(
             work_id=work["work_id"],
@@ -173,22 +195,31 @@ async def get_information_by_work_id(canonical_id: str) -> MovieDataOut:
     movie_out = MovieDataOut.model_validate(movie)
     movie_out_dict = movie_out.model_dump()
 
+    if changeImagePrefix:
+        movie_out_dict = replace_domain_in_value(
+            movie_out_dict, _config.get("SYSTEM_IMAGE_PREFIX")
+        )
+
     def merge_products(products: list[dict]) -> dict:
         merged = {}
         for p in products:
             for key, value in p.items():
-                if (value is not None and not (isinstance(value, list) and len(value) == 0)) and key not in merged:
+                if (
+                    value is not None
+                    and not (isinstance(value, list) and len(value) == 0)
+                ) and key not in merged:
                     merged[key] = value
         return merged
 
     if "products" in movie_out_dict and isinstance(movie_out_dict["products"], list):
         merged_product = merge_products(movie_out_dict["products"])
-        # 这里注意要用列表包起来
         movie_out_dict["products"] = [merged_product]
 
     movie_out = MovieDataOut(**movie_out_dict)
     if not movie_out.products[0].image_url:
-        movie_out.products[0].image_url = movie_out.products[0].thumbnail_url.replace("ps.jpg","pl.jpg")
+        movie_out.products[0].image_url = movie_out.products[0].thumbnail_url.replace(
+            "ps.jpg", "pl.jpg"
+        )
     return movie_out
 
 

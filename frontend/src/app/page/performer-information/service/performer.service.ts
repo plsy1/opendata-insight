@@ -41,41 +41,31 @@ export class PerformerService {
     this.actressNumberFilter = actressNumberFilter;
   }
 
-  discoverByActress(filter_value: string, page: number): Observable<any> {
-    return this.common.request<any>('GET', 'avbase/actress/movies', {
-      params: { name: filter_value, page },
-    });
-  }
-
-  addActressCollect(url: string, title: string): Observable<any> {
-    return this.common.request<any>('POST', 'feed/addActressCollect', {
-      body: new URLSearchParams({ avatar_url: url, name: title }).toString(),
-      acceptJson: true,
-    });
-  }
-
-  addFeedsRSS(
-    avatar_img_url: string,
-    actor_name: string,
-    description: string = ''
-  ): Observable<any> {
-    return this.common.request<any>('POST', 'feed/addFeeds', {
-      body: new URLSearchParams({
-        avatar_img_url,
-        actor_name,
-        description,
-      }).toString(),
-      acceptJson: true,
-    });
-  }
-
-  getActressInformation(name: string): Observable<any> {
-    return this.common.request<any>('GET', 'avbase/actress/information', {
+  addActorCollect(name: string): Observable<any> {
+    return this.common.request<any>('POST', 'feed/actorCollect', {
       params: { name },
     });
   }
 
-    isEnableBlur$(): Observable<boolean> {
+  addActorSubscribe(name: string): Observable<any> {
+    return this.common.request<any>('POST', 'feed/actorSubscribe', {
+      params: { name },
+    });
+  }
+
+  getActorInformation(name: string): Observable<any> {
+    return this.common.request<any>('GET', 'avbase/actorInformation', {
+      params: { name },
+    });
+  }
+
+  getMoviesByActorName(name: string, page: number): Observable<any> {
+    return this.common.request<any>('GET', 'avbase/moviesOfActor', {
+      params: { name: name, page },
+    });
+  }
+
+  isEnableBlur$(): Observable<boolean> {
     return this.common.enableBlur$;
   }
 

@@ -62,11 +62,10 @@ export class MovieCards implements OnInit {
     });
   }
 
-  loadDiscoverData(filter_value: string, page: number): void {
+  loadDiscoverData(name: string, page: number): void {
     if (this.isLoading) return;
     this.isLoading = true;
-
-    this.service.discoverByActress(filter_value, page).subscribe({
+    this.service.getMoviesByActorName(name, page).subscribe({
       next: (data) => {
         this.discoverResults = data.movies;
         this.isLoading = false;

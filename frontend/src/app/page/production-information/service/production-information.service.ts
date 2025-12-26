@@ -9,7 +9,7 @@ export class ProductionInformationService {
   constructor(private common: CommonService) {}
 
   getSingleProductionInformation(work_id: string): Observable<any> {
-    return this.common.request<any>('GET', 'avbase/movie/information', {
+    return this.common.request<any>('GET', 'avbase/movieInformation', {
       params: { work_id: work_id },
     });
   }
@@ -20,7 +20,7 @@ export class ProductionInformationService {
     img: string,
     link: string
   ): Observable<any> {
-    return this.common.request<any>('POST', 'feed/addKeywords', {
+    return this.common.request<any>('POST', 'feed/movieSubscribe', {
       body: new URLSearchParams({ actors, keyword, img, link }).toString(),
       acceptJson: true,
     });

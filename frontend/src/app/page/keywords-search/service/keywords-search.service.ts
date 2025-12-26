@@ -37,7 +37,7 @@ export class KeywordsSearchService {
   }
 
   discoverByKeywords(filter_value: string, page: number): Observable<any> {
-    return this.common.request<any>('GET', 'avbase/keywords', {
+    return this.common.request<any>('GET', 'avbase/search', {
       params: {
         keywords: filter_value,
         page,

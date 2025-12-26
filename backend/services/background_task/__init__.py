@@ -1,5 +1,5 @@
 import uuid, asyncio
-from core.database import get_db, RSSItem,ActorData
+from core.database import get_db, RSSItem, ActorData
 from modules.metadata.prowlarr import Prowlarr
 from modules.downloader.qbittorrent import QB
 from core.config import _config

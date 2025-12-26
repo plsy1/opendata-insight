@@ -2,87 +2,40 @@ from fastapi import APIRouter, Depends
 from core.auth import tokenInterceptor
 from modules.metadata.avbase import *
 from core.config import _config
-
+from urllib.parse import unquote
 
 router = APIRouter()
 
 
-@router.get("/actress/movies")
-async def get_actress_movies(
+@router.get("/moviesOfActor")
+async def get_movies_of_actor(
     name: str, page: int, isValid: str = Depends(tokenInterceptor)
 ):
-    movies = await get_movie_info_by_actress_name(name, page)
+    movies = await get_movie_info_by_actress_name(name, page, True)
     return {"movies": movies, "page": page}
 
 
-@router.get("/actress/information")
-async def get_actress_information(name: str, isValid: str = Depends(tokenInterceptor)):
-    from core.database import ActorData, get_db
-
-    db = next(get_db())
-
-    import urllib.parse
-
-    name = urllib.parse.unquote(name)
-
+@router.get("/actorInformation")
+async def get_actor_information(name: str, isValid: str = Depends(tokenInterceptor)):
     try:
-        result = db.query(ActorData).where(ActorData.name == name).first()
-
-        if result:
-            result_dict = {
-                k: v
-                for k, v in result.__dict__.items()
-                if not k.startswith("_sa_instance_state")
-            }
-            new_result = replace_domain_in_value(
-                result_dict,
-                _config.get("SYSTEM_IMAGE_PREFIX"),
-                [
-                    "x.com",
-                    "www.instagram.com",
-                    "www.avbase.net",
-                    "ja.wikipedia.org",
-                    "www.tiktok.com",
-                ],
-            )
-            return new_result
-
-        actress_data = await get_actress_info_by_actress_name(name)
-        if not actress_data:
-            return {"error": "Actor not found"}
-
-        new_actor = ActorData(
-            **actress_data.dict(exclude={"raw_avatar_url"}),
-            isSubscribe=False,
-            isCollect=False,
-        )
-        db.add(new_actor)
-        db.commit()
-        db.refresh(new_actor)
-
-        return replace_domain_in_value(new_actor, _config.get("SYSTEM_IMAGE_PREFIX"))
-
+        return await get_actress_info_by_actress_name(name, True)
     except Exception as e:
         return {"error": str(e)}
 
 
-@router.get("/movie/information")
-async def get_information_by_work_id(
-    work_id: str, isValid: str = Depends(tokenInterceptor)
-):
-    from modules.metadata.avbase import get_information_by_work_id as func
-    from urllib.parse import unquote
+@router.get("/movieInformation")
+async def get_movie_information(work_id: str, isValid: str = Depends(tokenInterceptor)):
 
-    result = await func(unquote(work_id))
+    result = await get_information_by_work_id(unquote(work_id), True)
 
-    return replace_domain_in_value(result, _config.get("SYSTEM_IMAGE_PREFIX"))
+    return result
 
 
-@router.get("/keywords")
+@router.get("/search")
 async def search_movies_by_keywords(
     keywords: str, page: int, isValid: str = Depends(tokenInterceptor)
 ):
-    return await get_movie_info_by_keywords(keywords, page)
+    return await get_movie_info_by_keywords(keywords, page, True)
 
 
 @router.get("/get_index")
