@@ -1,25 +1,27 @@
 import json
 from bs4 import BeautifulSoup
 from typing import List
-from .model import *
 from .helper import *
-from core.config import _config
-from core.system import replace_domain_in_value
+from config import _config
+from services.system import replace_domain_in_value
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+from schemas.actor import ActorDataOut
+from schemas.movies import MovieDataOut
+from database import MovieData, MovieProduct, get_db
 
 
 async def get_actress_info_by_actress_name(
     name: str, changeImagePrefix: bool = False
-) -> ActorDataResponse:
+) -> ActorDataOut:
 
-    from core.database import get_db, ActorData
+    from database import get_db, ActorData
 
     db = next(get_db())
 
     records = db.query(ActorData).where(ActorData.name == name).first()
 
     if not records:
-        data = ActorDataResponse(name=name)
+        data = ActorDataOut(name=name)
 
         url = f"https://www.avbase.net/talents/{name}"
         content = await get_raw_html(url)
@@ -55,7 +57,7 @@ async def get_actress_info_by_actress_name(
 
     if changeImagePrefix:
         records = replace_domain_in_value(records, _config.get("SYSTEM_IMAGE_PREFIX"))
-    return ActorDataResponse.model_validate(records)
+    return ActorDataOut.model_validate(records)
 
 
 async def get_movie_info_by_actress_name(
@@ -74,7 +76,7 @@ async def get_movie_info_by_keywords(
 
 async def fetch_avbase_index_actor_list():
 
-    from core.database import get_db, avbaseNewbie, avbasePopular
+    from database import get_db, avbaseNewbie, avbasePopular
 
     url = f"https://www.avbase.net"
     data = await get_next_data(url)
@@ -124,112 +126,13 @@ async def fetch_avbase_index_actor_list():
     db.commit()
 
 
-async def get_information_by_work_id(
-    canonical_id: str, changeImagePrefix: bool = False
-) -> MovieDataOut:
-
-    from core.database import MovieData, MovieProduct, get_db
-
-    db = next(get_db())
-
-    if ":" in canonical_id:
-        work_id = canonical_id.split(":", 1)[1]
-    else:
-        work_id = canonical_id
-
-    movie = db.query(MovieData).filter(MovieData.work_id == work_id).first()
-
-    if not movie:
-        url = f"https://www.avbase.net/works/{canonical_id}"
-
-        data = await get_next_data(url)
-
-        work = data.get("props", {}).get("pageProps", {}).get("work", {})
-
-        min_date = parse_min_date(work.get("min_date"))
-
-        movie = MovieData(
-            work_id=work["work_id"],
-            prefix=work.get("prefix", ""),
-            title=work.get("title", ""),
-            min_date=min_date,
-            casts=[c["actor"] for c in work.get("casts", [])],
-            actors=work.get("actors", []),
-            tags=work.get("tags", []),
-            genres=[g["name"] for g in work.get("genres", [])],
-        )
-        db.add(movie)
-        db.flush()
-
-        for p in work.get("products", []):
-            min_date = parse_min_date(p.get("date"))
-            product_data = dict(
-                product_id=p["product_id"],
-                url=p["url"],
-                image_url=p.get("image_url"),
-                title=p.get("title"),
-                source=p.get("source"),
-                thumbnail_url=p.get("thumbnail_url"),
-                date=min_date,
-                maker=p.get("maker", {}).get("name") if p.get("maker") else None,
-                label=p.get("label", {}).get("name") if p.get("label") else None,
-                series=p.get("series", {}).get("name") if p.get("series") else None,
-                sample_image_urls=p.get("sample_image_urls", []),
-                director=(
-                    p.get("iteminfo", {}).get("director") if p.get("iteminfo") else None
-                ),
-                price=p.get("iteminfo", {}).get("price") if p.get("iteminfo") else None,
-                volume=(
-                    p.get("iteminfo", {}).get("volume") if p.get("iteminfo") else None
-                ),
-                work_id=movie.id,
-            )
-
-            product = MovieProduct(**product_data)
-            db.add(product)
-
-        db.commit()
-
-        db.refresh(movie)
-
-    movie_out = MovieDataOut.model_validate(movie)
-    movie_out_dict = movie_out.model_dump()
-
-    if changeImagePrefix:
-        movie_out_dict = replace_domain_in_value(
-            movie_out_dict, _config.get("SYSTEM_IMAGE_PREFIX")
-        )
-
-    def merge_products(products: list[dict]) -> dict:
-        merged = {}
-        for p in products:
-            for key, value in p.items():
-                if (
-                    value is not None
-                    and not (isinstance(value, list) and len(value) == 0)
-                ) and key not in merged:
-                    merged[key] = value
-        return merged
-
-    if "products" in movie_out_dict and isinstance(movie_out_dict["products"], list):
-        merged_product = merge_products(movie_out_dict["products"])
-        movie_out_dict["products"] = [merged_product]
-
-    movie_out = MovieDataOut(**movie_out_dict)
-    if not movie_out.products[0].image_url:
-        movie_out.products[0].image_url = movie_out.products[0].thumbnail_url.replace(
-            "ps.jpg", "pl.jpg"
-        )
-    return movie_out
-
-
 async def get_release_by_date(date_str: str):
     """
     获取指定日期的作品列表，写入数据库
     date_str: 'YYYY-MM-DD'
     """
 
-    from core.database import MovieData, MovieProduct, get_db
+    from database import MovieData, MovieProduct, get_db
 
     all_works = []
 
@@ -342,3 +245,44 @@ async def get_release_by_date(date_str: str):
         db.execute(stmt)
 
     db.commit()
+
+
+async def get_information_by_work_id(
+    canonical_id: str, changeImagePrefix: bool = False
+) -> MovieDataOut:
+
+    db = next(get_db())
+
+    work_id = canonical_id.split(":", 1)[1] if ":" in canonical_id else canonical_id
+
+    movie = get_movie_from_db(db, work_id)
+
+    if not movie:
+        work = await fetch_work_data(canonical_id)
+        movie = parse_work_to_movie(work)
+        db.add(movie)
+        db.flush()
+        add_products_to_db(db, work.get("products", []), movie.id)
+        db.commit()
+        db.refresh(movie)
+
+    movie_out = MovieDataOut.model_validate(movie)
+    movie_out_dict = movie_out.model_dump()
+
+    if changeImagePrefix:
+        movie_out_dict = replace_domain_in_value(
+            movie_out_dict, _config.get("SYSTEM_IMAGE_PREFIX")
+        )
+
+    if "products" in movie_out_dict and isinstance(movie_out_dict["products"], list):
+        merged_product = merge_products(movie_out_dict["products"])
+        movie_out_dict["products"] = [merged_product]
+
+    movie_out = MovieDataOut(**movie_out_dict)
+
+    if not movie_out.products[0].image_url:
+        movie_out.products[0].image_url = movie_out.products[0].thumbnail_url.replace(
+            "ps.jpg", "pl.jpg"
+        )
+
+    return movie_out

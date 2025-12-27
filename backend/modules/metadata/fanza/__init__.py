@@ -2,8 +2,8 @@ import re, httpx
 from bs4 import BeautifulSoup
 
 from .model import Actress, Work, RankingType
-from core.config import _config
-from core.system import replace_domain_in_value
+from config import _config
+from services.system import replace_domain_in_value
 
 
 HEADERS = {

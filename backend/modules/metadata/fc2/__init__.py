@@ -1,6 +1,6 @@
 from .model import RankingType, FC2RankingItem, FC2VideoInformation
 from .helper import parse_ranking
-from core.logs import LOG_ERROR, LOG_INFO
+from utils.logs import LOG_ERROR, LOG_INFO
 
 import asyncio
 

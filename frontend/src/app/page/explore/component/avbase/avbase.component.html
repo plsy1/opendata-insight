@@ -42,7 +42,7 @@
 ></app-pagination>
 
 <div *ngFor="let group of releaseData">
-  <h3>{{ group.prefixName }}</h3>
+  <h3>{{ group.maker }}</h3>
   <div class="poster-grid">
     <app-movie-card
       *ngFor="let work of group.works"

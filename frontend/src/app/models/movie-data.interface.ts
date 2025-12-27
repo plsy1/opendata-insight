@@ -18,6 +18,12 @@ export interface Cast {
   note?: string | null;
 }
 
+export interface Genre {
+  id: number;
+  name: string;
+  canonical_id?: string | number | null;
+}
+
 export interface MakerLabelSeries {
   name: string;
 }
@@ -44,13 +50,7 @@ export interface Product {
   iteminfo?: ProductItemInfo | null;
 }
 
-export interface Genre {
-  id: number;
-  name: string;
-  canonical_id?: string | number | null;
-}
-
-export interface Work {
+export interface MovieData {
   id: number;
   prefix: string;
   work_id: string;
@@ -62,9 +62,4 @@ export interface Work {
   tags: any[];
   genres: Genre[];
   products: Product[];
-}
-
-export interface AvbaseEverydayReleaseByPrefix {
-  maker: string;
-  works: Work[];
 }

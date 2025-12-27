@@ -1,8 +1,8 @@
 import requests
 from .model import *
-from core.config import _config
-from core.logs import LOG_ERROR
-from core.system import replace_domain_in_value
+from config import _config
+from utils.logs import LOG_ERROR
+from services.system import replace_domain_in_value
 
 
 def get_javtrailers_fetch_tokens() -> str:

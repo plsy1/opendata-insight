@@ -2,12 +2,12 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from core.config import _config
-from core.logs import LOGGING_CONFIG
-from core.database import initDatabase
-from core.auth import initUser
-from core.scheduler import init_scheduler_service
-from core.playwright import init_playwright_service
+from config import _config
+from utils.logs import LOGGING_CONFIG
+from database import initDatabase
+from services.auth import initUser
+from modules.scheduler import init_scheduler_service
+from modules.playwright import init_playwright_service
 from modules.notification.telegram import init_telegram_bot
 
 
@@ -52,7 +52,7 @@ Server = uvicorn.Server(Config)
 
 
 def initRouter():
-    from api.api import api_router
+    from routers import api_router
 
     App.include_router(api_router, prefix="/api/v1")
 

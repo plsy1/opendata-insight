@@ -14,6 +14,7 @@ class ActorListType(str, Enum):
     SUBSCRIBE = "subscribe"
     COLLECT = "collect"
 
-class MovieFeedOperation(str, Enum):
-    ADD = "add"
-    REMOVE = "remove"
+class MovieFeedOperation(Enum):
+    ADD = "add"                 
+    REMOVE = "remove"           
+    MARK_DOWNLOADED = "done"    

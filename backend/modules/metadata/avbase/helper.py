@@ -1,16 +1,14 @@
 import json
 
 from datetime import datetime
-from typing import List
 from bs4 import BeautifulSoup
 from fastapi import HTTPException
-from .model import SocialMedia, Movie
-from core.config import _config
+from .model import Movie
+from schemas.actor import SocialMedia
+from config import _config
+from services.system import encrypt_payload
 
-from core.system.model import DecryptedImagePayload
-from core.system import encrypt_payload
-import time
-
+from database import MovieData, MovieProduct
 
 from typing import Optional
 
@@ -37,7 +35,7 @@ def parse_min_date(date_str: Optional[str]) -> Optional[str]:
         return None
 
 
-async def get_movies(url: str, changeImagePrefix: bool = True) -> List[Movie]:
+async def get_movies(url: str, changeImagePrefix: bool = True) -> list[Movie]:
     try:
         content = await get_raw_html(url)
 
@@ -148,7 +146,7 @@ def date_trans(date: str) -> str:
 
 
 async def get_next_data(url: str):
-    from core.playwright import _playwright_service
+    from modules.playwright import _playwright_service
 
     context = await _playwright_service.get_context(use_new_fingerprint=True)
     page = await context.new_page()
@@ -180,7 +178,7 @@ async def get_next_data(url: str):
 
 
 async def get_raw_html(url: str):
-    from core.playwright import _playwright_service
+    from modules.playwright import _playwright_service
 
     context = await _playwright_service.get_context()
     page = await context.new_page()
@@ -196,3 +194,67 @@ async def get_raw_html(url: str):
         await page.close()
 
     return content
+
+
+def get_movie_from_db(db, work_id: str) -> MovieData | None:
+    return db.query(MovieData).filter(MovieData.work_id == work_id).first()
+
+
+# ---------------------------
+# API 抓取
+# ---------------------------
+async def fetch_work_data(canonical_id: str) -> dict:
+    url = f"https://www.avbase.net/works/{canonical_id}"
+    data = await get_next_data(url)
+    return data.get("props", {}).get("pageProps", {}).get("work", {})
+
+
+# ---------------------------
+# 解析 Work 数据为 MovieData
+# ---------------------------
+def parse_work_to_movie(work: dict) -> MovieData:
+    min_date = parse_min_date(work.get("min_date"))
+    return MovieData(
+        work_id=work["work_id"],
+        prefix=work.get("prefix", ""),
+        title=work.get("title", ""),
+        min_date=min_date,
+        casts=[c["actor"] for c in work.get("casts", [])],
+        actors=work.get("actors", []),
+        tags=work.get("tags", []),
+        genres=[g["name"] for g in work.get("genres", [])],
+    )
+
+
+def add_products_to_db(db, work_products: list[dict], movie_id: int):
+    for p in work_products:
+        min_date = parse_min_date(p.get("date"))
+        product_data = dict(
+            product_id=p["product_id"],
+            url=p["url"],
+            image_url=p.get("image_url"),
+            title=p.get("title"),
+            source=p.get("source"),
+            thumbnail_url=p.get("thumbnail_url"),
+            date=min_date,
+            maker=p.get("maker", {}).get("name") if p.get("maker") else None,
+            label=p.get("label", {}).get("name") if p.get("label") else None,
+            series=p.get("series", {}).get("name") if p.get("series") else None,
+            sample_image_urls=p.get("sample_image_urls", []),
+            director=(
+                p.get("iteminfo", {}).get("director") if p.get("iteminfo") else None
+            ),
+            price=p.get("iteminfo", {}).get("price") if p.get("iteminfo") else None,
+            volume=p.get("iteminfo", {}).get("volume") if p.get("iteminfo") else None,
+            work_id=movie_id,
+        )
+        db.add(MovieProduct(**product_data))
+
+def merge_products(products: list[dict]) -> dict:
+    merged = {}
+    for p in products:
+        for key, value in p.items():
+            if value is not None and not (isinstance(value, list) and len(value) == 0):
+                if key not in merged:
+                    merged[key] = value
+    return merged

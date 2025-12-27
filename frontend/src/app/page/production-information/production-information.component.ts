@@ -83,12 +83,8 @@ export class ProductionInformationComponent implements OnInit {
   }
 
   subscribeToMovie(): void {
-    const actorNames = this.movieData.casts.map((c) => c.name).join(', ');
     this.ProductionInformationService.addProductionSubscribe(
-      actorNames,
-      this.movieData.work_id,
-      this.movieData.products[0].image_url ?? '',
-      this.movieId
+      this.movieData.work_id
     ).subscribe({
       next: (results) => {
         this.snackBar.open('Added successfully.', 'Close', { duration: 2000 });

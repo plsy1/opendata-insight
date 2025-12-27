@@ -1,60 +1,62 @@
-from core.database import RSSItem, ActorData, get_db
-from core.logs import LOG_ERROR
+from database import ActorData, MovieData, MovieSubscribe, ActorSubscribe
+from utils.logs import LOG_ERROR
 from modules.metadata.avbase import *
 from modules.notification.telegram.text import *
 from .model import *
-from core.config import _config
-
+from config import _config
+from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import Session
+from schemas.actor import ActorDataOut
 
 async def actor_operation_service(
+    db: Session,
     name: str,
     operation: Operation,
 ) -> bool:
-    db = next(get_db())
     try:
-        record = db.query(ActorData).filter(ActorData.name == name).first()
+        actor = db.query(ActorData).filter(ActorData.name == name).first()
 
         if operation in (Operation.UNSUBSCRIBE, Operation.UNCOLLECT):
-            if not record:
+            if not actor or not actor.subscribers:
                 return True
+
             if operation == Operation.UNSUBSCRIBE:
-                record.isSubscribe = False
+                actor.subscribers.is_subscribe = False
             else:
-                record.isCollect = False
+                actor.subscribers.is_collect = False
 
             db.commit()
             return True
 
-        if record:
-            if operation == Operation.SUBSCRIBE:
-                record.isSubscribe = True
-            elif operation == Operation.COLLECT:
-                record.isCollect = True
-
-            db.commit()
-            db.refresh(record)
-            data = ActorDataResponse.model_validate(record)
-
-        else:
+        if not actor:
             data = await get_actress_info_by_actress_name(name)
 
-            new_actor = ActorData(
-                **data.model_dump(),
-                isSubscribe=(operation == Operation.SUBSCRIBE),
-                isCollect=(operation == Operation.COLLECT),
-            )
-            db.add(new_actor)
-            db.commit()
-            db.refresh(new_actor)
+            actor = ActorData(**data.model_dump())
+            db.add(actor)
+            db.flush()
 
-            data = ActorDataResponse.model_validate(new_actor)
+        if not actor.subscribers:
+            actor.subscribers = ActorSubscribe(
+                is_subscribe=(operation == Operation.SUBSCRIBE),
+                is_collect=(operation == Operation.COLLECT),
+            )
+        else:
+            if operation == Operation.SUBSCRIBE:
+                actor.subscribers.is_subscribe = True
+            elif operation == Operation.COLLECT:
+                actor.subscribers.is_collect = True
+
+        db.commit()
+        db.refresh(actor)
 
         if operation == Operation.SUBSCRIBE:
-            actress_details = actressInformation(data)
+            actress_details = actressInformation(
+                ActorDataOut.model_validate(actor)
+            )
             from modules.notification.telegram import _telegram_bot
 
             await _telegram_bot.send_message_with_image(
-                data.avatar_url,
+                actor.avatar_url,
                 actress_details,
             )
 
@@ -66,38 +68,53 @@ async def actor_operation_service(
         return False
 
 
-def movie_subscribe_list_service(type: MovieStatus, changeImagePrefix: bool = False):
-    db = next(get_db())
-    downloaded_flag = type == MovieStatus.DOWNLOADED
+def movie_subscribe_list_service(
+    db: Session,
+    status: MovieStatus,
+    changeImagePrefix: bool = False,
+):
 
-    feeds = (
-        db.query(RSSItem)
-        .filter(RSSItem.downloaded == downloaded_flag)
-        .order_by(RSSItem.id.desc())
+    downloaded_flag = status == MovieStatus.DOWNLOADED
+
+    subs = (
+        db.query(MovieSubscribe)
+        .options(selectinload(MovieSubscribe.movie).selectinload(MovieData.products))
+        .filter(MovieSubscribe.is_downloaded == downloaded_flag)
+        .order_by(MovieSubscribe.created_at.desc())
         .all()
     )
 
+    result: list[MovieDataOut] = []
+
+    for sub in subs:
+        movie = sub.movie
+
+        movie_out = MovieDataOut.model_validate(movie)
+
+        result.append(movie_out)
+
     if changeImagePrefix:
-        feeds = replace_domain_in_value(
-            feeds,
+        result = replace_domain_in_value(
+            result,
             _config.get("SYSTEM_IMAGE_PREFIX"),
         )
 
-    return feeds
+    return result
 
 
-def actor_list_service(list_type: ActorListType, changeImagePrefix: bool = False):
-
-    db = next(get_db())
-
+def actor_list_service(
+    db: Session,
+    list_type: ActorListType,
+    changeImagePrefix: bool = False,
+) -> list[ActorData]:
     if list_type == ActorListType.SUBSCRIBE:
-        condition = ActorData.isSubscribe.is_(True)
+        condition = ActorSubscribe.is_subscribe.is_(True)
     elif list_type == ActorListType.COLLECT:
-        condition = ActorData.isCollect.is_(True)
+        condition = ActorSubscribe.is_collect.is_(True)
     else:
         raise ValueError("Invalid ActorListType")
 
-    actors = db.query(ActorData).filter(condition).all()
+    actors = db.query(ActorData).join(ActorSubscribe).filter(condition).all()
 
     if changeImagePrefix:
         actors = replace_domain_in_value(
@@ -108,57 +125,70 @@ def actor_list_service(list_type: ActorListType, changeImagePrefix: bool = False
     return actors
 
 
-async def movie_feed_service(
+async def movie_subscribe_service(
+    db: Session,
     operation: MovieFeedOperation,
-    *,
-    keyword: str,
-    actors: str | None = None,
-    img: str | None = None,
-    link: str | None = None,
+    work_id: str,
 ) -> bool:
-    from modules.notification.telegram import _telegram_bot
+    movie = db.query(MovieData).filter(MovieData.work_id == work_id).first()
 
-    db = next(get_db())
+    if not movie:
+        return False
 
     try:
         if operation == MovieFeedOperation.REMOVE:
-            feed = db.query(RSSItem).filter(RSSItem.keyword == keyword).first()
-            if not feed:
-                return True
+            return _remove_movie_subscribe(db, movie)
 
-            db.delete(feed)
-            db.commit()
-            return True
+        if operation == MovieFeedOperation.ADD:
+            return await _add_movie_subscribe(db, movie)
 
-        feed = db.query(RSSItem).filter(RSSItem.keyword == keyword).first()
+        if operation == MovieFeedOperation.MARK_DOWNLOADED:
+            return _mark_movie_downloaded(db, movie)
 
-        if feed:
-            feed.downloaded = False
-        else:
-            feed = RSSItem(
-                actors=actors,
-                keyword=keyword,
-                img=img,
-                link=link,
-                downloaded=False,
-            )
-            db.add(feed)
-
-        db.commit()
-        db.refresh(feed)
-
-        movie_info = await get_information_by_work_id(link)
-        movie_details = movieInformation(keyword, movie_info)
-
-        img_url = str(movie_info.products[0].image_url)
-        await _telegram_bot.send_message_with_image(
-            img_url,
-            movie_details,
-        )
-
-        return True
+        return False
 
     except Exception as e:
         db.rollback()
         LOG_ERROR(e)
         return False
+
+
+def _remove_movie_subscribe(db: Session, movie: MovieData) -> bool:
+    if not movie.subscribers:
+        return True
+
+    db.delete(movie.subscribers)
+    db.commit()
+    return True
+
+
+async def _add_movie_subscribe(db: Session, movie: MovieData) -> bool:
+    from modules.notification.telegram import _telegram_bot
+
+    if movie.subscribers:
+        movie.subscribers.is_downloaded = False
+        db.commit()
+        return True
+
+    movie.subscribers = MovieSubscribe(is_downloaded=False)
+    db.commit()
+
+    movie_info = await get_information_by_work_id(movie.work_id)
+    movie_details = movieInformation(movie.title, movie_info)
+
+    img_url = str(movie_info.products[0].image_url)
+    await _telegram_bot.send_message_with_image(
+        img_url,
+        movie_details,
+    )
+
+    return True
+
+
+def _mark_movie_downloaded(db: Session, movie: MovieData) -> bool:
+    if not movie.subscribers:
+        return False
+
+    movie.subscribers.is_downloaded = True
+    db.commit()
+    return True

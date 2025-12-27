@@ -14,15 +14,9 @@ export class ProductionInformationService {
     });
   }
 
-  addProductionSubscribe(
-    actors: string,
-    keyword: string,
-    img: string,
-    link: string
-  ): Observable<any> {
+  addProductionSubscribe(work_id: string): Observable<any> {
     return this.common.request<any>('POST', 'feed/movieSubscribe', {
-      body: new URLSearchParams({ actors, keyword, img, link }).toString(),
-      acceptJson: true,
+      params: { work_id: work_id },
     });
   }
 }

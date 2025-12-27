@@ -1,21 +1,40 @@
 import requests, time
 from qbittorrentapi import Client
 from io import BytesIO
+from config import _config
+from urllib.parse import urlparse
 
 
 class QB:
-    def __init__(self, host, port, username, password, tags="Ecchi"):
+    def __init__(self):
         """
-        初始化 QBittorrent 客户端并配置。
+        初始化 qBittorrent 客户端并配置（从配置文件读取）
+        """
 
-        :param host: qbittorrent 主机地址
-        :param port: qbittorrent 端口
-        :param username: qbittorrent 用户名
-        :param password: qbittorrent 密码
-        :param tags: 可选，默认标签
-        """
-        self.qb = Client(host=host, port=port, username=username, password=password)
-        self.tags = tags
+        qb_url = _config.get("QB_URL")
+        parsed = urlparse(qb_url)
+
+        host = parsed.hostname
+        if parsed.port:
+            port = parsed.port
+        else:
+            port = 443 if parsed.scheme == "https" else 80
+
+        username = _config.get("QB_USERNAME")
+        password = _config.get("QB_PASSWORD")
+
+        self.qb = Client(
+            host=host,
+            port=port,
+            username=username,
+            password=password,
+        )
+
+        self.filter = [
+            kw.strip()
+            for kw in _config.get("QB_KEYWORD_FILTER", "").split(",")
+            if kw.strip()
+        ]
 
     def delete_torrent(self, torrent_hash, delete_files=True):
         """
@@ -38,7 +57,7 @@ class QB:
             return []
 
         try:
-            torrents = self.qb.torrents_info(status_filter="downloading",tag=self.tags)
+            torrents = self.qb.torrents_info(status_filter="downloading", tag=self.tags)
             downloading_list = [
                 {
                     "name": t.name,
@@ -139,7 +158,7 @@ class QB:
         except Exception as e:
             print(e)
 
-    def file_filter_by_keywords(self, QB_KEYWORD_FILTER):
+    def file_filter_by_keywords(self):
         try:
 
             deselect_map = {}
@@ -153,7 +172,7 @@ class QB:
                 deselect_ids = [
                     f.get("index")
                     for f in files
-                    if any(kw in f.get("name", "") for kw in QB_KEYWORD_FILTER)
+                    if any(kw in f.get("name", "") for kw in self.filter)
                 ]
 
                 if deselect_ids:
@@ -167,7 +186,7 @@ class QB:
         except Exception as e:
             print(e)
 
-    def filter_after_add_by_tag(self, random_tag, keyword_filter, max_wait=30):
+    def filter_after_add_by_tag(self, max_wait=30):
         torrent_hash = None
 
         try:
@@ -175,18 +194,27 @@ class QB:
                 torrent_list = self.get_torrents_list()
                 for t in torrent_list:
                     tags = t.get("tags", "")
-                    if random_tag in tags.split(","):
+                    if self.random_tag in tags.split(","):
                         torrent_hash = t.get("hash")
                         files = self.get_torrent_file_by_hash(hash=torrent_hash)
                         if files:
-                            self.file_filter_by_keywords(
-                                QB_KEYWORD_FILTER=keyword_filter
-                            )
+                            self.file_filter_by_keywords()
                             return
                 time.sleep(1)
         finally:
             if torrent_hash:
                 self.qb.torrents_remove_tags(
-                    tags=random_tag,
+                    tags=self.random_tag,
                     torrent_hashes=torrent_hash,
                 )
+
+    def generate_tags(self):
+        import uuid
+
+        random_tag = str(uuid.uuid4())[:8]
+        tags = f"Ecchi,{random_tag}"
+
+        self.random_tag = random_tag
+        self.tags = tags
+
+        return tags

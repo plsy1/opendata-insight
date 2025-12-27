@@ -7,6 +7,8 @@ import { KeywordFeed } from '../../models/production-subscription.interface';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.component';
+import { MovieData } from '../../../../models/movie-data.interface';
+
 @Component({
   selector: 'app-production-subscription-list',
   standalone: true,
@@ -21,7 +23,7 @@ import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.com
   styleUrl: './subscription.component.css',
 })
 export class ProductionSubscriptionListComponent implements OnInit {
-  keywordFeeds: KeywordFeed[] = [];
+  keywordFeeds: MovieData[] = [];
 
   constructor(
     private router: Router,
@@ -30,7 +32,7 @@ export class ProductionSubscriptionListComponent implements OnInit {
 
   ngOnInit(): void {
     this.ProductionSubscriptionService.getKeywordFeeds().subscribe({
-      next: (data: KeywordFeed[]) => {
+      next: (data: MovieData[]) => {
         this.keywordFeeds = data;
       },
       error: (error) => {
@@ -41,7 +43,7 @@ export class ProductionSubscriptionListComponent implements OnInit {
 
   onUnsubscribeClick(): void {
     this.ProductionSubscriptionService.getKeywordFeeds().subscribe({
-      next: (data: KeywordFeed[]) => {
+      next: (data: MovieData[]) => {
         this.keywordFeeds = data;
       },
       error: (error) => {
@@ -50,11 +52,15 @@ export class ProductionSubscriptionListComponent implements OnInit {
     });
   }
 
-  async onMovieCardClick(movie: KeywordFeed): Promise<void> {
+  async posterClick(prefix: string, work_id: string) {
     try {
-      this.router.navigate(['production', movie.link]);
+      this.router.navigate(['/production', prefix + ':' + work_id]);
     } catch (error) {
       console.error('Failed:', error);
     }
+  }
+
+  getActorNames(actors: any[] = []): string[] {
+    return actors.map((a) => a.name);
   }
 }

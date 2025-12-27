@@ -1,7 +1,8 @@
-from modules.metadata.avbase.model import ActorDataResponse, MovieDataOut
+from schemas.actor import ActorDataOut
+from schemas.movies import MovieDataOut
 
 
-def actressInformation(info: ActorDataResponse):
+def actressInformation(info: ActorDataOut):
     actress_details = f"*【添加订阅】*: {info.name}\n"
 
     if info.birthday:

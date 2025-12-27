@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from collections import Counter
-from core.database import RSSItem
+from database import RSSItem
 
 
 def stat_overview(db: Session) -> dict:
