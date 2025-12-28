@@ -9,6 +9,7 @@ from . import (
     emby,
     fc2,
     system,
+    background_task,
 )
 
 api_router = APIRouter()
@@ -20,4 +21,7 @@ api_router.include_router(avbase.router, prefix="/avbase", tags=["avbase"])
 api_router.include_router(fanza.router, prefix="/fanza", tags=["fanza"])
 api_router.include_router(emby.router, prefix="/emby", tags=["emby"])
 api_router.include_router(system.router, prefix="/system", tags=["system"])
+api_router.include_router(
+    background_task.router, prefix="/background_task", tags=["background_task"]
+)
 api_router.include_router(fc2.router, prefix="/fc2", tags=["fc2"])

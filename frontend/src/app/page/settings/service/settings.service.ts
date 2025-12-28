@@ -12,7 +12,7 @@ export class SettingsService {
 
   updateEnvironment(env: EnvironmentConfig): Observable<boolean> {
     return this.common
-      .request<{ success?: boolean }>('POST', 'system/updateEnvironment', {
+      .request<{ success?: boolean }>('POST', 'system/update_environment', {
         body: env,
       })
       .pipe(map((data) => data.success ?? true));
@@ -21,7 +21,7 @@ export class SettingsService {
   getEnvironment(): Observable<EnvironmentConfig> {
     return this.common.request<EnvironmentConfig>(
       'GET',
-      'system/getEnvironment'
+      'system/get_environment'
     );
   }
 
@@ -45,7 +45,7 @@ export class SettingsService {
   refreshKeywordsFeeds(): Observable<{ message: string }> {
     return this.common.request<{ message: string }>(
       'POST',
-      'system/refreshKeywordsFeeds',
+      'background_task/refreshKeywordsFeeds',
       {
         body: {},
       }
@@ -55,7 +55,7 @@ export class SettingsService {
   refreshActressFeeds(): Observable<{ message: string }> {
     return this.common.request<{ message: string }>(
       'POST',
-      'system/refreshActressFeeds',
+      'background_task/update_subscribe',
       {
         body: {},
       }
@@ -65,7 +65,7 @@ export class SettingsService {
   refreshEMBY(): Observable<{ message: string }> {
     return this.common.request<{ message: string }>(
       'POST',
-      'system/refresh_emby_movies_database',
+      'background_task/refresh_emby_movies_database',
       {
         body: {},
       }

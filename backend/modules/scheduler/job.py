@@ -1,7 +1,6 @@
-import uuid, asyncio
+import asyncio
 from database import get_db
 from modules.metadata.prowlarr import Prowlarr
-from modules.downloader.qbittorrent import QB
 from config import _config
 from modules.metadata.avbase import *
 from database import get_db, EmbyMovie
@@ -154,7 +153,7 @@ async def update_avbase_release_everyday():
         LOG_ERROR(e)
 
 
-def clean_cache_dir(max_image_cache_hours=48):
+def clean_cache_dir(max_image_cache_hours=1):
     from pathlib import Path
 
     CACHE_DIR = _config.get("CACHE_DIR")

@@ -1,50 +1,99 @@
-import asyncio
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
-from utils.logs import logging
-from services.task import (
-    refresh_feeds,
-    update_emby_movies_in_db,
-    clean_cache_dir,
-    update_avbase_release_everyday,
-    update_fc2_ranking_in_db,
-    fetch_avbase_index_actor_list,
-)
+from utils.logs import LOG_INFO, LOG_ERROR
+from .job import *
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Optional
+import asyncio
+import inspect
+from fastapi.concurrency import run_in_threadpool
+
+
+@dataclass
+class JobInfo:
+    id: str
+    name: str
+    next_run_time: Optional[datetime]
+    trigger: str
 
 
 class AppScheduler:
     def __init__(self):
         self.scheduler: AsyncIOScheduler | None = None
+        self._job_counter = 0
 
     def job_listener(self, event):
         if event.exception:
-            logging.error(f"Job {event.job_id} failed: {event.exception}")
+            LOG_ERROR(f"Job {event.job_id} failed: {event.exception}")
         else:
-            logging.info(f"Job {event.job_id} completed")
+            LOG_INFO(f"Job {event.job_id} completed")
 
     def init(self):
         if self.scheduler is not None:
             return
-
         self.scheduler = AsyncIOScheduler()
         self.scheduler.add_listener(
             self.job_listener,
             EVENT_JOB_EXECUTED | EVENT_JOB_ERROR,
         )
         self.scheduler.start()
-        logging.info("Scheduler started")
+        LOG_INFO("Scheduler started")
 
     def add_job(self, func, trigger=None, job_id=None, name=None, **trigger_args):
+        if job_id is None:
+            self._job_counter += 1
+            job_id = f"{self._job_counter}"
+
         trigger = trigger(**trigger_args) if trigger else IntervalTrigger(seconds=60)
-        self.scheduler.add_job(func, trigger, id=job_id, name=name)
-        logging.info(f"Added job: {job_id or name}")
+        self.scheduler.add_job(func, trigger, id=job_id, name=name or job_id)
+        LOG_INFO(f"Added job: {job_id}")
+        return job_id
+
+    async def run_job(self, job_id: str):
+        if not self.scheduler:
+            raise RuntimeError("Scheduler not initialized")
+
+        job = self.scheduler.get_job(job_id)
+        if not job:
+            raise KeyError(f"Job {job_id} not found")
+
+        async def _runner():
+            try:
+                if inspect.iscoroutinefunction(job.func):
+                    await job.func()
+                else:
+                    await run_in_threadpool(job.func)
+            except Exception as e:
+                LOG_ERROR(f"Job {job_id} failed: {e}")
+
+        asyncio.create_task(_runner())
+
+    def remove_job(self, job_id):
+        if self.scheduler:
+            self.scheduler.remove_job(job_id)
+            LOG_INFO(f"Removed job: {job_id}")
+
+    def list_jobs(self) -> list[JobInfo]:
+        if not self.scheduler:
+            return []
+
+        return [
+            JobInfo(
+                id=job.id,
+                name=job.name,
+                next_run_time=job.next_run_time,
+                trigger=str(job.trigger),
+            )
+            for job in self.scheduler.get_jobs()
+        ]
 
     def shutdown(self):
         if self.scheduler:
             self.scheduler.shutdown()
             self.scheduler = None
-            logging.info("Scheduler shutdown")
+            LOG_INFO("Scheduler shutdown")
 
 
 def init_app_scheduler() -> AppScheduler:
@@ -54,52 +103,46 @@ def init_app_scheduler() -> AppScheduler:
     app_scheduler.add_job(
         update_emby_movies_in_db,
         trigger=IntervalTrigger,
-        job_id="Emby",
-        name="Update Emby Movies",
+        name="update emby",
         hours=1,
     )
 
     app_scheduler.add_job(
         clean_cache_dir,
         trigger=IntervalTrigger,
-        job_id="Cache",
-        name="Clean Cache",
+        name="clean image cache",
         hours=3,
     )
 
     app_scheduler.add_job(
         refresh_feeds,
         trigger=IntervalTrigger,
-        job_id="Feed",
-        name="Check Feed",
+        name="refresh subscribe",
         hours=7,
     )
 
     app_scheduler.add_job(
         update_avbase_release_everyday,
         trigger=IntervalTrigger,
-        job_id="avbase_release_everyday",
-        name="Update avbase release everyday",
+        name="update avbase release everyday",
         hours=7,
     )
 
     app_scheduler.add_job(
         update_fc2_ranking_in_db,
         trigger=IntervalTrigger,
-        job_id="update_fc2_ranking_in_db",
-        name="Update fc2_ranking_in_db",
+        name="update fc2 ranking",
         hours=3,
     )
 
     app_scheduler.add_job(
         fetch_avbase_index_actor_list,
         trigger=IntervalTrigger,
-        job_id="fetch_avbase_index_actor_list",
-        name="fetch_avbase_index_actor_list",
+        name="update avbase everyday release",
         hours=12,
     )
 
-    logging.info("AppScheduler initialized with default jobs")
+    LOG_INFO("AppScheduler initialized with default jobs")
     return app_scheduler
 
 

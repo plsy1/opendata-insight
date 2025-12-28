@@ -3,10 +3,7 @@ import json
 from typing import List, Dict
 from config import _config
 from database import get_db, EmbyMovie
-from services.system.model import DecryptedImagePayload
 from services.system import encrypt_payload
-import time
-
 
 def is_movie_in_db_partial(title: str):
     db = next(get_db())

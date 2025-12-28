@@ -30,8 +30,6 @@ class QB:
         self._stop_filter = False
 
     async def start(self):
-        # 异步初始化，如果有需要
-        # 启动后台关键词过滤任务
         self._stop_filter = False
         self._filter_task = asyncio.create_task(self._background_keyword_filter())
 
