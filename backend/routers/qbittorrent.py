@@ -5,7 +5,6 @@ from fastapi import (
     File,
     APIRouter,
     Depends,
-    BackgroundTasks,
     Body,
     Response,
     status,
@@ -17,15 +16,10 @@ from modules.downloader.qbittorrent import QB
 from services.auth import tokenInterceptor
 from config import _config
 from modules.metadata.avbase import *
-from modules.notification.telegram.text import *
-from database import MovieSubscribe, get_db
-
-from services.feed import movie_subscribe_service
-from services.feed.model import *
-
+from database import get_db
+from services.feed import *
 from sqlalchemy.orm import Session
-
-from services.telegram import send_movie_download_message_by_work_id
+from services.telegram import send_movie_download_message_by_work_id, DownloadStatus
 
 
 router = APIRouter()
@@ -47,7 +41,6 @@ async def delete(
     delete_files: bool = Body(True),
     isValid: str = Depends(tokenInterceptor),
 ):
-
     qb_client = QB()
 
     try:
@@ -69,23 +62,36 @@ async def add_torrent_url(
     db: Session = Depends(get_db),
     isValid: str = Depends(tokenInterceptor),
 ):
-    """
-    通过 URL 添加种子到 qbittorrent。
-    """
     try:
+
         save_path = (
             Path(save_path) if save_path else Path(_config.get("DOWNLOAD_PATH", ""))
         )
 
-        qb_client = QB()
+        records = db.query(MovieData).filter(MovieData.work_id == work_id).first()
 
-        success = qb_client.add_torrent_url(download_link, save_path)
+        if records:
+            movie_out = MovieDataOut.model_validate(records)
+
+            top_names_list = [
+                cast["name"] for cast in movie_out.casts if cast.get("name")
+            ][:3]
+
+            top_names = ", ".join(top_names_list)
+
+            save_path = save_path / top_names
+
+        from modules.downloader.qbittorrent import _qb_instance
+
+        success = await _qb_instance.add_torrent_url(download_link, save_path)
 
         if success and work_id:
             await movie_subscribe_service(
                 db, MovieFeedOperation.MARK_DOWNLOADED, work_id
             )
-            await send_movie_download_message_by_work_id(work_id)
+            await send_movie_download_message_by_work_id(
+                work_id, DownloadStatus.START_DOWNLOAD
+            )
 
             return Response(status_code=status.HTTP_204_NO_CONTENT)
         else:
@@ -101,14 +107,6 @@ async def add_torrent_file(
     save_path: str = Query(...),
     isValid: str = Depends(tokenInterceptor),
 ):
-    """
-    通过上传的种子文件添加种子到 qbittorrent。
-
-    :param file: 上传的种子文件
-    :param save_path: 种子保存路径
-    :param tags: 可选标签
-    :return: 成功与否
-    """
     try:
         torrent_data = BytesIO(await file.read())
         qb_client = QB()

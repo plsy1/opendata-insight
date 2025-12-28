@@ -21,8 +21,6 @@ class ActorData(Base):
     aliases = Column(JSON, nullable=True)
     avatar_url = Column(String, nullable=True)
     social_media = Column(JSON, nullable=True)
-    isSubscribe = Column(Boolean, default=False, nullable=False)
-    isCollect = Column(Boolean, default=False, nullable=False)
 
     subscribers = relationship(
         "ActorSubscribe",

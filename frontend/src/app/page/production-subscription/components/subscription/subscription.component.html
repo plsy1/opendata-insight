@@ -4,7 +4,7 @@
       [id]="movie.work_id"
       [title]="movie.title"
       [imgUrl]="movie.products[0].image_url || ''"
-      [actors]="getActorNames(movie.actors)"
+      [actors]="getActorNames(movie.casts)"
       (movieClick)="posterClick(movie.prefix,movie.work_id)"
       (movieDelete)="onUnsubscribeClick()"
       [showID]="false"

@@ -44,11 +44,7 @@ async def get_actress_info_by_actress_name(
 
         data.social_media = get_social_media_links(soup)
 
-        new_actor = ActorData(
-            **data.model_dump(),
-            isSubscribe=False,
-            isCollect=False,
-        )
+        new_actor = ActorData(**data.model_dump())
         db.add(new_actor)
         db.commit()
         db.refresh(new_actor)
@@ -269,10 +265,6 @@ async def get_information_by_work_id(
     movie_out = MovieDataOut.model_validate(movie)
     movie_out_dict = movie_out.model_dump()
 
-    if changeImagePrefix:
-        movie_out_dict = replace_domain_in_value(
-            movie_out_dict, _config.get("SYSTEM_IMAGE_PREFIX")
-        )
 
     if "products" in movie_out_dict and isinstance(movie_out_dict["products"], list):
         merged_product = merge_products(movie_out_dict["products"])
@@ -283,6 +275,11 @@ async def get_information_by_work_id(
     if not movie_out.products[0].image_url:
         movie_out.products[0].image_url = movie_out.products[0].thumbnail_url.replace(
             "ps.jpg", "pl.jpg"
+        )
+
+    if changeImagePrefix:
+        movie_out = replace_domain_in_value(
+            movie_out, _config.get("SYSTEM_IMAGE_PREFIX")
         )
 
     return movie_out

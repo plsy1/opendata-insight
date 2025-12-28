@@ -1,12 +1,33 @@
 from database import ActorData, MovieData, MovieSubscribe, ActorSubscribe
 from utils.logs import LOG_ERROR
 from modules.metadata.avbase import *
-from modules.notification.telegram.text import *
-from .model import *
 from config import _config
-from sqlalchemy.orm import selectinload
-from sqlalchemy.orm import Session
-from schemas.actor import ActorDataOut
+from sqlalchemy.orm import selectinload, Session
+from enum import Enum
+
+
+class Operation(str, Enum):
+    SUBSCRIBE = "subscribe"
+    UNSUBSCRIBE = "unsubscribe"
+    COLLECT = "collect"
+    UNCOLLECT = "uncollect"
+
+
+class MovieStatus(str, Enum):
+    SUBSCRIBE = "subscribe"
+    DOWNLOADED = "downloaded"
+
+
+class ActorListType(str, Enum):
+    SUBSCRIBE = "subscribe"
+    COLLECT = "collect"
+
+
+class MovieFeedOperation(Enum):
+    ADD = "add"
+    REMOVE = "remove"
+    MARK_DOWNLOADED = "done"
+
 
 async def actor_operation_service(
     db: Session,
@@ -48,17 +69,6 @@ async def actor_operation_service(
 
         db.commit()
         db.refresh(actor)
-
-        if operation == Operation.SUBSCRIBE:
-            actress_details = actressInformation(
-                ActorDataOut.model_validate(actor)
-            )
-            from modules.notification.telegram import _telegram_bot
-
-            await _telegram_bot.send_message_with_image(
-                actor.avatar_url,
-                actress_details,
-            )
 
         return True
 
@@ -163,7 +173,6 @@ def _remove_movie_subscribe(db: Session, movie: MovieData) -> bool:
 
 
 async def _add_movie_subscribe(db: Session, movie: MovieData) -> bool:
-    from modules.notification.telegram import _telegram_bot
 
     if movie.subscribers:
         movie.subscribers.is_downloaded = False
@@ -172,23 +181,14 @@ async def _add_movie_subscribe(db: Session, movie: MovieData) -> bool:
 
     movie.subscribers = MovieSubscribe(is_downloaded=False)
     db.commit()
-
-    movie_info = await get_information_by_work_id(movie.work_id)
-    movie_details = movieInformation(movie.title, movie_info)
-
-    img_url = str(movie_info.products[0].image_url)
-    await _telegram_bot.send_message_with_image(
-        img_url,
-        movie_details,
-    )
-
     return True
 
 
 def _mark_movie_downloaded(db: Session, movie: MovieData) -> bool:
     if not movie.subscribers:
-        return False
+        movie.subscribers = MovieSubscribe(is_downloaded=True)
+    else:
+        movie.subscribers.is_downloaded = True
 
-    movie.subscribers.is_downloaded = True
     db.commit()
     return True

@@ -24,11 +24,6 @@ async def get_image(token: str = Query(...)):
     if payload.exp < int(time.time()):
         raise HTTPException(status_code=403, detail="Token expired")
 
-    # SSRF
-    # allowed_prefix = _config.get("EMBY_URL")
-    # if not payload.url.startswith(allowed_prefix):
-    #     raise HTTPException(status_code=403, detail="Invalid image source")
-
     content, headers = await fetch_and_cache_image(payload.url)
 
     return StreamingResponse(content, media_type="image/jpeg", headers=headers)

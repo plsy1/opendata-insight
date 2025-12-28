@@ -27,11 +27,9 @@ export class TorrentService {
   ): Observable<any> {
     return this.common.request<any>('POST', 'downloader/add_torrent_url', {
       params: {
-        keywords,
-        movie_link: movieId,
+        work_id: keywords,
         download_link: downloadLink,
-        save_path: savePath,
-        performerName,
+        save_path: savePath
       },
       body: null,
     });

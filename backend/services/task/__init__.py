@@ -1,21 +1,16 @@
 import uuid, asyncio
-from database import get_db, ActorData, ActorSubscribe
+from database import get_db
 from modules.metadata.prowlarr import Prowlarr
 from modules.downloader.qbittorrent import QB
 from config import _config
-from modules.notification.telegram import _telegram_bot
-from modules.notification.telegram.text import *
 from modules.metadata.avbase import *
 from database import get_db, EmbyMovie
 from modules.mediaServer.emby import emby_get_all_movies
 from utils.logs import LOG_ERROR, LOG_INFO
 from datetime import datetime, timedelta
-from services.feed.model import *
-from services.feed import (
-    movie_subscribe_list_service,
-    actor_list_service,
-    movie_subscribe_service,
-)
+from services.feed import *
+from services.telegram import send_movie_download_message_by_work_id, DownloadStatus
+from pathlib import Path
 
 
 async def refresh_movies_feeds():
@@ -24,6 +19,10 @@ async def refresh_movies_feeds():
         PROWLARR_KEY = _config.get("PROWLARR_KEY")
 
         prowlarr = Prowlarr(PROWLARR_URL, PROWLARR_KEY)
+
+        from modules.downloader.qbittorrent import _qb_instance
+
+        save_path = Path(_config.get("DOWNLOAD_PATH", ""))
 
         db = next(get_db())
         feeds = movie_subscribe_list_service(db, MovieStatus.SUBSCRIBE, True)
@@ -45,6 +44,17 @@ async def refresh_movies_feeds():
 
             if not download_link:
                 continue
+
+            success = await _qb_instance.add_torrent_url(download_link, save_path)
+
+            if success:
+                await movie_subscribe_service(
+                    db, MovieFeedOperation.MARK_DOWNLOADED, work_id
+                )
+
+                await send_movie_download_message_by_work_id(
+                    work_id, DownloadStatus.START_DOWNLOAD
+                )
 
             await asyncio.sleep(5)
         return
@@ -87,6 +97,10 @@ async def refresh_actress_feeds():
             work_id = item.id
 
             await movie_subscribe_service(db, MovieFeedOperation.ADD, work_id)
+
+            await send_movie_download_message_by_work_id(
+                work_id, DownloadStatus.ADD_SUBSCRIBE
+            )
 
             await asyncio.sleep(5)
 

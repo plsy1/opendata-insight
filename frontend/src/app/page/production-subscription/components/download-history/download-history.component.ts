@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { ProductionSubscriptionService } from '../../service/production-subscription.service';
 import { CommonModule } from '@angular/common';
-import { KeywordFeed } from '../../models/production-subscription.interface';
+import { MovieData } from '../../../../models/movie-data.interface';
+
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -21,7 +22,7 @@ import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.com
   styleUrl: './download-history.component.css',
 })
 export class DownloadHistoryComponent {
-  keywordFeeds: KeywordFeed[] = [];
+  keywordFeeds: MovieData[] = [];
   constructor(
     public ProductionSubscriptionService: ProductionSubscriptionService,
     private router: Router
@@ -30,7 +31,7 @@ export class DownloadHistoryComponent {
   ngOnInit(): void {
     this.ProductionSubscriptionService.getDownloadedKeywordsFeedListGet().subscribe(
       {
-        next: (data: KeywordFeed[]) => {
+        next: (data: MovieData[]) => {
           this.keywordFeeds = data;
         },
         error: (error) => {
@@ -39,22 +40,26 @@ export class DownloadHistoryComponent {
       }
     );
   }
-  async onMovieCardClick(movie: KeywordFeed): Promise<void> {
+  async posterClick(prefix: string, work_id: string) {
     try {
-      this.router.navigate(['production', movie.link]);
+      this.router.navigate(['/production', prefix + ':' + work_id]);
     } catch (error) {
       console.error('Failed:', error);
     }
   }
 
+
   onUnsubscribeClick(): void {
     this.ProductionSubscriptionService.getDownloadedKeywordsFeedListGet().subscribe({
-      next: (data: KeywordFeed[]) => {
+      next: (data: MovieData[]) => {
         this.keywordFeeds = data;
       },
       error: (error) => {
         console.error('Error fetching keywords feed list', error);
       },
     });
+  }
+    getActorNames(actors: any[] = []): string[] {
+    return actors.map((a) => a.name);
   }
 }

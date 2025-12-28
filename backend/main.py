@@ -9,6 +9,7 @@ from services.auth import initUser
 from modules.scheduler import init_scheduler_service
 from modules.playwright import init_playwright_service
 from modules.notification.telegram import init_telegram_bot
+from modules.downloader.qbittorrent import init_qb
 
 
 def Init():
@@ -24,6 +25,7 @@ async def lifespan(app: FastAPI):
     tgbot = await init_telegram_bot(
         _config.get("TELEGRAM_TOKEN", ""), _config.get("TELEGRAM_CHAT_ID", "")
     )
+    qb_client = await init_qb()
     initRouter()
 
     try:
