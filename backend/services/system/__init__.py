@@ -24,6 +24,34 @@ CACHE_DIR = BASE_DIR / _config.get("CACHE_DIR")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 
+IMAGE_EXTENSIONS = (
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp",
+    ".gif",
+    ".bmp",
+    ".avif",
+)
+
+IMAGE_KEYS = ("image", "Images", "img", "cover", "poster", "avatar", "thumb")
+
+IMAGE_PATH_KEYWORDS = (
+    "/images/",
+    "/image/",
+    "/art/",
+    "/poster",
+    "/thumb",
+    "/backdrop",
+    "/primary",
+    "/logo",
+)
+
+
+def is_image_field(key: str) -> bool:
+    return any(k in key.lower() for k in IMAGE_KEYS)
+
+
 def next_monday_timestamp():
     today = datetime.now()
     days_ahead = 0 - today.weekday()
@@ -53,10 +81,24 @@ def _to_plain(value: Any) -> Any:
     return value
 
 
+def is_image_url(url: str) -> bool:
+    parsed = urlparse(url)
+    path = parsed.path.lower()
+
+    # 1️⃣ 常规图片后缀
+    if path.endswith(IMAGE_EXTENSIONS):
+        return True
+
+    # 2️⃣ Emby / Jellyfin / Plex 风格
+    if any(k in path for k in IMAGE_PATH_KEYWORDS):
+        return True
+
+    return False
+
+
 def replace_domain_in_value(value: Any, exclude: List[str] = None) -> Any:
     """
-    递归替换 dict/list 结构中的所有 URL 为 prefix + encrypt_payload(DecryptedImagePayload)
-    排除域名列表中的 URL 不做替换
+    递归替换 dict/list 中的【图片 URL】
     """
 
     prefix = _config.get("SYSTEM_IMAGE_PREFIX")
@@ -75,24 +117,36 @@ def replace_domain_in_value(value: Any, exclude: List[str] = None) -> Any:
     value = _to_plain(value)
 
     if isinstance(value, dict):
-        return {
-            k: replace_domain_in_value(v, exclude) for k, v in value.items()
-        }
+        result = {}
+        for k, v in value.items():
+            if isinstance(v, str) and is_image_field(k):
+                result[k] = replace_domain_in_value(v, exclude)
+            else:
+                result[k] = replace_domain_in_value(v, exclude)
+        return result
+
     elif isinstance(value, list):
         return [replace_domain_in_value(v, exclude) for v in value]
+
     elif isinstance(value, str):
-        if value.startswith("http://") or value.startswith("https://"):
+        if value.startswith(("http://", "https://")):
             try:
                 parsed = urlparse(value)
+
+                # 域名白名单
                 if parsed.netloc in exclude:
                     return value
+
+                # 🚨 只替换图片 URL
+                if not is_image_url(value):
+                    return value
+
                 token = encrypt_payload(value)
                 return f"{prefix}{token}"
+
             except Exception:
                 return value
-        else:
-            return value
-    else:
+
         return value
 
 
