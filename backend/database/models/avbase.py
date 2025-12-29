@@ -8,7 +8,6 @@ class avbaseNewbie(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False)
     avatar_url = Column(String, nullable=True)
-    isActive = Column(Boolean, default=False, nullable=False)
 
 
 class avbasePopular(Base):
@@ -17,6 +16,3 @@ class avbasePopular(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(100), nullable=False)
     avatar_url = Column(String, nullable=True)
-    isActive = Column(Boolean, default=False, nullable=False)
-
-

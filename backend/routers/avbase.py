@@ -1,13 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from services.auth import tokenInterceptor
-from modules.metadata.avbase import (
-    get_movie_info_by_actress_name,
-    get_actress_info_by_actress_name,
-    get_information_by_work_id,
-    get_movie_info_by_keywords,
-    fetch_avbase_index_actor_list,
-    fetch_avbase_release_by_date_and_write_db,
-)
+from modules.metadata.avbase import *
 from services.system import replace_domain_in_value
 from schemas.movies import MovieDataOut
 from config import _config
@@ -15,81 +8,63 @@ from urllib.parse import unquote
 from sqlalchemy.orm import selectinload
 from database import get_db, avbaseNewbie, avbasePopular, MovieData
 from sqlalchemy.orm import Session
+from services.avbase import *
+
 
 router = APIRouter()
 
-
-@router.get("/moviesOfActor")
-async def get_movies_of_actor(
-    name: str, page: int, isValid: str = Depends(tokenInterceptor)
+@router.get("/get_index")
+async def get_avbase_index_actor(
+    db: Session = Depends(get_db), isValid: str = Depends(tokenInterceptor)
 ):
-    movies = await get_movie_info_by_actress_name(name, page, True)
-    return {"movies": movies, "page": page}
-
-
-@router.get("/actorInformation")
-async def get_actor_information(name: str, isValid: str = Depends(tokenInterceptor)):
     try:
-        return await get_actress_info_by_actress_name(name, True)
+        return await get_avbase_index_actor_service(db)
+
+    except Exception as e:
+        db.rollback()
+        return {"error": str(e)}
+
+
+@router.get("/search")
+async def get_movie_list_by_keywords(
+    keywords: str, page: int, isValid: str = Depends(tokenInterceptor)
+):
+    try:
+        return await get_movie_list_by_keywords_service(keywords, page)
     except Exception as e:
         return {"error": str(e)}
 
 
-@router.get("/movieInformation")
-async def get_movie_information(work_id: str, isValid: str = Depends(tokenInterceptor)):
-
-    result = await get_information_by_work_id(unquote(work_id), True)
-
-    return result
-
-
-@router.get("/search")
-async def search_movies_by_keywords(
-    keywords: str, page: int, isValid: str = Depends(tokenInterceptor)
-):
-    return await get_movie_info_by_keywords(keywords, page, True)
-
-
-@router.get("/get_index")
-async def get_index_data(
-    db: Session = Depends(get_db), isValid: str = Depends(tokenInterceptor)
+@router.get("/moviesOfActor")
+async def get_movie_list_by_actor_name(
+    name: str, page: int, isValid: str = Depends(tokenInterceptor)
 ):
     try:
+        return await get_movie_list_by_actor_name_service(name, page)
+    except Exception as e:
+        return {"error": str(e)}
 
-        newbie_records = db.query(avbaseNewbie).filter_by(isActive=True).all()
-        popular_records = db.query(avbasePopular).filter_by(isActive=True).all()
 
-        if not newbie_records:
-            await fetch_avbase_index_actor_list()
-            newbie_records = db.query(avbaseNewbie).filter_by(isActive=True).all()
-            popular_records = db.query(avbasePopular).filter_by(isActive=True).all()
-
-        newbie = [
-            {
-                k: v
-                for k, v in r.__dict__.items()
-                if k != "isActive" and not k.startswith("_sa_instance_state")
-            }
-            for r in newbie_records
-        ]
-        popular = [
-            {
-                k: v
-                for k, v in r.__dict__.items()
-                if k != "isActive" and not k.startswith("_sa_instance_state")
-            }
-            for r in popular_records
-        ]
-
-        result = {"newbie_talents": newbie, "popular_talents": popular}
-
-        return replace_domain_in_value(result, _config.get("SYSTEM_IMAGE_PREFIX"))
-
+@router.get("/actorInformation")
+async def get_actor_information_by_name(
+    name: str, db: Session = Depends(get_db), isValid: str = Depends(tokenInterceptor)
+):
+    try:
+        return await get_actor_information_by_name_service(db, name)
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=f"获取失败: {e}")
-    finally:
-        db.close()
+        return {"error": str(e)}
+
+
+
+@router.get("/movieInformation")
+async def get_movie_information(work_id: str, isValid: str = Depends(tokenInterceptor)):
+    try:
+        result = await get_information_by_work_id(unquote(work_id), True)
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
 
 
 @router.get("/get_release_by_date")

@@ -85,7 +85,7 @@ async def _refresh_actor_feeds():
                 name, 1, changeImagePrefix=False
             )
 
-            valid_items: list[Movie] = []
+            valid_items: list[MoviePoster] = []
             for item in items:
                 try:
                     release_date = datetime.strptime(item.release_date, "%Y/%m/%d")

@@ -67,9 +67,9 @@ export class MovieCards implements OnInit {
     this.isLoading = true;
     this.service.getMoviesByActorName(name, page).subscribe({
       next: (data) => {
-        this.discoverResults = data.movies;
+        this.discoverResults = data;
         this.isLoading = false;
-        this.service.saveProductionInformation(data.movies);
+        this.service.saveProductionInformation(data);
         this.service.savePage(this.page);
       },
       error: (error) => {

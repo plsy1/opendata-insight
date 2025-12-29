@@ -5,14 +5,14 @@ from .helper import *
 from config import _config
 from services.system import replace_domain_in_value
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
-from schemas.actor import ActorDataOut
+from schemas.actor import ActorDataOut, AvbaseIndexActorOut
 from schemas.movies import MovieDataOut
-from database import MovieData, MovieProduct, get_db
+from database import MovieData, MovieProduct, get_db, avbaseNewbie, avbasePopular
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 
-class Movie(BaseModel):
+class MoviePoster(BaseModel):
     id: str
     title: str
     full_id: str
@@ -67,70 +67,47 @@ async def get_actress_info_by_actress_name(
     return ActorDataOut.model_validate(records)
 
 
-async def get_movie_info_by_actress_name(
-    name: str, page: int, changeImagePrefix: bool = False
-) -> List[Movie]:
-    url = f"https://www.avbase.net/talents/{name}?q=&page={page}"
-    return await get_movies(url, changeImagePrefix=changeImagePrefix)
+# async def parse_avbase_index_actor(db: Session) -> list[AvbaseIndexActorOut]:
+#     url = f"https://www.avbase.net"
+#     data = await get_next_data(url)
+#     data = data.get("props").get("pageProps")
 
+#     newbie_talents = data.get("newbie_talents")
+#     popular_talents = data.get("popular_talents")
 
-async def get_movie_info_by_keywords(
-    keywords: str, page: int, changeImagePrefix: bool = False
-) -> List[Movie]:
-    url = f"https://www.avbase.net/works?q={keywords}&page={page}"
-    return await get_movies(url, changeImagePrefix=changeImagePrefix)
+#     for item in newbie_talents:
+#         for actor in item.get("actors", []):
+#             name = actor.get("name")
+#             avatar_url = actor.get("image_url")
 
+#             record = db.query(avbaseNewbie).filter_by(name=name).first()
 
-async def fetch_avbase_index_actor_list():
+#             if record:
+#                 record.avatar_url = avatar_url
+#                 record.isActive = True
+#             else:
+#                 record = avbaseNewbie(name=name, avatar_url=avatar_url, isActive=True)
+#                 db.add(record)
 
-    from database import get_db, avbaseNewbie, avbasePopular
+#     for item in popular_talents:
+#         actors = item.get("actors", [])
+#         if not actors:
+#             continue
 
-    url = f"https://www.avbase.net"
-    data = await get_next_data(url)
-    data = data.get("props").get("pageProps")
+#         actor = actors[0]
+#         name = actor.get("name")
+#         avatar_url = actor.get("image_url")
 
-    newbie_talents = data.get("newbie_talents")
-    popular_talents = data.get("popular_talents")
+#         record = db.query(avbasePopular).filter_by(name=name).first()
 
-    db = next(get_db())
+#         if record:
+#             record.avatar_url = avatar_url
+#             record.isActive = True
+#         else:
+#             record = avbasePopular(name=name, avatar_url=avatar_url, isActive=True)
+#             db.add(record)
 
-    db.query(avbaseNewbie).update({avbaseNewbie.isActive: False})
-    db.query(avbasePopular).update({avbasePopular.isActive: False})
-    db.commit()
-
-    for item in newbie_talents:
-        for actor in item.get("actors", []):
-            name = actor.get("name")
-            avatar_url = actor.get("image_url")
-
-            record = db.query(avbaseNewbie).filter_by(name=name).first()
-
-            if record:
-                record.avatar_url = avatar_url
-                record.isActive = True
-            else:
-                record = avbaseNewbie(name=name, avatar_url=avatar_url, isActive=True)
-                db.add(record)
-
-    for item in popular_talents:
-        actors = item.get("actors", [])
-        if not actors:
-            continue
-
-        actor = actors[0]
-        name = actor.get("name")
-        avatar_url = actor.get("image_url")
-
-        record = db.query(avbasePopular).filter_by(name=name).first()
-
-        if record:
-            record.avatar_url = avatar_url
-            record.isActive = True
-        else:
-            record = avbasePopular(name=name, avatar_url=avatar_url, isActive=True)
-            db.add(record)
-
-    db.commit()
+#     db.commit()
 
 
 async def fetch_avbase_release_by_date_and_write_db(date_str: str):

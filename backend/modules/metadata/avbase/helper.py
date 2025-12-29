@@ -3,22 +3,21 @@ import json
 from datetime import datetime
 from bs4 import BeautifulSoup
 from fastapi import HTTPException
-from schemas.actor import SocialMedia
-from config import _config
-from services.system import encrypt_payload
-
+from schemas.actor import SocialMedia, ActorDataOut, AvbaseIndexActorOut
 from database import MovieData, MovieProduct
 from pydantic import BaseModel
 
 from typing import Optional
 
-class Movie(BaseModel):
+
+class MoviePoster(BaseModel):
     id: str
     title: str
     full_id: str
     release_date: str
     img_url: str
     actors: list[str]
+
 
 def parse_min_date(date_str: Optional[str]) -> Optional[str]:
     """
@@ -42,7 +41,39 @@ def parse_min_date(date_str: Optional[str]) -> Optional[str]:
         return None
 
 
-async def get_movies(url: str, changeImagePrefix: bool = True) -> list[Movie]:
+async def parse_actor_information(url: str) -> ActorDataOut:
+
+    try:
+        data = ActorDataOut()
+        content = await get_raw_html(url)
+        soup = BeautifulSoup(content, "html.parser")
+        script_tag = soup.find("script", id="__NEXT_DATA__")
+        if script_tag:
+            tmp = json.loads(script_tag.string)
+            page_props = tmp["props"]["pageProps"]
+            data.name = page_props.get("name", {})
+
+            talent = page_props.get("talent", {})
+            primary = talent.get("primary", {})
+            data.avatar_url = f'{primary.get("image_url")}'
+
+            fanza = (primary.get("meta") or {}).get("fanza") or {}
+            for k, v in fanza.items():
+                if hasattr(data, k):
+                    setattr(data, k, v)
+
+            actors = talent.get("actors", [])
+            data.aliases = [actor.get("name") for actor in actors if actor.get("name")]
+
+        data.social_media = get_social_media_links(soup)
+
+        return data
+
+    except Exception as e:
+        print(e)
+
+
+async def parse_movie_lists(url: str) -> list[MoviePoster]:
     try:
         content = await get_raw_html(url)
 
@@ -77,21 +108,13 @@ async def get_movies(url: str, changeImagePrefix: bool = True) -> list[Movie]:
             img_url = img_tag.get("src", "") if img_tag else ""
             if img_url:
                 img_url = img_url.replace("ps.", "pl.")
-
-                if changeImagePrefix:
-                    SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-
-                    image_token = encrypt_payload(img_url)
-
-                    img_url = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
-
             actors = [
                 a.get_text(strip=True)
                 for a in movie.find_all("a", class_="chip chip-sm")
             ]
 
             movies.append(
-                Movie(
+                MoviePoster(
                     id=movie_id,
                     title=title,
                     full_id=link,
@@ -257,6 +280,7 @@ def add_products_to_db(db, work_products: list[dict], movie_id: int):
         )
         db.add(MovieProduct(**product_data))
 
+
 def merge_products(products: list[dict]) -> dict:
     merged = {}
     for p in products:
@@ -265,3 +289,37 @@ def merge_products(products: list[dict]) -> dict:
                 if key not in merged:
                     merged[key] = value
     return merged
+
+
+async def parse_avbase_index_actor() -> (
+    tuple[list[AvbaseIndexActorOut], list[AvbaseIndexActorOut]]
+):
+    url = "https://www.avbase.net"
+    data = await get_next_data(url)
+    page_props = data.get("props", {}).get("pageProps", {})
+
+    newbie_talents_raw = page_props.get("newbie_talents", [])
+    popular_talents_raw = page_props.get("popular_talents", [])
+
+    newbie_talents: list[AvbaseIndexActorOut] = []
+    for item in newbie_talents_raw:
+        for actor in item.get("actors", []):
+            name = actor.get("name")
+            avatar_url = actor.get("image_url")
+            newbie_talents.append(
+                AvbaseIndexActorOut(name=name, avatar_url=avatar_url, isActive=False)
+            )
+
+    popular_talents: list[AvbaseIndexActorOut] = []
+    for item in popular_talents_raw:
+        actors = item.get("actors", [])
+        if not actors:
+            continue
+        actor = actors[0]
+        name = actor.get("name")
+        avatar_url = actor.get("image_url")
+        popular_talents.append(
+            AvbaseIndexActorOut(name=name, avatar_url=avatar_url, isActive=False)
+        )
+
+    return newbie_talents, popular_talents

@@ -24,3 +24,9 @@ class ActorDataOut(BaseModel):
     social_media: Optional[List[SocialMedia]] = Field(default_factory=list)
 
     model_config = {"from_attributes": True}
+
+
+class AvbaseIndexActorOut(BaseModel):
+    name: str
+    avatar_url: Optional[str] = None
+    model_config = {"from_attributes": True}
