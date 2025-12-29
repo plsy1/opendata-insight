@@ -7,8 +7,6 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 import asyncio
-import inspect
-from fastapi.concurrency import run_in_threadpool
 import os
 
 
@@ -57,43 +55,10 @@ class AppScheduler:
         self.scheduler.add_job(func, trigger_instance, id=job_id, name=name or job_id)
         return job_id
 
-    async def run_job(self, job_id: str):
-        if not self.scheduler:
-            raise RuntimeError("Scheduler not initialized")
-
-        job = self.scheduler.get_job(job_id)
-        if not job:
-            raise KeyError(f"Job {job_id} not found")
-
-        async def _runner():
-            try:
-                if inspect.iscoroutinefunction(job.func):
-                    await job.func()
-                else:
-                    await run_in_threadpool(job.func)
-            except Exception as e:
-                LOG_ERROR(f"Job {job_id} failed: {e}")
-
-        asyncio.create_task(_runner())
-
     def remove_job(self, job_id):
         if self.scheduler:
             self.scheduler.remove_job(job_id)
             LOG_INFO(f"Removed job: {job_id}")
-
-    def list_jobs(self):
-        if not self.scheduler:
-            return []
-
-        return [
-            JobInfo(
-                id=job.id,
-                name=job.name,
-                next_run_time=job.next_run_time,
-                trigger=str(job.trigger),
-            )
-            for job in self.scheduler.get_jobs()
-        ]
 
     async def shutdown(self):
         if self.scheduler:

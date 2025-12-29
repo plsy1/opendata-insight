@@ -1,12 +1,8 @@
-import asyncio
-from playwright.async_api import async_playwright
-
-
-import asyncio
 import random
 import uuid
-from typing import Optional
+import asyncio
 from playwright.async_api import async_playwright, Browser, BrowserContext
+from typing import Optional
 
 
 USER_AGENTS = [

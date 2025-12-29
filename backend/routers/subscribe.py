@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query, Depends, Response, status
 from services.auth import tokenInterceptor
-from services.feed import *
+from services.subscribe import *
 from database import get_db
 from sqlalchemy.orm import Session
 

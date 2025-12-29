@@ -1,7 +1,7 @@
 import asyncio
-import requests
 from qbittorrentapi import Client
 from io import BytesIO
+import httpx
 from config import _config
 from urllib.parse import urlparse
 
@@ -26,10 +26,13 @@ class QB:
 
         self._filter_task: asyncio.Task | None = None
         self._stop_filter = False
+        self.http_client: httpx.AsyncClient | None = None
 
     async def start(self):
         self._stop_filter = False
         self._filter_task = asyncio.create_task(self._background_keyword_filter())
+        if not self.http_client:
+            self.http_client = httpx.AsyncClient(timeout=20.0)
 
     async def stop_filter_task(self):
         self._stop_filter = True
@@ -126,12 +129,20 @@ class QB:
             return False
 
     async def download_torrent_file(self, torrent_url):
+        if not self.http_client:
+            raise RuntimeError("QB http client not started")
         try:
-            response = await asyncio.to_thread(requests.get, torrent_url, timeout=10)
-            return BytesIO(response.content)
+            resp = await self.http_client.get(torrent_url)
+            resp.raise_for_status()
+            return BytesIO(resp.content)
         except Exception as e:
             print(f"Error downloading torrent: {e}")
             return None
+
+    async def shutdown(self):
+        if self.http_client:
+            await self.http_client.aclose()
+            self.http_client = None
 
 
 _qb_instance: QB | None = None
@@ -152,4 +163,6 @@ async def init_qb(qb_url: str, username: str, password: str) -> QB:
 async def shutdown_qb():
     global _qb_instance
     async with _qb_lock:
-        _qb_instance = None
+        if _qb_instance:
+            await _qb_instance.shutdown()
+            _qb_instance = None

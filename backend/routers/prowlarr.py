@@ -4,6 +4,7 @@ from services.auth import tokenInterceptor
 
 router = APIRouter()
 
+
 @router.get("/search")
 async def search(
     query: str,
@@ -23,7 +24,7 @@ async def search(
 
     from modules.metadata.prowlarr import _prowlarr_instance
 
-    search_results = _prowlarr_instance.search(
+    search_results = await _prowlarr_instance.search(
         query=query, page=page, page_size=page_size
     )
 

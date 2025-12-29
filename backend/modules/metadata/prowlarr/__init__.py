@@ -1,4 +1,4 @@
-import requests
+import httpx
 import asyncio
 from typing import Optional
 
@@ -8,19 +8,34 @@ class Prowlarr:
         self.base_url = base_url
         self.api_key = api_key
         self.headers = {"X-Api-Key": self.api_key}
+        self.client: Optional[httpx.AsyncClient] = None
 
     async def start(self):
-        await asyncio.sleep(0)
+        if not self.client:
+            self.client = httpx.AsyncClient(timeout=20.0)
 
-    def search(self, query: str, page: int = 1, page_size: int = 10):
+    async def shutdown(self):
+        if self.client:
+            await self.client.aclose()
+            self.client = None
+
+    async def search(self, query: str, page: int = 1, page_size: int = 10):
+        if not self.client:
+            raise RuntimeError("AsyncProwlarr not started")
+
         url = f"{self.base_url}/api/v1/search"
-        params = {"query": query, "categories": "6000"}
+        params = {
+            "query": query,
+            "categories": "6000",
+            "page": page,
+            "pageSize": page_size,
+        }
 
         try:
-            response = requests.get(url, headers=self.headers, params=params)
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
+            resp = await self.client.get(url, headers=self.headers, params=params)
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.RequestError as e:
             print(f"请求失败: {e}")
             return None
 
@@ -40,4 +55,6 @@ async def init_prowlarr(base_url: str, api_key: str) -> Prowlarr:
 
 async def shutdown_prowlarr():
     global _prowlarr_instance
-    _prowlarr_instance = None
+    if _prowlarr_instance:
+        await _prowlarr_instance.shutdown()
+        _prowlarr_instance = None

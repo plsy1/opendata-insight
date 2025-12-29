@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from config import _config
 from database import get_db
 from services.auth import tokenInterceptor
-from services.feed import *
+from services.subscribe import *
 from services.telegram import *
 
 

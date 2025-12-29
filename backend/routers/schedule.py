@@ -1,20 +1,20 @@
 from fastapi import APIRouter, HTTPException, status
 from services.auth import tokenInterceptor
-from modules.scheduler import _scheduler_service
+from services.schedule import *
 
 
 router = APIRouter()
 
 
 @router.get("/list")
-async def test():
-    return _scheduler_service.list_jobs()
+async def list_jobs():
+    return list_jobs_service()
 
 
 @router.post("/run")
 async def run_task(job_id: str):
     try:
-        await _scheduler_service.run_job(job_id)
+        await run_job_service(job_id)
         return {"message": f"Job '{job_id}' executed successfully"}
 
     except KeyError:

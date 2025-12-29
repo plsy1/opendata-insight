@@ -4,7 +4,7 @@ from config import _config
 from modules.metadata.avbase import *
 from utils.logs import LOG_ERROR
 from datetime import datetime
-from services.feed import *
+from services.subscribe import *
 from services.telegram import *
 from pathlib import Path
 
