@@ -1,26 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import JSONResponse
-from modules.metadata.prowlarr import Prowlarr
 from services.auth import tokenInterceptor
-from config import _config
 
 router = APIRouter()
-
-
-def format_size(size_in_bytes: int) -> str:
-    """
-    将字节大小转换为更易读的格式（MB/GB）。
-
-    :param size_in_bytes: 字节数
-    :return: 转换后的大小字符串
-    """
-    if size_in_bytes >= 1_073_741_824:
-        return f"{size_in_bytes / 1_073_741_824:.2f} GB"
-    elif size_in_bytes >= 1_048_576:
-        return f"{size_in_bytes / 1_048_576:.2f} MB"
-    else:
-        return f"{size_in_bytes} bytes"
-
 
 @router.get("/search")
 async def search(
@@ -38,13 +20,12 @@ async def search(
     :param current_user: 当前已认证的用户，来自依赖项
     :return: 搜索结果的JSON响应
     """
-    
-    PROWLARR_URL = _config.get("PROWLARR_URL")
-    PROWLARR_KEY = _config.get("PROWLARR_KEY")
 
-    prowlarr = Prowlarr(PROWLARR_URL, PROWLARR_KEY)
+    from modules.metadata.prowlarr import _prowlarr_instance
 
-    search_results = prowlarr.search(query=query, page=page, page_size=page_size)
+    search_results = _prowlarr_instance.search(
+        query=query, page=page, page_size=page_size
+    )
 
     if search_results is None:
         raise HTTPException(status_code=500, detail="Prowlarr API请求失败")

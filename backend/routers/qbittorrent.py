@@ -1,8 +1,5 @@
 from fastapi import (
     HTTPException,
-    Query,
-    UploadFile,
-    File,
     APIRouter,
     Depends,
     Body,
@@ -11,15 +8,12 @@ from fastapi import (
 )
 
 from pathlib import Path
-from io import BytesIO
-from modules.downloader.qbittorrent import QB
-from services.auth import tokenInterceptor
-from config import _config
-from modules.metadata.avbase import *
-from database import get_db
-from services.feed import *
 from sqlalchemy.orm import Session
-from services.telegram import send_movie_download_message_by_work_id, DownloadStatus
+from config import _config
+from database import get_db
+from services.auth import tokenInterceptor
+from services.feed import *
+from services.telegram import *
 
 
 router = APIRouter()
@@ -30,9 +24,9 @@ router = APIRouter()
 )
 async def get(isValid: str = Depends(tokenInterceptor)):
 
-    qb_client = QB()
+    from modules.downloader.qbittorrent import _qb_instance
 
-    return qb_client.get_downloading_torrents()
+    return await _qb_instance.get_downloading_torrents()
 
 
 @router.post("/delete_torrent")
@@ -41,10 +35,11 @@ async def delete(
     delete_files: bool = Body(True),
     isValid: str = Depends(tokenInterceptor),
 ):
-    qb_client = QB()
+
+    from modules.downloader.qbittorrent import _qb_instance
 
     try:
-        qb_client.delete_torrent(torrent_hash, delete_files=delete_files)
+        await _qb_instance.delete_torrent(torrent_hash, delete_files=delete_files)
         return {
             "status": "success",
             "hash": torrent_hash,
@@ -86,7 +81,7 @@ async def add_torrent_url(
         success = await _qb_instance.add_torrent_url(download_link, save_path)
 
         if success and work_id:
-            await movie_subscribe_service(
+            movie_subscribe_service(
                 db, MovieFeedOperation.MARK_DOWNLOADED, work_id
             )
             await send_movie_download_message_by_work_id(
@@ -94,27 +89,6 @@ async def add_torrent_url(
             )
 
             return Response(status_code=status.HTTP_204_NO_CONTENT)
-        else:
-            raise HTTPException(status_code=400, detail="Failed to add torrent")
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.post("/add_torrent_file")
-async def add_torrent_file(
-    file: UploadFile = File(...),
-    save_path: str = Query(...),
-    isValid: str = Depends(tokenInterceptor),
-):
-    try:
-        torrent_data = BytesIO(await file.read())
-        qb_client = QB()
-
-        success = qb_client.add_torrent_file(file.filename, torrent_data, save_path)
-
-        if success:
-            return {"message": "Torrent added successfully"}
         else:
             raise HTTPException(status_code=400, detail="Failed to add torrent")
 

@@ -8,6 +8,17 @@ from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from schemas.actor import ActorDataOut
 from schemas.movies import MovieDataOut
 from database import MovieData, MovieProduct, get_db
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+
+class Movie(BaseModel):
+    id: str
+    title: str
+    full_id: str
+    release_date: str
+    img_url: str
+    actors: list[str]
 
 
 async def get_actress_info_by_actress_name(
@@ -122,12 +133,7 @@ async def fetch_avbase_index_actor_list():
     db.commit()
 
 
-async def get_release_by_date(date_str: str):
-    """
-    获取指定日期的作品列表，写入数据库
-    date_str: 'YYYY-MM-DD'
-    """
-
+async def fetch_avbase_release_by_date_and_write_db(date_str: str):
     from database import MovieData, MovieProduct, get_db
 
     all_works = []
@@ -147,7 +153,6 @@ async def get_release_by_date(date_str: str):
 
     db = next(get_db())
 
-    # ----------- 准备 MovieData 批量数据 -----------
     movie_records = []
     for work_dict in all_works:
         min_date = parse_min_date(work_dict.get("min_date"))
@@ -165,7 +170,6 @@ async def get_release_by_date(date_str: str):
             )
         )
 
-    # ----------- 批量 upsert MovieData -----------
     if movie_records:
         stmt = sqlite_insert(MovieData).values(movie_records)
         stmt = stmt.on_conflict_do_update(
@@ -183,14 +187,12 @@ async def get_release_by_date(date_str: str):
         db.execute(stmt)
         db.flush()
 
-    # ----------- 获取 work_id -> movie.id 映射 -----------
     work_ids = [w["work_id"] for w in all_works]
     movie_map = {
         m.work_id: m.id
         for m in db.query(MovieData).filter(MovieData.work_id.in_(work_ids)).all()
     }
 
-    # ----------- 准备 MovieProduct 批量数据 -----------
     product_records = []
     for work_dict in all_works:
         movie_id = movie_map[work_dict["work_id"]]
@@ -228,10 +230,8 @@ async def get_release_by_date(date_str: str):
                 )
             )
 
-    # ----------- 批量 upsert MovieProduct -----------
     if product_records:
         stmt = sqlite_insert(MovieProduct).values(product_records)
-        # UPSERT 按 (work_id, product_id) 唯一约束
         stmt = stmt.on_conflict_do_update(
             index_elements=["work_id", "product_id"],
             set_={
@@ -265,7 +265,6 @@ async def get_information_by_work_id(
     movie_out = MovieDataOut.model_validate(movie)
     movie_out_dict = movie_out.model_dump()
 
-
     if "products" in movie_out_dict and isinstance(movie_out_dict["products"], list):
         merged_product = merge_products(movie_out_dict["products"])
         movie_out_dict["products"] = [merged_product]
@@ -283,3 +282,21 @@ async def get_information_by_work_id(
         )
 
     return movie_out
+
+
+async def fetch_movie_data_and_save_to_db(db: Session, full_id: str):
+
+    work_id = full_id.split(":", 1)[1] if ":" in full_id else full_id
+
+    records = db.query(MovieData).filter(MovieData.work_id == work_id).first()
+
+    if records:
+        return
+
+    work = await fetch_work_data(full_id)
+    movie = parse_work_to_movie(work)
+    db.add(movie)
+    db.flush()
+    add_products_to_db(db, work.get("products", []), movie.id)
+    db.commit()
+    db.refresh(movie)

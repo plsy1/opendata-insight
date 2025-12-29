@@ -30,7 +30,7 @@ def get_db() -> Generator[Session, None, None]:
         db.close()
 
 
-def initDatabase():
+def init_database():
     import database.models
 
     Base.metadata.create_all(bind=engine)

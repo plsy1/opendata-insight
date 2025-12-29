@@ -82,7 +82,7 @@ def movie_subscribe_list_service(
     db: Session,
     status: MovieStatus,
     changeImagePrefix: bool = False,
-):
+) -> list[MovieDataOut]:
 
     downloaded_flag = status == MovieStatus.DOWNLOADED
 
@@ -144,7 +144,6 @@ def movie_subscribe_service(
 
     if not movie:
         return False
-
     try:
         if operation == MovieFeedOperation.REMOVE:
             return _remove_movie_subscribe(db, movie)
@@ -194,3 +193,4 @@ def _mark_movie_downloaded(db: Session, movie: MovieData) -> bool:
 
     db.commit()
     return True
+

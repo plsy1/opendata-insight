@@ -180,3 +180,10 @@ async def init_playwright_service() -> PlaywrightService:
         _playwright_service = PlaywrightService()
         await _playwright_service.start()
     return _playwright_service
+
+
+async def shutdown_playwright_service():
+    global _playwright_service
+    if _playwright_service:
+        await _playwright_service.stop()
+        _playwright_service = None

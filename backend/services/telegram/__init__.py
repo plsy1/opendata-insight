@@ -8,7 +8,7 @@ class DownloadStatus(str, Enum):
     ADD_SUBSCRIBE = "【添加订阅】"
 
 
-def generate_download_information(
+def _generate_download_information(
     work: MovieDataOut, status: DownloadStatus = DownloadStatus.START_DOWNLOAD
 ) -> str:
     movie_details = f"*{status.value}*: {work.work_id}\n"
@@ -40,7 +40,7 @@ async def send_movie_download_message_by_work_id(
     from modules.notification.telegram import _telegram_bot
 
     movie_info = await get_information_by_work_id(work_id)
-    movie_details = generate_download_information(movie_info, status)
+    movie_details = _generate_download_information(movie_info, status)
 
     image_url = movie_info.products[0].image_url if movie_info.products else None
 

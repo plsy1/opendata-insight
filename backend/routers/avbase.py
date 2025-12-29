@@ -6,7 +6,7 @@ from modules.metadata.avbase import (
     get_information_by_work_id,
     get_movie_info_by_keywords,
     fetch_avbase_index_actor_list,
-    get_release_by_date,
+    fetch_avbase_release_by_date_and_write_db,
 )
 from services.system import replace_domain_in_value
 from schemas.movies import MovieDataOut
@@ -114,7 +114,7 @@ async def get_release(
     )
 
     if not records:
-        await get_release_by_date(date_str)
+        await fetch_avbase_release_by_date_and_write_db(date_str)
         records = (
             db.query(MovieData)
             .options(selectinload(MovieData.products))

@@ -111,7 +111,7 @@ def create_root_user_if_not_exists(db: Session):
         LOG_INFO(f"root 用户已创建，密码为: {rawPass}")
 
 
-def initUser():
+def init_user():
     db = SessionLocal()
     try:
         create_root_user_if_not_exists(db)

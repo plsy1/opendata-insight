@@ -4,36 +4,51 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from config import _config
 from utils.logs import LOGGING_CONFIG
-from database import initDatabase
-from services.auth import initUser
-from modules.scheduler import init_scheduler_service
-from modules.playwright import init_playwright_service
-from modules.notification.telegram import init_telegram_bot
-from modules.downloader.qbittorrent import init_qb
+from database import init_database
+from services.auth import init_user
+from modules.scheduler import init_scheduler_service, shutdown_scheduler_service
+from modules.playwright import init_playwright_service, shutdown_playwright_service
+from modules.notification.telegram import init_telegram_bot, shutdown_telegram_bot
+from modules.downloader.qbittorrent import init_qb, shutdown_qb
+from modules.metadata.prowlarr import init_prowlarr, shutdown_prowlarr
 
 
-def Init():
-    initDatabase()
-    initUser()
+def init_environments():
+    init_database()
+    init_user()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    Init()
-    scheduler = init_scheduler_service()
-    playwright = await init_playwright_service()
-    tgbot = await init_telegram_bot(
+    init_environments()
+
+    await init_scheduler_service()
+    await init_playwright_service()
+
+    await init_telegram_bot(
         _config.get("TELEGRAM_TOKEN", ""), _config.get("TELEGRAM_CHAT_ID", "")
     )
-    qb_client = await init_qb()
-    initRouter()
+
+    await init_qb(
+        _config.get("QB_URL"),
+        username=_config.get("QB_USERNAME"),
+        password=_config.get("QB_PASSWORD"),
+    )
+
+    await init_prowlarr(
+        _config.get("PROWLARR_URL", ""), _config.get("PROWLARR_KEY", "")
+    )
+
+    init_router()
 
     try:
         yield
     finally:
-        await tgbot.shutdown()
-        await playwright.stop()
-        scheduler.shutdown()
+        await shutdown_prowlarr()
+        await shutdown_qb()
+        await shutdown_telegram_bot()
+        await shutdown_playwright_service()
+        await shutdown_scheduler_service()
 
 
 App = FastAPI(lifespan=lifespan)
@@ -53,7 +68,7 @@ Config = uvicorn.Config(
 Server = uvicorn.Server(Config)
 
 
-def initRouter():
+def init_router():
     from routers import api_router
 
     App.include_router(api_router, prefix="/api/v1")

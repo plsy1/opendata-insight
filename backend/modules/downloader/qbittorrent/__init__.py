@@ -7,14 +7,12 @@ from urllib.parse import urlparse
 
 
 class QB:
-    def __init__(self):
-        qb_url = _config.get("QB_URL")
+    def __init__(self, qb_url: str, username: str, password: str):
+
         parsed = urlparse(qb_url)
 
         host = parsed.hostname
         port = parsed.port if parsed.port else (443 if parsed.scheme == "https" else 80)
-        username = _config.get("QB_USERNAME")
-        password = _config.get("QB_PASSWORD")
 
         self.tags = "Ecchi"
         self.random_tag = None
@@ -142,11 +140,11 @@ _qb_instance: QB | None = None
 _qb_lock = asyncio.Lock()
 
 
-async def init_qb() -> QB:
+async def init_qb(qb_url: str, username: str, password: str) -> QB:
     global _qb_instance
     async with _qb_lock:
         if _qb_instance is None:
-            _qb_instance = QB()
+            _qb_instance = QB(qb_url, username, password)
             await _qb_instance.start()
     return _qb_instance
 

@@ -3,15 +3,22 @@ import json
 from datetime import datetime
 from bs4 import BeautifulSoup
 from fastapi import HTTPException
-from .model import Movie
 from schemas.actor import SocialMedia
 from config import _config
 from services.system import encrypt_payload
 
 from database import MovieData, MovieProduct
+from pydantic import BaseModel
 
 from typing import Optional
 
+class Movie(BaseModel):
+    id: str
+    title: str
+    full_id: str
+    release_date: str
+    img_url: str
+    actors: list[str]
 
 def parse_min_date(date_str: Optional[str]) -> Optional[str]:
     """

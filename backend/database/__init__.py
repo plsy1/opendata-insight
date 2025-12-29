@@ -1,4 +1,4 @@
-from .base import Base, engine, SessionLocal, get_db,initDatabase
+from .base import Base, engine, SessionLocal, get_db,init_database
 from .models import *
 
 __all__ = [
@@ -6,5 +6,5 @@ __all__ = [
     "engine",
     "SessionLocal",
     "get_db",
-    "initDatabase"
+    "init_database"
 ]
