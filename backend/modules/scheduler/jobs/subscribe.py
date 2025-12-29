@@ -1,11 +1,11 @@
 import asyncio
 from database import get_db
 from config import _config
-from modules.metadata.avbase import *
 from utils.logs import LOG_ERROR
 from datetime import datetime
 from services.subscribe import *
 from services.telegram import *
+from services.avbase import *
 from pathlib import Path
 
 
@@ -31,14 +31,16 @@ async def _refresh_movie_feeds():
         save_path = Path(_config.get("DOWNLOAD_PATH", ""))
 
         db = next(get_db())
-        feeds = movie_subscribe_list_service(db, MovieStatus.SUBSCRIBE, False)
+        feeds = movie_subscribe_list_service(db, MovieStatus.SUBSCRIBE)
 
         if not feeds:
             return
 
         for feed in feeds:
             work_id = feed.work_id
-            search_data = _prowlarr_instance.search(query=work_id, page=1, page_size=5)
+            search_data = await _prowlarr_instance.search(
+                query=work_id, page=1, page_size=5
+            )
 
             if not search_data:
                 continue
@@ -60,7 +62,7 @@ async def _refresh_movie_feeds():
             if success:
                 movie_subscribe_service(db, MovieFeedOperation.MARK_DOWNLOADED, work_id)
                 await send_movie_download_message_by_work_id(
-                    work_id, DownloadStatus.START_DOWNLOAD
+                    db, work_id, DownloadStatus.START_DOWNLOAD
                 )
             await asyncio.sleep(5)
         return
@@ -68,6 +70,8 @@ async def _refresh_movie_feeds():
     except Exception as e:
         LOG_ERROR(e)
         return
+    finally:
+        db.close()
 
 
 async def _refresh_actor_feeds():
@@ -81,9 +85,7 @@ async def _refresh_actor_feeds():
         for feed in feeds:
             name = feed.name
 
-            items = await get_movie_info_by_actress_name(
-                name, 1, changeImagePrefix=False
-            )
+            items = await get_movie_list_by_actor_name_service(name, 1)
 
             valid_items: list[MoviePoster] = []
             for item in items:
@@ -100,18 +102,20 @@ async def _refresh_actor_feeds():
 
             item = valid_items[-1]
 
-            await fetch_movie_data_and_save_to_db(db, item.full_id)
+            await get_information_by_work_id_service(db, item.full_id)
 
             movie_subscribe_service(db, MovieFeedOperation.ADD, item.id)
 
             await send_movie_download_message_by_work_id(
-                item.id, DownloadStatus.ADD_SUBSCRIBE
+                db, item.id, DownloadStatus.ADD_SUBSCRIBE
             )
 
             await asyncio.sleep(5)
 
     except Exception as e:
         LOG_ERROR(e)
+    finally:
+        db.close()
 
 
 async def refresh_feeds():

@@ -2,8 +2,6 @@ import requests
 from .model import *
 from config import _config
 from utils.logs import LOG_ERROR
-from services.system import replace_domain_in_value
-
 
 def get_javtrailers_fetch_tokens() -> str:
     """
@@ -70,17 +68,13 @@ def fetch_daily_release(year: int, month: int, day: int) -> DailyRelease:
 
         resp.raise_for_status()
         data = resp.json()
-        SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
         studios = [
             Studio(
                 name=s["name"],
                 jpName=s["jpName"],
                 slug=s["slug"],
                 link=s["link"],
-                videos=[
-                    Video(**replace_domain_in_value(v, SYSTEM_IMAGE_PREFIX))
-                    for v in s.get("videos", [])
-                ],
+                videos=[Video(**v) for v in s.get("videos", [])],
             )
             for s in data.get("studios", [])
         ]

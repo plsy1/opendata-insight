@@ -82,7 +82,7 @@ async def add_torrent_url(
 
         if success and work_id:
             movie_subscribe_service(db, MovieFeedOperation.MARK_DOWNLOADED, work_id)
-            await send_movie_download_message_by_work_id(
+            await send_movie_download_message_by_work_id(db,
                 work_id, DownloadStatus.START_DOWNLOAD
             )
 

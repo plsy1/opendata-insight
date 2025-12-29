@@ -5,6 +5,7 @@ from services.auth import tokenInterceptor
 from database import FC2Ranking, FC2Product, get_db
 from modules.metadata.fc2 import get_ranking, get_information_by_number
 from modules.metadata.fc2.model import RankingType
+from services.system import replace_domain_in_value
 
 router = APIRouter()
 
@@ -18,7 +19,7 @@ async def fetch_details(number: str):
         product = db.query(FC2Product).filter(FC2Product.article_id == number).first()
 
         if product:
-            return product
+            return replace_domain_in_value(product)
 
         info = await get_information_by_number(number)
 
@@ -57,7 +58,7 @@ async def fetch_details(number: str):
 
         product = db.query(FC2Product).filter(FC2Product.article_id == number).first()
 
-        return product
+        return replace_domain_in_value(product)
 
     except HTTPException:
         raise
@@ -88,7 +89,7 @@ async def fetch_ranking(
         )
 
         if records:
-            return records
+            return replace_domain_in_value(records)
 
         items = await get_ranking(page=page, term=term)
         if not items:
@@ -124,7 +125,7 @@ async def fetch_ranking(
             .all()
         )
 
-        return records
+        return replace_domain_in_value(records)
 
     except Exception as e:
         db.rollback()

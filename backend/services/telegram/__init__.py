@@ -1,6 +1,7 @@
-from modules.metadata.avbase import get_information_by_work_id
 from schemas.movies import MovieDataOut
 from enum import Enum
+from services.avbase import get_information_by_work_id_service
+from sqlalchemy.orm import Session
 
 
 class DownloadStatus(str, Enum):
@@ -35,11 +36,11 @@ def _generate_download_information(
 
 
 async def send_movie_download_message_by_work_id(
-    work_id: str, status: DownloadStatus = DownloadStatus.START_DOWNLOAD
+    db: Session, work_id: str, status: DownloadStatus = DownloadStatus.START_DOWNLOAD
 ):
     from modules.notification.telegram import _telegram_bot
 
-    movie_info = await get_information_by_work_id(work_id)
+    movie_info = await get_information_by_work_id_service(db, work_id)
     movie_details = _generate_download_information(movie_info, status)
 
     image_url = movie_info.products[0].image_url if movie_info.products else None

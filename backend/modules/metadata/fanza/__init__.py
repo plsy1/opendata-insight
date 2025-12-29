@@ -1,10 +1,6 @@
 import re, httpx
 from bs4 import BeautifulSoup
-
 from .model import Actress, Work, RankingType
-from config import _config
-from services.system import replace_domain_in_value
-
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0",
@@ -74,10 +70,6 @@ async def fetch_actress_ranking(page: int) -> list[Actress]:
                 )
             )
 
-        actresses = replace_domain_in_value(
-            actresses, _config.get("SYSTEM_IMAGE_PREFIX")
-        )
-
         return actresses
 
 
@@ -127,7 +119,5 @@ async def fetch_movie_ranking(
                     actresses=actresses,
                 )
             )
-
-        results = replace_domain_in_value(results, _config.get("SYSTEM_IMAGE_PREFIX"))
 
         return results

@@ -53,11 +53,14 @@ def _to_plain(value: Any) -> Any:
     return value
 
 
-def replace_domain_in_value(value: Any, prefix: str, exclude: List[str] = None) -> Any:
+def replace_domain_in_value(value: Any, exclude: List[str] = None) -> Any:
     """
     递归替换 dict/list 结构中的所有 URL 为 prefix + encrypt_payload(DecryptedImagePayload)
     排除域名列表中的 URL 不做替换
     """
+
+    prefix = _config.get("SYSTEM_IMAGE_PREFIX")
+
     if exclude is None:
         exclude = [
             "www.mgstage.com",
@@ -73,10 +76,10 @@ def replace_domain_in_value(value: Any, prefix: str, exclude: List[str] = None) 
 
     if isinstance(value, dict):
         return {
-            k: replace_domain_in_value(v, prefix, exclude) for k, v in value.items()
+            k: replace_domain_in_value(v, exclude) for k, v in value.items()
         }
     elif isinstance(value, list):
-        return [replace_domain_in_value(v, prefix, exclude) for v in value]
+        return [replace_domain_in_value(v, exclude) for v in value]
     elif isinstance(value, str):
         if value.startswith("http://") or value.startswith("https://"):
             try:

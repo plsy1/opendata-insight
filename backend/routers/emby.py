@@ -3,6 +3,7 @@ from services.auth import tokenInterceptor
 from sqlalchemy.orm import Session
 from services.emby import *
 from database import get_db
+from services.system import replace_domain_in_value
 
 router = APIRouter()
 
@@ -10,7 +11,8 @@ router = APIRouter()
 @router.get("/get_item_counts")
 async def get_item_counts(isValid: str = Depends(tokenInterceptor)):
     try:
-        return await get_item_counts_service()
+        result = await get_item_counts_service()
+        return replace_domain_in_value(result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed: {e}")
 
@@ -18,7 +20,8 @@ async def get_item_counts(isValid: str = Depends(tokenInterceptor)):
 @router.get("/get_resume")
 async def get_resume(isValid: str = Depends(tokenInterceptor)):
     try:
-        return await get_resume_items_service()
+        result = await get_resume_items_service()
+        return replace_domain_in_value(result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed: {e}")
 
@@ -26,7 +29,8 @@ async def get_resume(isValid: str = Depends(tokenInterceptor)):
 @router.get("/get_latest")
 async def get_latest(isValid: str = Depends(tokenInterceptor)):
     try:
-        return await get_latest_items_service()
+        result = await get_latest_items_service()
+        return replace_domain_in_value(result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed: {e}")
 
@@ -34,7 +38,8 @@ async def get_latest(isValid: str = Depends(tokenInterceptor)):
 @router.get("/get_views")
 async def get_latest(isValid: str = Depends(tokenInterceptor)):
     try:
-        return await get_views_service()
+        result = await get_views_service()
+        return replace_domain_in_value(result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed: {e}")
 
@@ -42,7 +47,8 @@ async def get_latest(isValid: str = Depends(tokenInterceptor)):
 @router.get("/get_all")
 async def get_latest(isValid: str = Depends(tokenInterceptor)):
     try:
-        return await get_all_movies_service()
+        result = await get_all_movies_service()
+        return replace_domain_in_value(result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed: {e}")
 
@@ -52,7 +58,7 @@ async def exists(
     title: str, db: Session = Depends(get_db), isValid: str = Depends(tokenInterceptor)
 ):
     try:
-        return await exists_service(db, title)
-
+        result = await exists_service(db, title)
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed: {e}")

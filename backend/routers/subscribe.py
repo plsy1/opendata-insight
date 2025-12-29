@@ -3,6 +3,7 @@ from services.auth import tokenInterceptor
 from services.subscribe import *
 from database import get_db
 from sqlalchemy.orm import Session
+from services.system import replace_domain_in_value
 
 router = APIRouter()
 
@@ -38,7 +39,7 @@ async def get_movies_subscribe_list(
     isValid: str = Depends(tokenInterceptor),
     db: Session = Depends(get_db),
 ):
-    return movie_subscribe_list_service(db, MovieStatus.SUBSCRIBE, True)
+    return movie_subscribe_list_service(db, MovieStatus.SUBSCRIBE)
 
 
 @router.post("/actorSubscribe")
@@ -76,7 +77,8 @@ async def get_actor_subscribe_list(
     db: Session = Depends(get_db),
     isValid: str = Depends(tokenInterceptor),
 ):
-    return actor_list_service(db, ActorListType.SUBSCRIBE, True)
+    result = actor_list_service(db, ActorListType.SUBSCRIBE)
+    return replace_domain_in_value(result)
 
 
 @router.post("/actorCollect")
@@ -114,7 +116,8 @@ async def get_actor_collect_list(
     isValid: str = Depends(tokenInterceptor),
     db: Session = Depends(get_db),
 ):
-    return actor_list_service(db, ActorListType.COLLECT, True)
+    result = actor_list_service(db, ActorListType.COLLECT)
+    return replace_domain_in_value(result)
 
 
 @router.get("/movieDownloaded")
@@ -122,4 +125,5 @@ async def get_movies_downloaded_list(
     db: Session = Depends(get_db),
     isValid: str = Depends(tokenInterceptor),
 ):
-    return movie_subscribe_list_service(db, MovieStatus.DOWNLOADED, True)
+    result = movie_subscribe_list_service(db, MovieStatus.DOWNLOADED)
+    return replace_domain_in_value(result)

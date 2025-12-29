@@ -1,10 +1,9 @@
 from database import ActorData, MovieData, MovieSubscribe, ActorSubscribe
+from schemas.movies import MovieDataOut
 from utils.logs import LOG_ERROR
-from modules.metadata.avbase import *
-from config import _config
+from services.avbase import get_actor_information_by_name_service
 from sqlalchemy.orm import selectinload, Session
 from enum import Enum
-
 
 class Operation(str, Enum):
     SUBSCRIBE = "subscribe"
@@ -50,7 +49,7 @@ async def actor_operation_service(
             return True
 
         if not actor:
-            data = await get_actress_info_by_actress_name(name)
+            data = await get_actor_information_by_name_service(db, name)
 
             actor = ActorData(**data.model_dump())
             db.add(actor)
@@ -80,8 +79,7 @@ async def actor_operation_service(
 
 def movie_subscribe_list_service(
     db: Session,
-    status: MovieStatus,
-    changeImagePrefix: bool = False,
+    status: MovieStatus
 ) -> list[MovieDataOut]:
 
     downloaded_flag = status == MovieStatus.DOWNLOADED
@@ -103,19 +101,12 @@ def movie_subscribe_list_service(
 
         result.append(movie_out)
 
-    if changeImagePrefix:
-        result = replace_domain_in_value(
-            result,
-            _config.get("SYSTEM_IMAGE_PREFIX"),
-        )
-
     return result
 
 
 def actor_list_service(
     db: Session,
     list_type: ActorListType,
-    changeImagePrefix: bool = False,
 ) -> list[ActorData]:
     if list_type == ActorListType.SUBSCRIBE:
         condition = ActorSubscribe.is_subscribe.is_(True)
@@ -125,12 +116,6 @@ def actor_list_service(
         raise ValueError("Invalid ActorListType")
 
     actors = db.query(ActorData).join(ActorSubscribe).filter(condition).all()
-
-    if changeImagePrefix:
-        actors = replace_domain_in_value(
-            actors,
-            _config.get("SYSTEM_IMAGE_PREFIX"),
-        )
 
     return actors
 
@@ -193,4 +178,3 @@ def _mark_movie_downloaded(db: Session, movie: MovieData) -> bool:
 
     db.commit()
     return True
-

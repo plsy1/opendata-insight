@@ -1,15 +1,13 @@
 import json
-from bs4 import BeautifulSoup
-from typing import List
-from .helper import *
-from config import _config
-from services.system import replace_domain_in_value
-from sqlalchemy.dialects.sqlite import insert as sqlite_insert
-from schemas.actor import ActorDataOut, AvbaseIndexActorOut
-from schemas.movies import MovieDataOut
-from database import MovieData, MovieProduct, get_db, avbaseNewbie, avbasePopular
-from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+from database import MovieData, MovieProduct
+from pydantic import BaseModel
+from datetime import datetime
+from bs4 import BeautifulSoup
+from fastapi import HTTPException
+from schemas.actor import SocialMedia, ActorDataOut, AvbaseIndexActorOut
+from typing import Optional
 
 
 class MoviePoster(BaseModel):
@@ -21,30 +19,33 @@ class MoviePoster(BaseModel):
     actors: list[str]
 
 
-async def get_actress_info_by_actress_name(
-    name: str, changeImagePrefix: bool = False
-) -> ActorDataOut:
+def parse_min_date(date_str: Optional[str]) -> Optional[str]:
+    if not date_str:
+        return None
 
-    from database import get_db, ActorData
+    try:
+        date_str = date_str.split(" (")[0].split(" GMT")[0]
+        dt = datetime.strptime(date_str, "%a %b %d %Y %H:%M:%S")
+        return dt.strftime("%Y-%m-%d")
+    except Exception:
+        return None
 
-    db = next(get_db())
 
-    records = db.query(ActorData).where(ActorData.name == name).first()
-
-    if not records:
-        data = ActorDataOut(name=name)
-
-        url = f"https://www.avbase.net/talents/{name}"
-        content = await get_raw_html(url)
-
+async def parse_actor_information(url: str) -> ActorDataOut:
+    try:
+        data = ActorDataOut()
+        content = await _get_raw_html(url)
         soup = BeautifulSoup(content, "html.parser")
         script_tag = soup.find("script", id="__NEXT_DATA__")
         if script_tag:
             tmp = json.loads(script_tag.string)
             page_props = tmp["props"]["pageProps"]
+            data.name = page_props.get("name", {})
+
             talent = page_props.get("talent", {})
             primary = talent.get("primary", {})
             data.avatar_url = f'{primary.get("image_url")}'
+
             fanza = (primary.get("meta") or {}).get("fanza") or {}
             for k, v in fanza.items():
                 if hasattr(data, k):
@@ -53,72 +54,204 @@ async def get_actress_info_by_actress_name(
             actors = talent.get("actors", [])
             data.aliases = [actor.get("name") for actor in actors if actor.get("name")]
 
-        data.social_media = get_social_media_links(soup)
+        data.social_media = _get_social_media_links(soup)
 
-        new_actor = ActorData(**data.model_dump())
-        db.add(new_actor)
-        db.commit()
-        db.refresh(new_actor)
+        return data
 
-        records = new_actor
-
-    if changeImagePrefix:
-        records = replace_domain_in_value(records, _config.get("SYSTEM_IMAGE_PREFIX"))
-    return ActorDataOut.model_validate(records)
+    except Exception as e:
+        print(e)
 
 
-# async def parse_avbase_index_actor(db: Session) -> list[AvbaseIndexActorOut]:
-#     url = f"https://www.avbase.net"
-#     data = await get_next_data(url)
-#     data = data.get("props").get("pageProps")
+async def parse_movie_lists(url: str) -> list[MoviePoster]:
+    try:
+        content = await _get_raw_html(url)
 
-#     newbie_talents = data.get("newbie_talents")
-#     popular_talents = data.get("popular_talents")
+        soup = BeautifulSoup(content, "html.parser")
+        movie_elements = soup.find_all(
+            "div",
+            class_="bg-base border border-light rounded-lg overflow-hidden h-full",
+        )
 
-#     for item in newbie_talents:
-#         for actor in item.get("actors", []):
-#             name = actor.get("name")
-#             avatar_url = actor.get("image_url")
+        movies = []
+        for movie in movie_elements:
+            id_tag = movie.find("span", class_="font-bold text-gray-500")
+            movie_id = id_tag.get_text(strip=True) if id_tag else ""
 
-#             record = db.query(avbaseNewbie).filter_by(name=name).first()
+            title_tag = movie.find(
+                "a", class_="text-md font-bold btn-ghost rounded-lg m-1 line-clamp-5"
+            )
+            if not title_tag:
+                title_tag = movie.find(
+                    "a",
+                    class_="text-md font-bold btn-ghost rounded-lg m-1 line-clamp-3",
+                )
 
-#             if record:
-#                 record.avatar_url = avatar_url
-#                 record.isActive = True
-#             else:
-#                 record = avbaseNewbie(name=name, avatar_url=avatar_url, isActive=True)
-#                 db.add(record)
+            title = title_tag.get_text(strip=True) if title_tag else ""
+            link = title_tag.get("href", "") if title_tag else ""
+            link = link.split("/")[-1]
 
-#     for item in popular_talents:
-#         actors = item.get("actors", [])
-#         if not actors:
-#             continue
+            date_tag = movie.find("a", class_="block font-bold")
+            date = date_tag.get_text(strip=True) if date_tag else ""
 
-#         actor = actors[0]
-#         name = actor.get("name")
-#         avatar_url = actor.get("image_url")
+            img_tag = movie.find("img", loading="lazy")
+            img_url = img_tag.get("src", "") if img_tag else ""
+            if img_url:
+                img_url = img_url.replace("ps.", "pl.")
+            actors = [
+                a.get_text(strip=True)
+                for a in movie.find_all("a", class_="chip chip-sm")
+            ]
 
-#         record = db.query(avbasePopular).filter_by(name=name).first()
+            movies.append(
+                MoviePoster(
+                    id=movie_id,
+                    title=title,
+                    full_id=link,
+                    release_date=date,
+                    img_url=img_url,
+                    actors=actors,
+                )
+            )
 
-#         if record:
-#             record.avatar_url = avatar_url
-#             record.isActive = True
-#         else:
-#             record = avbasePopular(name=name, avatar_url=avatar_url, isActive=True)
-#             db.add(record)
-
-#     db.commit()
+        return movies
+    except Exception as e:
+        print(e)
 
 
-async def fetch_avbase_release_by_date_and_write_db(date_str: str):
-    from database import MovieData, MovieProduct, get_db
+def _get_social_media_links(soup) -> list[SocialMedia]:
+    social_media_links = []
 
+    social_media_div = soup.find("div", class_="group/social col-span-2 mt-4")
+    if not social_media_div:
+        return social_media_links
+
+    for tooltip in social_media_div.find_all("div", class_="tooltip"):
+        link_tag = tooltip.find("a")
+        if link_tag:
+            href = link_tag.get("href")
+            username = tooltip.get("data-tip")
+            social_media_links.append(
+                SocialMedia(
+                    platform=_get_platform_from_link(href),
+                    username=username or "",
+                    link=href or None,
+                )
+            )
+
+    return social_media_links
+
+
+def _get_platform_from_link(link: str):
+    if "twitter.com" in link or "x.com" in link:
+        return "Twitter"
+    elif "instagram.com" in link:
+        return "Instagram"
+    elif "tiktok.com" in link:
+        return "TikTok"
+    elif "avbase.net" in link:
+        return "RSS"
+    else:
+        return "Null"
+
+
+async def _get_next_data(url: str):
+    from modules.playwright import _playwright_service
+
+    context = await _playwright_service.get_context(use_new_fingerprint=True)
+    page = await context.new_page()
+
+    try:
+        response = await page.goto(url, timeout=5000)
+        status = response.status
+        if status == 403:
+            raise HTTPException(status_code=status, detail="403 Forbidden")
+        content = await page.content()
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"页面请求失败: {str(e)}")
+
+    finally:
+        await page.close()
+        await context.close()
+
+    soup = BeautifulSoup(content, "html.parser")
+    script_tag = soup.find("script", id="__NEXT_DATA__")
+    if not script_tag:
+        raise HTTPException(status_code=500, detail="没有找到 __NEXT_DATA__")
+    try:
+        data = json.loads(script_tag.string)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="JSON 解析失败")
+
+    return data
+
+
+async def _get_raw_html(url: str):
+    from modules.playwright import _playwright_service
+
+    context = await _playwright_service.get_context()
+    page = await context.new_page()
+    try:
+        response = await page.goto(url, timeout=5000)
+        status = response.status
+        if status == 403:
+            raise HTTPException(status_code=status, detail="403")
+        content = await page.content()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"页面请求失败: {str(e)}")
+    finally:
+        await page.close()
+
+    return content
+
+
+async def parse_movie_information(work_id: str) -> dict:
+    url = f"https://www.avbase.net/works/{work_id}"
+    data = await _get_next_data(url)
+    return data.get("props", {}).get("pageProps", {}).get("work", {})
+
+
+async def parse_actor_lists() -> (
+    tuple[list[AvbaseIndexActorOut], list[AvbaseIndexActorOut]]
+):
+    url = "https://www.avbase.net"
+    data = await _get_next_data(url)
+    page_props = data.get("props", {}).get("pageProps", {})
+
+    newbie_talents_raw = page_props.get("newbie_talents", [])
+    popular_talents_raw = page_props.get("popular_talents", [])
+
+    newbie_talents: list[AvbaseIndexActorOut] = []
+    for item in newbie_talents_raw:
+        for actor in item.get("actors", []):
+            name = actor.get("name")
+            avatar_url = actor.get("image_url")
+            newbie_talents.append(
+                AvbaseIndexActorOut(name=name, avatar_url=avatar_url, isActive=False)
+            )
+
+    popular_talents: list[AvbaseIndexActorOut] = []
+    for item in popular_talents_raw:
+        actors = item.get("actors", [])
+        if not actors:
+            continue
+        actor = actors[0]
+        name = actor.get("name")
+        avatar_url = actor.get("image_url")
+        popular_talents.append(
+            AvbaseIndexActorOut(name=name, avatar_url=avatar_url, isActive=False)
+        )
+
+    return newbie_talents, popular_talents
+
+
+async def _get_every_day_release(date_str: str):
     all_works = []
 
     page = 1
     while True:
         url = f"https://www.avbase.net/works/date/{date_str}?page={page}"
-        data = await get_next_data(url)
+        data = await _get_next_data(url)
 
         works_data = data.get("props", {}).get("pageProps", {}).get("works", [])
 
@@ -128,18 +261,21 @@ async def fetch_avbase_release_by_date_and_write_db(date_str: str):
         all_works.extend(works_data)
         page += 1
 
-    db = next(get_db())
+    return all_works
+
+
+async def fetch_avbase_release_by_date_and_write_db(db: Session, date_str: str):
+
+    all_works = await _get_every_day_release(date_str)
 
     movie_records = []
     for work_dict in all_works:
-        min_date = parse_min_date(work_dict.get("min_date"))
-
         movie_records.append(
             dict(
                 work_id=work_dict["work_id"],
                 prefix=work_dict.get("prefix", ""),
                 title=work_dict.get("title", ""),
-                min_date=min_date,
+                min_date=parse_min_date(work_dict.get("min_date")),
                 casts=[c["actor"] for c in work_dict.get("casts", [])],
                 actors=work_dict.get("actors", []),
                 tags=work_dict.get("tags", []),
@@ -218,62 +354,3 @@ async def fetch_avbase_release_by_date_and_write_db(date_str: str):
         db.execute(stmt)
 
     db.commit()
-
-
-async def get_information_by_work_id(
-    canonical_id: str, changeImagePrefix: bool = False
-) -> MovieDataOut:
-
-    db = next(get_db())
-
-    work_id = canonical_id.split(":", 1)[1] if ":" in canonical_id else canonical_id
-
-    movie = get_movie_from_db(db, work_id)
-
-    if not movie:
-        work = await fetch_work_data(canonical_id)
-        movie = parse_work_to_movie(work)
-        db.add(movie)
-        db.flush()
-        add_products_to_db(db, work.get("products", []), movie.id)
-        db.commit()
-        db.refresh(movie)
-
-    movie_out = MovieDataOut.model_validate(movie)
-    movie_out_dict = movie_out.model_dump()
-
-    if "products" in movie_out_dict and isinstance(movie_out_dict["products"], list):
-        merged_product = merge_products(movie_out_dict["products"])
-        movie_out_dict["products"] = [merged_product]
-
-    movie_out = MovieDataOut(**movie_out_dict)
-
-    if not movie_out.products[0].image_url:
-        movie_out.products[0].image_url = movie_out.products[0].thumbnail_url.replace(
-            "ps.jpg", "pl.jpg"
-        )
-
-    if changeImagePrefix:
-        movie_out = replace_domain_in_value(
-            movie_out, _config.get("SYSTEM_IMAGE_PREFIX")
-        )
-
-    return movie_out
-
-
-async def fetch_movie_data_and_save_to_db(db: Session, full_id: str):
-
-    work_id = full_id.split(":", 1)[1] if ":" in full_id else full_id
-
-    records = db.query(MovieData).filter(MovieData.work_id == work_id).first()
-
-    if records:
-        return
-
-    work = await fetch_work_data(full_id)
-    movie = parse_work_to_movie(work)
-    db.add(movie)
-    db.flush()
-    add_products_to_db(db, work.get("products", []), movie.id)
-    db.commit()
-    db.refresh(movie)
