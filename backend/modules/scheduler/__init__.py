@@ -103,6 +103,12 @@ async def init_scheduler_service() -> AppScheduler:
                 hours=7,
             )
             _scheduler_service.add_job(
+                update_avbase_index_actor_service,
+                trigger=IntervalTrigger,
+                name="update_avbase_index_actor_service",
+                hours=12,
+            )
+            _scheduler_service.add_job(
                 update_fc2_ranking,
                 trigger=IntervalTrigger,
                 name="update fc2 ranking",

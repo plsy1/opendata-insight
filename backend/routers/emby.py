@@ -12,7 +12,7 @@ router = APIRouter()
 async def get_item_counts(isValid: str = Depends(tokenInterceptor)):
     try:
         result = await get_item_counts_service()
-        return replace_domain_in_value(result)
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed: {e}")
 
