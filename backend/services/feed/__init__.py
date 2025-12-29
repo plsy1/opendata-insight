@@ -135,7 +135,7 @@ def actor_list_service(
     return actors
 
 
-async def movie_subscribe_service(
+def movie_subscribe_service(
     db: Session,
     operation: MovieFeedOperation,
     work_id: str,
@@ -150,7 +150,7 @@ async def movie_subscribe_service(
             return _remove_movie_subscribe(db, movie)
 
         if operation == MovieFeedOperation.ADD:
-            return await _add_movie_subscribe(db, movie)
+            return _add_movie_subscribe(db, movie)
 
         if operation == MovieFeedOperation.MARK_DOWNLOADED:
             return _mark_movie_downloaded(db, movie)
@@ -172,16 +172,18 @@ def _remove_movie_subscribe(db: Session, movie: MovieData) -> bool:
     return True
 
 
-async def _add_movie_subscribe(db: Session, movie: MovieData) -> bool:
-
-    if movie.subscribers:
-        movie.subscribers.is_downloaded = False
+def _add_movie_subscribe(db: Session, movie: MovieData) -> bool:
+    try:
+        if movie.subscribers:
+            movie.subscribers.is_downloaded = False
+        else:
+            movie.subscribers = MovieSubscribe(is_downloaded=False)
         db.commit()
         return True
-
-    movie.subscribers = MovieSubscribe(is_downloaded=False)
-    db.commit()
-    return True
+    except Exception as e:
+        db.rollback()
+        LOG_ERROR(e)
+        return False
 
 
 def _mark_movie_downloaded(db: Session, movie: MovieData) -> bool:

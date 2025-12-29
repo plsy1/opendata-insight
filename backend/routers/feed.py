@@ -14,7 +14,7 @@ async def add_movie_feed(
     isValid: str = Depends(tokenInterceptor),
 ):
 
-    ok = await movie_subscribe_service(db, MovieFeedOperation.ADD, work_id=work_id)
+    ok = movie_subscribe_service(db, MovieFeedOperation.ADD, work_id=work_id)
     if ok:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     raise HTTPException(500, "Add movie feed failed")
@@ -27,7 +27,7 @@ async def remove_movie_feed(
     isValid: str = Depends(tokenInterceptor),
 ):
 
-    ok = await movie_subscribe_service(db, MovieFeedOperation.REMOVE, work_id=work_id)
+    ok = movie_subscribe_service(db, MovieFeedOperation.REMOVE, work_id=work_id)
     if ok:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     raise HTTPException(500, "Remove movie feed failed")

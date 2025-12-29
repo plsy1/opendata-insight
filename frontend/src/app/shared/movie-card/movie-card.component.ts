@@ -81,7 +81,7 @@ export class MovieCardComponent {
   onUnsubscribeClick(event: MouseEvent): void {
     event.stopPropagation();
 
-    this.shareService.removeKeywordsRSS(this.title).subscribe({
+    this.shareService.removeMovieSubscribe(this.id).subscribe({
       next: () => {
         this.movieDelete.emit();
       },
