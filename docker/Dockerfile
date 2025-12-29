@@ -20,7 +20,6 @@ RUN playwright install-deps chromium \
     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
 COPY backend /app/backend
-RUN mkdir -p /app/data
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends nginx supervisor && \
