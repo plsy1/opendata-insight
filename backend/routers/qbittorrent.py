@@ -81,9 +81,7 @@ async def add_torrent_url(
         success = await _qb_instance.add_torrent_url(download_link, save_path)
 
         if success and work_id:
-            movie_subscribe_service(
-                db, MovieFeedOperation.MARK_DOWNLOADED, work_id
-            )
+            movie_subscribe_service(db, MovieFeedOperation.MARK_DOWNLOADED, work_id)
             await send_movie_download_message_by_work_id(
                 work_id, DownloadStatus.START_DOWNLOAD
             )

@@ -13,10 +13,13 @@ import base64
 import hashlib
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.exceptions import InvalidTag
+from pathlib import Path
 
+BASE_DIR = Path(__file__).resolve().parent
 
 CACHE_EXPIRE_HOURS = _config.get("CACHE_EXPIRE_HOURS")
-CACHE_DIR = _config.get("CACHE_DIR")
+
+CACHE_DIR = BASE_DIR / _config.get("CACHE_DIR")
 
 os.makedirs(CACHE_DIR, exist_ok=True)
 

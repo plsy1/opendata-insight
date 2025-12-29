@@ -6,11 +6,13 @@ from config import _config
 from utils.logs import LOGGING_CONFIG
 from database import init_database
 from services.auth import init_user
+
 from modules.scheduler import init_scheduler_service, shutdown_scheduler_service
 from modules.playwright import init_playwright_service, shutdown_playwright_service
 from modules.notification.telegram import init_telegram_bot, shutdown_telegram_bot
 from modules.downloader.qbittorrent import init_qb, shutdown_qb
 from modules.metadata.prowlarr import init_prowlarr, shutdown_prowlarr
+from modules.mediaServer.emby import init_emby_service, shutdown_emby_service
 
 
 def init_environments():
@@ -39,11 +41,14 @@ async def lifespan(app: FastAPI):
         _config.get("PROWLARR_URL", ""), _config.get("PROWLARR_KEY", "")
     )
 
+    await init_emby_service(_config.get("EMBY_URL"), _config.get("EMBY_API_KEY"))
+
     init_router()
 
     try:
         yield
     finally:
+        await shutdown_emby_service()
         await shutdown_prowlarr()
         await shutdown_qb()
         await shutdown_telegram_bot()

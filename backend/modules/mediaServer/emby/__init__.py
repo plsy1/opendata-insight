@@ -1,186 +1,144 @@
 import requests
-import json
-from typing import List, Dict
-from config import _config
-from database import get_db, EmbyMovie
-from services.system import encrypt_payload
+from typing import Optional
 
-def is_movie_in_db_partial(title: str):
-    db = next(get_db())
-    try:
-        movie = db.query(EmbyMovie).filter(EmbyMovie.name.ilike(f"%{title}%")).first()
-        if movie:
-            return True, movie.indexLink
+
+class EmbyService:
+    def __init__(self, emby_url: str, api_key: str):
+        self.emby_url = emby_url
+        self.api_key = api_key
+        self.session: Optional[requests.Session] = None
+
+    async def start(self):
+        if not self.emby_url or not self.api_key:
+            return
+        self.session = requests.Session()
+
+    async def shutdown(self):
+        if self.session:
+            self.session.close()
+            self.session = None
+
+    def request(self, path: str, params=None, method="GET", use_header=True):
+        if not self.session:
+            raise RuntimeError("EmbyService not started")
+
+        if params is None:
+            params = {}
+
+        url = f"{self.emby_url}/emby{path}"
+        headers = {}
+
+        if use_header:
+            headers["X-Emby-Token"] = self.api_key
         else:
-            return False, None
-    finally:
-        db.close()
+            params["api_key"] = self.api_key
 
+        resp = self.session.request(
+            method, url, headers=headers, params=params, timeout=20
+        )
+        resp.raise_for_status()
+        return resp.json()
 
-def emby_request(path: str, params=None, method="GET", use_header=True) -> List[Dict]:
-    """
-    发送带 Emby API key 的请求
-    :param path: API 路径，比如 '/System/Info'
-    :param params: 查询参数字典
-    :param method: HTTP 方法 GET / POST / ...
-    :param use_header: True 使用 Header 认证，False 使用 Query 认证
-    """
-    if params is None:
-        params = {}
-
-    EMBY_URL = _config.get("EMBY_URL")
-    EMBY_API_KEY = _config.get("EMBY_API_KEY")
-
-    url = f"{EMBY_URL}/emby{path}"
-
-    headers = {}
-    if use_header:
-        headers["X-Emby-Token"] = EMBY_API_KEY
-    else:
-        params["api_key"] = EMBY_API_KEY
-
-    response = requests.request(method, url, headers=headers, params=params)
-    response.raise_for_status()
-    return json.loads(response.text)
-
-
-def emby_get_userId_of_administrator() -> str:
-    try:
-        info = emby_request("/Users/Query", use_header=True)
-        users = info.get("Items")
-        for user in users:
-            if user.get("Policy").get("IsAdministrator") == True:
+    def _get_admin_user_id(self) -> Optional[str]:
+        info = self.request("/Users/Query")
+        for user in info.get("Items", []):
+            if user.get("Policy", {}).get("IsAdministrator"):
                 return user.get("Id")
-    except Exception as e:
-        return
+        return None
 
+    def get_latest_items(self) -> list[dict]:
+        user_id = self._get_admin_user_id()
+        if not user_id:
+            return []
 
-def emby_get_item_counts() -> Dict:
-    try:
-        info = emby_request("/Items/Counts", use_header=True)
-        return info
-    except Exception as e:
-        return
+        params = {
+            "Recursive": "true",
+            "Fields": "BasicSyncInfo,CanDelete,CanDownload,PrimaryImageAspectRatio,ProductionYear",
+            "ImageTypeLimit": 1,
+            "EnableImageTypes": "Primary,Backdrop,Thumb",
+            "MediaTypes": "Video",
+            "Limit": 16,
+        }
+        items = self.request(f"/Users/{user_id}/Items/Latest", params=params)
 
-
-def emby_get_latest_items() -> List[Dict]:
-    params = {
-        "Recursive": "true",
-        "Fields": "BasicSyncInfo,CanDelete,CanDownload,PrimaryImageAspectRatio,ProductionYear",
-        "ImageTypeLimit": 1,
-        "EnableImageTypes": "Primary,Backdrop,Thumb",
-        "MediaTypes": "Video",
-        "Limit": 16,
-    }
-
-    EMBY_URL = _config.get("EMBY_URL")
-    SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-    result = []
-
-    userId = emby_get_userId_of_administrator()
-    info = emby_request(f"/Users/{userId}/Items/Latest", use_header=True, params=params)
-
-    for item in info:
-        name = item.get("Name")
-        item_id = item.get("Id")
-        serverId = item.get("ServerId")
-
-        real_image_url = f"{EMBY_URL}/Items/{item_id}/Images/Primary"
-
-        image_token = encrypt_payload(real_image_url)
-
-        primary = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
-
-        indexLink = (
-            f"{EMBY_URL}/web/index.html#!/item?"
-            f"id={item_id}&context=home&serverId={serverId}"
-        )
-
-        playbackLink = f"{EMBY_URL}/emby/videos/{item_id}/stream.mp4?api_key={_config.get('EMBY_API_KEY')}&Static=true"
-
-        result.append(
-            {
-                "name": name,
-                "primary": primary,
-                "serverId": serverId,
-                "indexLink": indexLink,
-                "playbackLink": playbackLink,
-            }
-        )
-
-    return result
-
-
-def emby_get_resume_items() -> List[Dict]:
-    params = {
-        "Recursive": "true",
-        "Fields": "BasicSyncInfo,CanDelete,CanDownload,PrimaryImageAspectRatio,ProductionYear",
-        "ImageTypeLimit": 1,
-        "EnableImageTypes": "Primary,Backdrop,Thumb",
-        "MediaTypes": "Video",
-        "Limit": 16,
-    }
-    try:
-        EMBY_URL = _config.get("EMBY_URL")
         result = []
-        userId = emby_get_userId_of_administrator()
-        info = emby_request(
-            f"/Users/{userId}/Items/Resume", use_header=True, params=params
-        )
-        SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-        for item in info.get("Items"):
-            name = item.get("Name")
-            item_id = item.get("Id")
-            serverId = item.get("ServerId")
+        for item in items:
+            print(item)
+            item_id = item["Id"]
+            server_id = item["ServerId"]
 
-            real_image_url = f"{EMBY_URL}/Items/{item_id}/Images/Primary"
-
-
-            image_token = encrypt_payload(real_image_url)
-
-            primary = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
-
-            indexLink = f"{EMBY_URL}/web/index.html#!/item?id={item_id}&context=home&serverId={serverId}"
-            PlayedPercentage = item.get("UserData").get("PlayedPercentage")
-            ProductionYear = item.get("ProductionYear")
-            playbackLink = f"{EMBY_URL}/emby/videos/{item_id}/stream.mp4?api_key={_config.get('EMBY_API_KEY')}&Static=true"
             result.append(
                 {
-                    "name": name,
-                    "primary": primary,
-                    "serverId": serverId,
-                    "indexLink": indexLink,
-                    "PlayedPercentage": PlayedPercentage,
-                    "ProductionYear": ProductionYear,
-                    "playbackLink": playbackLink,
+                    "name": item["Name"],
+                    "primary": f"{self.emby_url}/Items/{item_id}/Images/Primary",
+                    "serverId": server_id,
+                    "indexLink": (
+                        f"{self.emby_url}/web/index.html#!/item"
+                        f"?id={item_id}&context=home&serverId={server_id}"
+                    ),
+                    "playbackLink": (
+                        f"{self.emby_url}/emby/videos/{item_id}/stream.mp4"
+                        f"?api_key={self.api_key}&Static=true"
+                    ),
                 }
             )
         return result
-    except Exception as e:
-        return
 
+    def get_resume_items(self) -> list[dict]:
+        user_id = self._get_admin_user_id()
+        if not user_id:
+            return []
 
-def emby_get_views() -> List[Dict]:
-    try:
-        SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-        EMBY_URL = _config.get("EMBY_URL")
+        params = {
+            "Recursive": "true",
+            "Fields": "BasicSyncInfo,CanDelete,CanDownload,PrimaryImageAspectRatio,ProductionYear",
+            "ImageTypeLimit": 1,
+            "EnableImageTypes": "Primary,Backdrop,Thumb",
+            "MediaTypes": "Video",
+            "Limit": 16,
+        }
+        items = self.request(f"/Users/{user_id}/Items/Resume", params=params).get(
+            "Items"
+        )
+
         result = []
-        userId = emby_get_userId_of_administrator()
-        info = emby_request(f"/Users/{userId}/Views", use_header=True)
-        items = info.get("Items")
+        for item in items:
+            item_id = item["Id"]
+            server_id = item["ServerId"]
+
+            result.append(
+                {
+                    "name": item["Name"],
+                    "primary": f"{self.emby_url}/Items/{item_id}/Images/Primary",
+                    "serverId": server_id,
+                    "indexLink": (
+                        f"{self.emby_url}/web/index.html#!/item"
+                        f"?id={item_id}&context=home&serverId={server_id}"
+                    ),
+                    "playbackLink": (
+                        f"{self.emby_url}/emby/videos/{item_id}/stream.mp4"
+                        f"?api_key={self.api_key}&Static=true"
+                    ),
+                }
+            )
+        return result
+
+    def get_views(self) -> list[dict]:
+        user_id = self._get_admin_user_id()
+        if not user_id:
+            return []
+
+        items = self.request(f"/Users/{user_id}/Views").get("Items")
+
+        result = []
+
         for item in items:
             name = item.get("Name")
             item_id = item.get("Id")
             ServerId = item.get("ServerId")
+            primary = f"{self.emby_url}/Items/{item_id}/Images/Primary"
 
-            real_image_url = f"{EMBY_URL}/Items/{item_id}/Images/Primary"
-
-
-            image_token = encrypt_payload(real_image_url)
-
-            primary = f"{SYSTEM_IMAGE_PREFIX}{image_token}"
-
-            indexLink = f"{EMBY_URL}/web/index.html#!/videos?serverId={ServerId}&parentId={item_id}"
+            indexLink = f"{self.emby_url}/web/index.html#!/videos?serverId={ServerId}&parentId={item_id}"
             result.append(
                 {
                     "name": name,
@@ -191,42 +149,39 @@ def emby_get_views() -> List[Dict]:
             )
 
         return result
-    except Exception as e:
-        return
 
+    def get_all_movies(self) -> list[dict]:
+        params = {
+            "Recursive": "true",
+            "IncludeItemTypes": "Movie",
+            "Fields": "BasicSyncInfo,CanDelete,CanDownload,PrimaryImageAspectRatio,ProductionYear",
+            "ImageTypeLimit": 1,
+            "EnableImageTypes": "Primary,Backdrop,Thumb",
+            "Limit": 500,
+            "SortBy": "DateCreated,SortName",
+            "SortOrder": "Descending",
+        }
 
-def emby_get_all_movies() -> List[Dict]:
-    params = {
-        "Recursive": "true",
-        "IncludeItemTypes": "Movie",
-        "Fields": "BasicSyncInfo,CanDelete,CanDownload,PrimaryImageAspectRatio,ProductionYear",
-        "ImageTypeLimit": 1,
-        "EnableImageTypes": "Primary,Backdrop,Thumb",
-        "Limit": 500,
-        "SortBy": "DateCreated,SortName",
-        "SortOrder": "Descending",
-    }
-    try:
-        EMBY_URL = _config.get("EMBY_URL")
-        userId = emby_get_userId_of_administrator()
+        user_id = self._get_admin_user_id()
+        if not user_id:
+            return []
 
-        info = emby_request(f"/Users/{userId}/Items", use_header=True, params=params)
+        items = self.request(f"/Users/{user_id}/Items", params=params).get("Items")
 
         result = []
-        for item in info.get("Items", []):
-            name = item.get("Name")
-            id = item.get("Id")
-            serverId = item.get("ServerId")
-            SYSTEM_IMAGE_PREFIX = _config.get("SYSTEM_IMAGE_PREFIX")
-            primary = f"{SYSTEM_IMAGE_PREFIX}{EMBY_URL}/Items/{id}/Images/Primary"
-            indexLink = f"{EMBY_URL}/web/index.html#!/item?id={id}&context=home&serverId={serverId}"
-            ProductionYear = item.get("ProductionYear")
 
+        for item in items:
+            name = item.get("Name")
+            item_id = item.get("Id")
+            ServerId = item.get("ServerId")
+            primary = f"{self.emby_url}/Items/{item_id}/Images/Primary"
+            indexLink = f"{self.emby_url}/web/index.html#!/videos?serverId={ServerId}&parentId={item_id}"
+            ProductionYear = item.get("ProductionYear")
             result.append(
                 {
                     "name": name,
                     "primary": primary,
-                    "serverId": serverId,
+                    "serverId": ServerId,
                     "indexLink": indexLink,
                     "ProductionYear": ProductionYear,
                 }
@@ -234,6 +189,23 @@ def emby_get_all_movies() -> List[Dict]:
 
         return result
 
-    except Exception as e:
-        print(f"Error: {e}")
-        return []
+
+_emby_instance: EmbyService | None = None
+
+
+async def init_emby_service(emby_url: str, api_key: str) -> EmbyService:
+    global _emby_instance
+    if _emby_instance is None:
+        _emby_instance = EmbyService(
+            emby_url=emby_url,
+            api_key=api_key,
+        )
+        await _emby_instance.start()
+    return _emby_instance
+
+
+async def shutdown_emby_service():
+    global _emby_instance
+    if _emby_instance:
+        await _emby_instance.shutdown()
+        _emby_instance = None

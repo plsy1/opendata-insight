@@ -11,6 +11,7 @@ import inspect
 from fastapi.concurrency import run_in_threadpool
 import os
 
+
 @dataclass
 class JobInfo:
     id: str

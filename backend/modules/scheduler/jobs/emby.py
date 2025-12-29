@@ -1,14 +1,14 @@
 from modules.metadata.avbase import *
 from database import get_db, EmbyMovie
-from modules.mediaServer.emby import emby_get_all_movies
 from utils.logs import LOG_ERROR
 
 
 def update_emby_movies_in_db():
     db = next(get_db())
+    from modules.mediaServer.emby import _emby_instance
+
     try:
-        movies: List[dict] = emby_get_all_movies()
-        print("hello")
+        movies: List[dict] = _emby_instance.get_all_movies()
         db.query(EmbyMovie).delete()
         db.commit()
 
