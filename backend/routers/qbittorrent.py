@@ -63,18 +63,19 @@ async def add_torrent_url(
             Path(save_path) if save_path else Path(_config.get("DOWNLOAD_PATH", ""))
         )
 
-        records = db.query(MovieData).filter(MovieData.work_id == work_id).first()
+        if work_id:
+            records = db.query(MovieData).filter(MovieData.work_id == work_id).first()
 
-        if records:
-            movie_out = MovieDataOut.model_validate(records)
+            if records:
+                movie_out = MovieDataOut.model_validate(records)
 
-            top_names_list = [
-                cast["name"] for cast in movie_out.casts if cast.get("name")
-            ][:3]
+                top_names_list = [
+                    cast["name"] for cast in movie_out.casts if cast.get("name")
+                ][:3]
 
-            top_names = ", ".join(top_names_list)
+                top_names = ", ".join(top_names_list)
 
-            save_path = save_path / top_names
+                save_path = save_path / top_names
 
         from modules.downloader.qbittorrent import _qb_instance
 
@@ -82,10 +83,12 @@ async def add_torrent_url(
 
         if success and work_id:
             movie_subscribe_service(db, MovieFeedOperation.MARK_DOWNLOADED, work_id)
-            await send_movie_download_message_by_work_id(db,
-                work_id, DownloadStatus.START_DOWNLOAD
+            await send_movie_download_message_by_work_id(
+                db, work_id, DownloadStatus.START_DOWNLOAD
             )
 
+            return Response(status_code=status.HTTP_204_NO_CONTENT)
+        elif success:
             return Response(status_code=status.HTTP_204_NO_CONTENT)
         else:
             raise HTTPException(status_code=400, detail="Failed to add torrent")
