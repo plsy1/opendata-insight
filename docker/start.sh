@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-CONFIG_FILE="/app/data/config.yaml"
+CONFIG_FILE="/app/data/backend/config.yaml"
 
 if [ ! -f "$CONFIG_FILE" ]; then
     echo "Generating $CONFIG_FILE from environment variables..."
