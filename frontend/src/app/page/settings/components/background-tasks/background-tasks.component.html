@@ -1,16 +1,43 @@
-<div class="refresh-container">
-  <button
-    mat-raised-button
-    color="primary"
-    (click)="refreshFeeds()"
-  >
-    Refresh Feeds
-  </button>
-  <button
-    mat-raised-button
-    color="primary"
-    (click)="refreshEMBY()"
-  >
-    Refresh EMBY
-  </button>
-</div>
+
+  <mat-card class="tasks-card">
+    <div class="table-wrapper" *ngIf="jobs.length; else empty">
+      <table mat-table [dataSource]="jobs" class="mat-elevation-z1">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let job">
+            {{ job.name }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="trigger">
+          <th mat-header-cell *matHeaderCellDef>Trigger</th>
+          <td mat-cell *matCellDef="let job">
+            {{ formatTrigger(job.trigger) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nextRunTime">
+          <th mat-header-cell *matHeaderCellDef>Next Run</th>
+          <td mat-cell *matCellDef="let job">
+            {{ formatNextRun(job.next_run_time) }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell *matCellDef="let job">
+            <button mat-raised-button color="primary" (click)="run(job.id)">
+              Run
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+    </div>
+
+    <ng-template #empty>
+      <div class="empty-state">No background tasks found.</div>
+    </ng-template>
+  </mat-card>

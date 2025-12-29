@@ -5,7 +5,7 @@ export interface StatOverview {
 }
 
 export interface StatDailyItem {
-  date: string;   // ISO date: YYYY-MM-DD
+  date: string;
   count: number;
 }
 

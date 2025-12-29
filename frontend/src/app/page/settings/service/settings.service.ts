@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { EnvironmentConfig } from '../models/settings.interface';
 import { CommonService } from '../../../common.service';
+import { JobInfo } from '../models/job_info.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -42,33 +43,17 @@ export class SettingsService {
       .pipe(map((data) => data.message === 'Password updated successfully'));
   }
 
-  refreshKeywordsFeeds(): Observable<{ message: string }> {
+  runBackgroundTask(job_id: string): Observable<{ message: string }> {
     return this.common.request<{ message: string }>(
       'POST',
-      'background_task/refreshKeywordsFeeds',
+      'background_task/run',
       {
-        body: {},
+        params: { job_id: job_id },
       }
     );
   }
 
-  refreshActressFeeds(): Observable<{ message: string }> {
-    return this.common.request<{ message: string }>(
-      'POST',
-      'background_task/update_subscribe',
-      {
-        body: {},
-      }
-    );
-  }
-
-  refreshEMBY(): Observable<{ message: string }> {
-    return this.common.request<{ message: string }>(
-      'POST',
-      'background_task/refresh_emby_movies_database',
-      {
-        body: {},
-      }
-    );
+  listBackgroundTasks(): Observable<JobInfo[]> {
+    return this.common.request<JobInfo[]>('GET', 'background_task/list');
   }
 }
