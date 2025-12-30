@@ -2,14 +2,15 @@
   [(selectedIndex)]="selectedTabIndex"
   (selectedTabChange)="onTabChange($event)"
 >
-  <mat-tab label="Collections">
-    <ng-template matTabContent>
-      <app-list-performer-collect></app-list-performer-collect>
-    </ng-template>
-  </mat-tab>
+
   <mat-tab label="Subscriptions">
     <ng-template matTabContent>
       <app-performer-subscription-list></app-performer-subscription-list>
+    </ng-template>
+  </mat-tab>
+    <mat-tab label="Collections">
+    <ng-template matTabContent>
+      <app-list-performer-collect></app-list-performer-collect>
     </ng-template>
   </mat-tab>
 </mat-tab-group>

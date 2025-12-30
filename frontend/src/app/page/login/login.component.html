@@ -1,6 +1,9 @@
 <div class="login-container">
   <mat-card class="login-card">
-    <h2 mat-card-title>Ecchi</h2>
+    <h2 mat-card-title>
+      <img src="/assets/favicon.ico" alt="logo" class="title-icon" />
+      Kanojo
+    </h2>
 
     <form (ngSubmit)="onSubmit()">
       <mat-form-field class="form-group" appearance="outline">
@@ -24,6 +27,7 @@
           name="password"
         />
       </mat-form-field>
+
       <button mat-raised-button color="primary" type="submit">Login</button>
     </form>
   </mat-card>

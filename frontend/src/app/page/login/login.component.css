@@ -9,70 +9,131 @@
   align-items: flex-start;
   padding-top: 80px;
   box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 0;
 }
 
 mat-card.login-card {
   width: 100%;
-  max-width: 500px;
-  padding: 32px 48px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 16px;
+  max-width: 450px;
+  padding: 36px 48px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  transform: translateY(-50px);
+  opacity: 0;
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes rainbow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .login-card h2 {
-  text-align: center;
-  font-size: 28px;
-  margin-bottom: 24px;
-  font-weight: 500;
-  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(270deg, #ff6ec4, #7873f5, #00f2fe, #ff6ec4);
+  background-size: 600% 600%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rainbow 3s ease infinite;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
 }
+
+.title-icon {
+  width: 48px;
+  height: 48px;
+  margin-right: 12px;
+}
+
 
 mat-form-field.form-group {
   width: 100%;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
-mat-form-field.mat-form-field {
-  width: 100%;
+.mat-form-field-outline {
+  border-radius: 8px;
 }
 
 input[matInput] {
   font-size: 16px;
-  padding: 8px 12px;
-  border-radius: 4px;
-  color: #000;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #222;
 }
 
 button[mat-raised-button] {
   width: 100%;
-  padding: 12px 0;
+  padding: 14px 0;
   font-size: 16px;
-  border-radius: 4px;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
+  border-radius: 10px;
+  font-weight: 600;
+  background: linear-gradient(90deg, #4facfe, #00f2fe);
+  color: #fff;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
 }
 
 button[mat-raised-button]:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
+
+button[mat-raised-button]:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 
 @media (max-width: 480px) {
   mat-card.login-card {
-    padding: 24px 16px;
+    padding: 28px 20px;
   }
 
   .login-card h2 {
     font-size: 24px;
   }
 
+  .title-icon {
+    width: 36px;
+    height: 36px;
+    margin-right: 8px;
+  }
+
   button[mat-raised-button] {
     font-size: 14px;
-    padding: 10px 0;
+    padding: 12px 0;
   }
 }

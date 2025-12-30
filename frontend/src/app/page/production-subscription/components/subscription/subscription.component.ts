@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { KeywordFeed } from '../../models/production-subscription.interface';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.component';

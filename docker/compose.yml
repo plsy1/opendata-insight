@@ -29,12 +29,12 @@ services:
       - 9696:9696
 
 
-  ecchi:
-    image: plsy1/ecchi:latest
-    container_name: ecchi
+  kanojo:
+    image: plsy1/kanojo:latest
+    container_name: kanojo
     restart: unless-stopped
     volumes:
-      - ./data/ecchi:/app/data
+      - ./data/kanojo:/app/data
     ports:
       - "12450:80"
     environment:

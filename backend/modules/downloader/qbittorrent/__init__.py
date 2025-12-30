@@ -14,7 +14,7 @@ class QB:
         host = parsed.hostname
         port = parsed.port if parsed.port else (443 if parsed.scheme == "https" else 80)
 
-        self.tags = "Ecchi"
+        self.tags = "kanojo"
         self.random_tag = None
         self.filter = [
             kw.strip()

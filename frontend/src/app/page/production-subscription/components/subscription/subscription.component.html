@@ -5,9 +5,9 @@
       [title]="movie.title"
       [imgUrl]="movie.products[0].image_url || ''"
       [actors]="getActorNames(movie.casts)"
-      (movieClick)="posterClick(movie.prefix,movie.work_id)"
+      (movieClick)="posterClick(movie.prefix, movie.work_id)"
       (movieDelete)="onUnsubscribeClick()"
-      [showID]="false"
+      [showID]="true"
       [showDetialButton]="true"
       [enableBlur]="ProductionSubscriptionService.isEnableBlur$() | async"
     ></app-movie-card>

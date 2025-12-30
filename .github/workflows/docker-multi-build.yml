@@ -31,10 +31,10 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            plsy1/ecchi:${{ steps.timestamp.outputs.ts }}-amd64
-            plsy1/ecchi:latest-amd64
-          cache-from: type=registry,ref=plsy1/ecchi:buildcache
-          cache-to: type=registry,ref=plsy1/ecchi:buildcache,mode=max
+            plsy1/kanojo:${{ steps.timestamp.outputs.ts }}-amd64
+            plsy1/kanojo:latest-amd64
+          cache-from: type=registry,ref=plsy1/kanojo:buildcache
+          cache-to: type=registry,ref=plsy1/kanojo:buildcache,mode=max
 
   docker-arm64:
     runs-on: ubuntu-latest
@@ -62,10 +62,10 @@ jobs:
           push: true
           platforms: linux/arm64
           tags: |
-            plsy1/ecchi:${{ steps.timestamp.outputs.ts }}-arm64
-            plsy1/ecchi:latest-arm64
-          cache-from: type=registry,ref=plsy1/ecchi:buildcache
-          cache-to: type=registry,ref=plsy1/ecchi:buildcache,mode=max
+            plsy1/kanojo:${{ steps.timestamp.outputs.ts }}-arm64
+            plsy1/kanojo:latest-arm64
+          cache-from: type=registry,ref=plsy1/kanojo:buildcache
+          cache-to: type=registry,ref=plsy1/kanojo:buildcache,mode=max
 
   docker-manifest:
     runs-on: ubuntu-latest
@@ -79,6 +79,6 @@ jobs:
       - name: Create multi-arch manifest
         run: |
           docker buildx imagetools create \
-            --tag plsy1/ecchi:latest \
-            plsy1/ecchi:latest-amd64 \
-            plsy1/ecchi:latest-arm64
+            --tag plsy1/kanojo:latest \
+            plsy1/kanojo:latest-amd64 \
+            plsy1/kanojo:latest-arm64

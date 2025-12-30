@@ -1,5 +1,6 @@
 .tasks-card {
   margin: 0 auto;
+  background-color: var(--app-background);
 }
 
 .table-wrapper {

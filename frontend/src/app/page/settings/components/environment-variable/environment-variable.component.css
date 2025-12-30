@@ -3,7 +3,7 @@ mat-card {
   padding: 1rem;
   background-color: var(--app-background);
   border: 1px solid var(--border-color);
-    margin: 10px;
+  margin: 10px;
 }
 
 mat-card-title {

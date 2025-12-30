@@ -7,4 +7,24 @@
   padding: 1rem;
 }
 
+.menu-btn {
+  width: 28px;
+  height: 28px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  z-index: 10;
+  border: none;
+  background-color: transparent;
+}
+
+.menu-btn:hover {
+  background-color: var(--mat-hover-state-layer-color, rgba(0, 0, 0, 0.05));
+}
+
+.menu-btn:hover {
+  background-color: var(--mat-hover-state-layer-color, rgba(0, 0, 0, 0.04));
+  border-radius: 50%;
+}
 

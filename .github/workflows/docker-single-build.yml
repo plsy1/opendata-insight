@@ -33,7 +33,7 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           tags: |
-            plsy1/ecchi:${{ steps.timestamp.outputs.ts }}
-            plsy1/ecchi:latest
-          cache-from: type=registry,ref=plsy1/ecchi:buildcache
-          cache-to: type=registry,ref=plsy1/ecchi:buildcache,mode=max
+            plsy1/kanojo:${{ steps.timestamp.outputs.ts }}
+            plsy1/kanojo:latest
+          cache-from: type=registry,ref=plsy1/kanojo:buildcache
+          cache-to: type=registry,ref=plsy1/kanojo:buildcache,mode=max

@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { ProductionSubscriptionService } from '../../service/production-subscription.service';
 import { CommonModule } from '@angular/common';
 import { MovieData } from '../../../../models/movie-data.interface';
-
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -48,18 +47,19 @@ export class DownloadHistoryComponent {
     }
   }
 
-
   onUnsubscribeClick(): void {
-    this.ProductionSubscriptionService.getDownloadedKeywordsFeedListGet().subscribe({
-      next: (data: MovieData[]) => {
-        this.keywordFeeds = data;
-      },
-      error: (error) => {
-        console.error('Error fetching keywords feed list', error);
-      },
-    });
+    this.ProductionSubscriptionService.getDownloadedKeywordsFeedListGet().subscribe(
+      {
+        next: (data: MovieData[]) => {
+          this.keywordFeeds = data;
+        },
+        error: (error) => {
+          console.error('Error fetching keywords feed list', error);
+        },
+      }
+    );
   }
-    getActorNames(actors: any[] = []): string[] {
+  getActorNames(actors: any[] = []): string[] {
     return actors.map((a) => a.name);
   }
 }
