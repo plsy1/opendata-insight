@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, Query, Depends, Response, status
-from services.auth import tokenInterceptor
 from services.subscribe import *
 from database import get_db
 from sqlalchemy.orm import Session
@@ -12,7 +11,6 @@ router = APIRouter()
 async def add_movie_feed(
     work_id: str = Query(...),
     db: Session = Depends(get_db),
-    isValid: str = Depends(tokenInterceptor),
 ):
 
     ok = movie_subscribe_service(db, MovieFeedOperation.ADD, work_id=work_id)
@@ -25,7 +23,6 @@ async def add_movie_feed(
 async def remove_movie_feed(
     work_id: str = Query(...),
     db: Session = Depends(get_db),
-    isValid: str = Depends(tokenInterceptor),
 ):
 
     ok = movie_subscribe_service(db, MovieFeedOperation.REMOVE, work_id=work_id)
@@ -36,7 +33,6 @@ async def remove_movie_feed(
 
 @router.get("/movieSubscribe")
 async def get_movies_subscribe_list(
-    isValid: str = Depends(tokenInterceptor),
     db: Session = Depends(get_db),
 ):
     return movie_subscribe_list_service(db, MovieStatus.SUBSCRIBE)
@@ -46,7 +42,6 @@ async def get_movies_subscribe_list(
 async def add_actor_subscribe(
     name: str = Query(...),
     db: Session = Depends(get_db),
-    isValid: str = Depends(tokenInterceptor),
 ):
     if await actor_operation_service(db, name, Operation.SUBSCRIBE):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -61,7 +56,6 @@ async def add_actor_subscribe(
 async def del_actor_subscribe(
     name: str = Query(...),
     db: Session = Depends(get_db),
-    isValid: str = Depends(tokenInterceptor),
 ):
     if await actor_operation_service(db, name, Operation.UNSUBSCRIBE):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -75,7 +69,6 @@ async def del_actor_subscribe(
 @router.get("/actorSubscribe")
 async def get_actor_subscribe_list(
     db: Session = Depends(get_db),
-    isValid: str = Depends(tokenInterceptor),
 ):
     result = actor_list_service(db, ActorListType.SUBSCRIBE)
     return replace_domain_in_value(result)
@@ -85,7 +78,6 @@ async def get_actor_subscribe_list(
 async def add_actor_collect(
     name: str = Query(...),
     db: Session = Depends(get_db),
-    isValid: str = Depends(tokenInterceptor),
 ):
     if await actor_operation_service(db, name, Operation.COLLECT):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -100,7 +92,6 @@ async def add_actor_collect(
 async def del_actor_collect(
     name: str = Query(...),
     db: Session = Depends(get_db),
-    isValid: str = Depends(tokenInterceptor),
 ):
     if await actor_operation_service(db, name, Operation.UNCOLLECT):
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -113,7 +104,6 @@ async def del_actor_collect(
 
 @router.get("/actorCollect")
 async def get_actor_collect_list(
-    isValid: str = Depends(tokenInterceptor),
     db: Session = Depends(get_db),
 ):
     result = actor_list_service(db, ActorListType.COLLECT)
@@ -123,7 +113,6 @@ async def get_actor_collect_list(
 @router.get("/movieDownloaded")
 async def get_movies_downloaded_list(
     db: Session = Depends(get_db),
-    isValid: str = Depends(tokenInterceptor),
 ):
     result = movie_subscribe_list_service(db, MovieStatus.DOWNLOADED)
     return replace_domain_in_value(result)

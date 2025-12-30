@@ -5,14 +5,14 @@ from contextlib import asynccontextmanager
 from config import _config
 from utils.logs import LOGGING_CONFIG
 from database import init_database
-from services.auth import init_user
+from modules.auth import init_user
 
 from modules.scheduler import init_scheduler_service, shutdown_scheduler_service
 from modules.playwright import init_playwright_service, shutdown_playwright_service
 from modules.notification.telegram import init_telegram_bot, shutdown_telegram_bot
 from modules.downloader.qbittorrent import init_qb, shutdown_qb
-from modules.metadata.prowlarr import init_prowlarr, shutdown_prowlarr
-from modules.mediaServer.emby import init_emby_service, shutdown_emby_service
+from modules.indexer.prowlarr import init_prowlarr, shutdown_prowlarr
+from modules.media_server.emby import init_emby_service, shutdown_emby_service
 
 
 def init_environments():
@@ -32,9 +32,10 @@ async def lifespan(app: FastAPI):
     )
 
     await init_qb(
-        _config.get("QB_URL"),
+        qb_url=_config.get("QB_URL"),
         username=_config.get("QB_USERNAME"),
         password=_config.get("QB_PASSWORD"),
+        filter=_config.get("QB_KEYWORD_FILTER", ""),
     )
 
     await init_prowlarr(

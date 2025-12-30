@@ -1,5 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, Body, Query, Response, status
-from services.auth import tokenInterceptor
+from fastapi import APIRouter, HTTPException, Body, Query, Response, status
 from fastapi.responses import StreamingResponse
 from services.system import *
 from config import _config
@@ -21,12 +20,12 @@ async def get_image(token: str = Query(...)):
 
 
 @router.get("/get_environment")
-async def get_app_environment(isValid: str = Depends(tokenInterceptor)):
+async def get_app_environment():
     return _config.get_environment()
 
 @router.post("/update_environment")
 async def update_environment(
-    env: dict = Body(...), isValid: str = Depends(tokenInterceptor)
+    env: dict = Body(...), 
 ):
     try:
         _config.set(env)

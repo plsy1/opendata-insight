@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from services.auth import tokenInterceptor
+
 from modules.metadata.avbase import *
 from services.system import replace_domain_in_value
 from urllib.parse import unquote
@@ -12,9 +12,7 @@ router = APIRouter()
 
 
 @router.get("/get_index")
-async def get_avbase_index_actor(
-    db: Session = Depends(get_db), isValid: str = Depends(tokenInterceptor)
-):
+async def get_avbase_index_actor(db: Session = Depends(get_db)):
     try:
         result = await get_avbase_index_actor_service(db)
         return replace_domain_in_value(result)
@@ -25,9 +23,7 @@ async def get_avbase_index_actor(
 
 
 @router.get("/search")
-async def get_movie_list_by_keywords(
-    keywords: str, page: int, isValid: str = Depends(tokenInterceptor)
-):
+async def get_movie_list_by_keywords(keywords: str, page: int):
     try:
         result = await get_movie_list_by_keywords_service(keywords, page)
         return replace_domain_in_value(result)
@@ -36,9 +32,7 @@ async def get_movie_list_by_keywords(
 
 
 @router.get("/moviesOfActor")
-async def get_movie_list_by_actor_name(
-    name: str, page: int, isValid: str = Depends(tokenInterceptor)
-):
+async def get_movie_list_by_actor_name(name: str, page: int):
     try:
         result = await get_movie_list_by_actor_name_service(name, page)
         return replace_domain_in_value(result)
@@ -47,9 +41,7 @@ async def get_movie_list_by_actor_name(
 
 
 @router.get("/actorInformation")
-async def get_actor_information_by_name(
-    name: str, db: Session = Depends(get_db), isValid: str = Depends(tokenInterceptor)
-):
+async def get_actor_information_by_name(name: str, db: Session = Depends(get_db)):
     try:
         result = await get_actor_information_by_name_service(db, name)
         return replace_domain_in_value(result)
@@ -59,11 +51,7 @@ async def get_actor_information_by_name(
 
 
 @router.get("/movieInformation")
-async def get_information_by_work_id(
-    work_id: str,
-    db: Session = Depends(get_db),
-    isValid: str = Depends(tokenInterceptor),
-):
+async def get_information_by_work_id(work_id: str, db: Session = Depends(get_db)):
     try:
         work_id = unquote(work_id)
         result = await get_information_by_work_id_service(db, work_id)
@@ -73,11 +61,7 @@ async def get_information_by_work_id(
 
 
 @router.get("/get_release_by_date")
-async def get_release(
-    yyyymmdd: str,
-    db: Session = Depends(get_db),
-    isValid: str = Depends(tokenInterceptor),
-):
+async def get_release(yyyymmdd: str, db: Session = Depends(get_db)):
 
     if len(yyyymmdd) != 8 or not yyyymmdd.isdigit():
         raise HTTPException(

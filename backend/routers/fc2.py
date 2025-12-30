@@ -1,19 +1,17 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from datetime import datetime
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
-from services.auth import tokenInterceptor
 from database import FC2Ranking, FC2Product, get_db
 from modules.metadata.fc2 import get_ranking, get_information_by_number
 from modules.metadata.fc2.model import RankingType
 from services.system import replace_domain_in_value
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 
 
 @router.get("/details")
-async def fetch_details(number: str):
-
-    db = next(get_db())
+async def fetch_details(number: str, db: Session = Depends(get_db)):
 
     try:
         product = db.query(FC2Product).filter(FC2Product.article_id == number).first()
@@ -73,9 +71,8 @@ async def fetch_details(number: str):
 async def fetch_ranking(
     page: int = Query(1, ge=1, le=5),
     term: RankingType = RankingType.monthly,
+    db: Session = Depends(get_db),
 ):
-
-    db = next(get_db())
 
     try:
         records = (

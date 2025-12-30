@@ -1,13 +1,12 @@
+import httpx
 import asyncio
 from qbittorrentapi import Client
 from io import BytesIO
-import httpx
-from config import _config
 from urllib.parse import urlparse
 
 
 class QB:
-    def __init__(self, qb_url: str, username: str, password: str):
+    def __init__(self, qb_url: str, username: str, password: str, keywords_filter: str):
 
         parsed = urlparse(qb_url)
 
@@ -16,11 +15,7 @@ class QB:
 
         self.tags = "kanojo"
         self.random_tag = None
-        self.filter = [
-            kw.strip()
-            for kw in _config.get("QB_KEYWORD_FILTER", "").split(",")
-            if kw.strip()
-        ]
+        self.filter = [kw.strip() for kw in keywords_filter.split(",") if kw.strip()]
 
         self.qb = Client(host=host, port=port, username=username, password=password)
 
@@ -151,11 +146,11 @@ _qb_instance: QB | None = None
 _qb_lock = asyncio.Lock()
 
 
-async def init_qb(qb_url: str, username: str, password: str) -> QB:
+async def init_qb(qb_url: str, username: str, password: str, filter: str) -> QB:
     global _qb_instance
     async with _qb_lock:
         if _qb_instance is None:
-            _qb_instance = QB(qb_url, username, password)
+            _qb_instance = QB(qb_url, username, password, filter)
             await _qb_instance.start()
     return _qb_instance
 

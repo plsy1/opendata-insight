@@ -1,11 +1,10 @@
-from fastapi import APIRouter, Depends
-from services.auth import tokenInterceptor
+from fastapi import APIRouter
 from modules.metadata.javtrailers import *
 
 router = APIRouter()
 
 @router.get("/getReleasebyDate")
-async def get_actress_movies(yyyymmdd: str,isValid: str = Depends(tokenInterceptor)):
+async def get_actress_movies(yyyymmdd: str):
     yyyymmdd = str(yyyymmdd)
     if len(yyyymmdd) != 8 or not yyyymmdd.isdigit():
         raise ValueError("Date Format invalid")

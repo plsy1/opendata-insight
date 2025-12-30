@@ -5,7 +5,7 @@ from utils.extract_code import extract_jav_code
 
 
 async def _get_admin_user_id() -> Optional[str]:
-    from modules.mediaServer.emby import _emby_instance
+    from modules.media_server.emby import _emby_instance
 
     info = await _emby_instance.request("/Users/Query")
     for user in info.get("Items", []):
@@ -15,14 +15,14 @@ async def _get_admin_user_id() -> Optional[str]:
 
 
 async def get_item_counts_service():
-    from modules.mediaServer.emby import _emby_instance
+    from modules.media_server.emby import _emby_instance
 
     results = await _emby_instance.request("/Items/Counts", use_header=True)
     return results
 
 
 async def get_latest_items_service() -> list[dict]:
-    from modules.mediaServer.emby import _emby_instance
+    from modules.media_server.emby import _emby_instance
 
     user_id = await _get_admin_user_id()
     if not user_id:
@@ -64,7 +64,7 @@ async def get_latest_items_service() -> list[dict]:
 
 
 async def get_resume_items_service() -> list[dict]:
-    from modules.mediaServer.emby import _emby_instance
+    from modules.media_server.emby import _emby_instance
 
     user_id = await _get_admin_user_id()
     if not user_id:
@@ -106,7 +106,7 @@ async def get_resume_items_service() -> list[dict]:
 
 
 async def get_views_service() -> list[dict]:
-    from modules.mediaServer.emby import _emby_instance
+    from modules.media_server.emby import _emby_instance
 
     user_id = await _get_admin_user_id()
     if not user_id:
@@ -134,7 +134,7 @@ async def get_views_service() -> list[dict]:
 
 
 async def get_all_movies_service() -> list[dict]:
-    from modules.mediaServer.emby import _emby_instance
+    from modules.media_server.emby import _emby_instance
 
     user_id = await _get_admin_user_id()
     if not user_id:

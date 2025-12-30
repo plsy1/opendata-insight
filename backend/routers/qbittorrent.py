@@ -11,7 +11,6 @@ from pathlib import Path
 from sqlalchemy.orm import Session
 from config import _config
 from database import get_db
-from services.auth import tokenInterceptor
 from services.subscribe import *
 from services.telegram import *
 
@@ -22,7 +21,7 @@ router = APIRouter()
 @router.get(
     "/get_downloading_torrents",
 )
-async def get(isValid: str = Depends(tokenInterceptor)):
+async def get():
 
     from modules.downloader.qbittorrent import _qb_instance
 
@@ -33,7 +32,6 @@ async def get(isValid: str = Depends(tokenInterceptor)):
 async def delete(
     torrent_hash: str = Body(...),
     delete_files: bool = Body(True),
-    isValid: str = Depends(tokenInterceptor),
 ):
 
     from modules.downloader.qbittorrent import _qb_instance
@@ -55,7 +53,6 @@ async def add_torrent_url(
     download_link: str,
     save_path: str,
     db: Session = Depends(get_db),
-    isValid: str = Depends(tokenInterceptor),
 ):
     try:
 

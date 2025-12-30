@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, status
-from services.auth import tokenInterceptor
 from services.schedule import *
 
 

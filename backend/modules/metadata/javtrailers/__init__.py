@@ -3,11 +3,8 @@ from .model import *
 from config import _config
 from utils.logs import LOG_ERROR
 
-def get_javtrailers_fetch_tokens() -> str:
-    """
-    从网页 HTML 提取 AUTH_TOKEN
-    """
 
+def get_javtrailers_fetch_tokens() -> str:
     headers = {
         "User-Agent": (
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "

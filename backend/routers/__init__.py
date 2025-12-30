@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from . import (
     prowlarr,
     qbittorrent,
@@ -13,17 +13,26 @@ from . import (
     statistic,
 )
 
+from .dependencies.auth_dependencies import token_interceptor
+
 api_router = APIRouter()
+
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
-api_router.include_router(subscribe.router, prefix="/feed", tags=["feed"])
-api_router.include_router(prowlarr.router, prefix="/prowlarr", tags=["prowlarr"])
-api_router.include_router(qbittorrent.router, prefix="/downloader", tags=["downloader"])
-api_router.include_router(avbase.router, prefix="/avbase", tags=["avbase"])
-api_router.include_router(fanza.router, prefix="/fanza", tags=["fanza"])
-api_router.include_router(emby.router, prefix="/emby", tags=["emby"])
-api_router.include_router(system.router, prefix="/system", tags=["system"])
-api_router.include_router(
-    schedule.router, prefix="/background_task", tags=["background_task"]
-)
-api_router.include_router(fc2.router, prefix="/fc2", tags=["fc2"])
-api_router.include_router(statistic.router, prefix="/statistic", tags=["statistic"])
+
+protected_routers = [
+    (subscribe.router, "/feed", ["feed"]),
+    (prowlarr.router, "/prowlarr", ["prowlarr"]),
+    (qbittorrent.router, "/downloader", ["downloader"]),
+    (avbase.router, "/avbase", ["avbase"]),
+    (fanza.router, "/fanza", ["fanza"]),
+    (emby.router, "/emby", ["emby"]),
+    (system.router, "/system", ["system"]),
+    (schedule.router, "/background_task", ["background_task"]),
+    (fc2.router, "/fc2", ["fc2"]),
+    (statistic.router, "/statistic", ["statistic"]),
+]
+
+for r, prefix, tags in protected_routers:
+    api_router.include_router(
+        r, prefix=prefix, tags=tags, dependencies=[Depends(token_interceptor)]
+    )

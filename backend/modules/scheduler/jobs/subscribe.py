@@ -25,7 +25,7 @@ def _get_actor_name_from_db(db: Session, work_id: str):
 async def _refresh_movie_feeds():
     try:
 
-        from modules.metadata.prowlarr import _prowlarr_instance
+        from modules.indexer.prowlarr import _prowlarr_instance
         from modules.downloader.qbittorrent import _qb_instance
 
         save_path = Path(_config.get("DOWNLOAD_PATH", ""))
