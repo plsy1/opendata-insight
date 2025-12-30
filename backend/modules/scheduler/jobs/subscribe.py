@@ -1,13 +1,13 @@
 import asyncio
 from database import get_db
 from config import _config
-from utils.logs import LOG_ERROR
+from utils.logs import LOG_ERROR,LOG_INFO
 from datetime import datetime
 from services.subscribe import *
 from services.telegram import *
 from services.avbase import *
 from pathlib import Path
-
+from datetime import date, timedelta, datetime
 
 def _get_actor_name_from_db(db: Session, work_id: str):
 
@@ -35,8 +35,14 @@ async def _refresh_movie_feeds():
 
         if not feeds:
             return
+        
+        yesterday = date.today() - timedelta(days=1)
 
         for feed in feeds:
+            min_date = datetime.strptime(feed.min_date, "%Y-%m-%d").date()
+            if yesterday < min_date:
+                LOG_INFO("[Scheduler] Skipping torrent fetch:", feed.work_id)
+                continue
             work_id = feed.work_id
             search_data = await _prowlarr_instance.search(
                 query=work_id, page=1, page_size=5
@@ -102,13 +108,19 @@ async def _refresh_actor_feeds():
 
             item = valid_items[-1]
 
-            await get_information_by_work_id_service(db, item.full_id)
+            records = db.query(MovieData).filter(MovieData.work_id == item.id).first()
 
-            movie_subscribe_service(db, MovieFeedOperation.ADD, item.id)
+            if not records:
 
-            await send_movie_download_message_by_work_id(
-                db, item.id, DownloadStatus.ADD_SUBSCRIBE
-            )
+                await get_information_by_work_id_service(db, item.full_id)
+
+                movie_subscribe_service(db, MovieFeedOperation.ADD, item.id)
+
+                await send_movie_download_message_by_work_id(
+                    db, item.id, DownloadStatus.ADD_SUBSCRIBE
+                )
+
+                LOG_INFO("[Scheduler] Add Movie subscribe",item.id)
 
             await asyncio.sleep(5)
 
@@ -119,5 +131,6 @@ async def _refresh_actor_feeds():
 
 
 async def refresh_feeds():
+    LOG_INFO("[Scheduler] Starting feed refresh")
     await _refresh_actor_feeds()
     await _refresh_movie_feeds()

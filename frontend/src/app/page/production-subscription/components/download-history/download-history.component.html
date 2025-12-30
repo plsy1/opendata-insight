@@ -4,6 +4,7 @@
       [id]="movie.work_id"
       [title]="movie.title"
       [imgUrl]="movie.products[0].image_url || ''"
+      [releaseDate]="movie.min_date || ''"
       [actors]="getActorNames(movie.casts)"
       (movieClick)="posterClick(movie.prefix, movie.work_id)"
       (movieDelete)="onUnsubscribeClick()"
