@@ -114,13 +114,7 @@ async def init_scheduler_service() -> AppScheduler:
                 name="update fc2 ranking",
                 hours=3,
             )
-            _scheduler_service.add_job(
-                update_avbase_release_everyday,
-                trigger=IntervalTrigger,
-                name="update avbase everyday release",
-                hours=12,
-            )
-
+            
             LOG_INFO("AppScheduler initialized with default jobs")
     return _scheduler_service
 
