@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException, Body, Query, Response, status
+from fastapi import APIRouter, HTTPException, Body, Query, Response, status, Depends
 from fastapi.responses import StreamingResponse
 from services.system import *
 from config import _config
+from .dependencies.auth_dependencies import token_interceptor
 
 router = APIRouter()
 
@@ -13,6 +14,7 @@ async def get_image(token: str = Query(...)):
     except ValueError:
         raise HTTPException(status_code=403, detail="Invalid token")
     import time
+
     if payload.exp < int(time.time()):
         raise HTTPException(status_code=403, detail="Token expired")
     content, headers = await fetch_and_cache_image(payload.url)
@@ -20,12 +22,13 @@ async def get_image(token: str = Query(...)):
 
 
 @router.get("/get_environment")
-async def get_app_environment():
+async def get_app_environment(dep: None = Depends(token_interceptor)):
     return _config.get_environment()
+
 
 @router.post("/update_environment")
 async def update_environment(
-    env: dict = Body(...), 
+    env: dict = Body(...), dep: None = Depends(token_interceptor)
 ):
     try:
         _config.set(env)

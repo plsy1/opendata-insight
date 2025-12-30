@@ -18,6 +18,7 @@ from .dependencies.auth_dependencies import token_interceptor
 api_router = APIRouter()
 
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(system.router, prefix="/system", tags=["system"])
 
 protected_routers = [
     (subscribe.router, "/feed", ["feed"]),
@@ -26,7 +27,6 @@ protected_routers = [
     (avbase.router, "/avbase", ["avbase"]),
     (fanza.router, "/fanza", ["fanza"]),
     (emby.router, "/emby", ["emby"]),
-    (system.router, "/system", ["system"]),
     (schedule.router, "/background_task", ["background_task"]),
     (fc2.router, "/fc2", ["fc2"]),
     (statistic.router, "/statistic", ["statistic"]),
