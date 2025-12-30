@@ -1,7 +1,7 @@
 # Kanojo
 
 <div align="center">
-    <img src="images/favicon.png" alt="logo" width="100">
+    <img src="images/favicon.ico" alt="logo" width="100">
 </div>
 
 ## **部署**
