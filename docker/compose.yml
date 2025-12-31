@@ -34,7 +34,8 @@ services:
     container_name: kanojo
     restart: unless-stopped
     volumes:
-      - ./data/kanojo:/app/data
+      - ./data/kanojo:/app/backend/data
+      - ./runtime:/app/runtime
     ports:
       - "12450:80"
     environment:

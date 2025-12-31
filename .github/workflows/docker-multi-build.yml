@@ -36,40 +36,40 @@ jobs:
           cache-from: type=registry,ref=plsy1/kanojo:buildcache
           cache-to: type=registry,ref=plsy1/kanojo:buildcache,mode=max
 
-  docker-arm64:
-    runs-on: ubuntu-latest
-    needs: []
-    outputs:
-      ts: ${{ steps.timestamp.outputs.ts }}
-    steps:
-      - uses: actions/checkout@v2
+  # docker-arm64:
+  #   runs-on: ubuntu-latest
+  #   needs: []
+  #   outputs:
+  #     ts: ${{ steps.timestamp.outputs.ts }}
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Get timestamp
-        id: timestamp
-        run: echo "ts=$(date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
+  #     - name: Get timestamp
+  #       id: timestamp
+  #       run: echo "ts=$(date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
 
-      - uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+  #     - uses: docker/login-action@v3
+  #       with:
+  #         username: ${{ secrets.DOCKER_USERNAME }}
+  #         password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - uses: docker/setup-qemu-action@v3
-      - uses: docker/setup-buildx-action@v3
+  #     - uses: docker/setup-qemu-action@v3
+  #     - uses: docker/setup-buildx-action@v3
 
-      - uses: docker/build-push-action@v6
-        with:
-          file: ./docker/Dockerfile
-          push: true
-          platforms: linux/arm64
-          tags: |
-            plsy1/kanojo:${{ steps.timestamp.outputs.ts }}-arm64
-            plsy1/kanojo:latest-arm64
-          cache-from: type=registry,ref=plsy1/kanojo:buildcache
-          cache-to: type=registry,ref=plsy1/kanojo:buildcache,mode=max
+  #     - uses: docker/build-push-action@v6
+  #       with:
+  #         file: ./docker/Dockerfile
+  #         push: true
+  #         platforms: linux/arm64
+  #         tags: |
+  #           plsy1/kanojo:${{ steps.timestamp.outputs.ts }}-arm64
+  #           plsy1/kanojo:latest-arm64
+  #         cache-from: type=registry,ref=plsy1/kanojo:buildcache
+  #         cache-to: type=registry,ref=plsy1/kanojo:buildcache,mode=max
 
   docker-manifest:
     runs-on: ubuntu-latest
-    needs: [docker-amd64, docker-arm64]
+    needs: [docker-amd64]
     steps:
       - uses: docker/login-action@v3
         with:
@@ -80,5 +80,5 @@ jobs:
         run: |
           docker buildx imagetools create \
             --tag plsy1/kanojo:latest \
-            plsy1/kanojo:latest-amd64 \
-            plsy1/kanojo:latest-arm64
+            plsy1/kanojo:latest-amd64
+
