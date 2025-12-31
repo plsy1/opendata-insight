@@ -13,11 +13,13 @@ COPY requirements.txt .
 RUN python3 -m pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-RUN playwright install-deps chromium \
-    && playwright install chromium \
-    && apt-get autoremove -y \
-    && apt-get clean \
-    && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+# RUN playwright install-deps chromium \
+#     && playwright install chromium \
+#     && apt-get autoremove -y \
+#     && apt-get clean \
+#     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+
+ENV PLAYWRIGHT_BROWSERS_PATH=/app/runtime
 
 COPY backend /app/backend
 
