@@ -13,11 +13,45 @@ COPY requirements.txt .
 RUN python3 -m pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
-# RUN playwright install-deps chromium \
-#     && playwright install chromium \
-#     && apt-get autoremove -y \
-#     && apt-get clean \
-#     && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    fonts-liberation \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libdrm2 \
+    libgbm1 \
+    libglib2.0-0 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libx11-6 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxext6 \
+    libxfixes3 \
+    libxrandr2 \
+    libxi6 \
+    libxrender1 \
+    libxshmfence1 \
+    libasound2 \
+    libatspi2.0-0 \
+    libpangocairo-1.0-0 \
+    libpango-1.0-0 \
+    libx11-xcb1 \
+    libxkbfile1 \
+    libxcb1 \
+    libxmu6 \
+    fonts-ipafont-gothic \
+    fonts-wqy-zenhei \
+    fonts-noto-color-emoji \
+    fontconfig \
+    libfontconfig1 \
+    libfreetype6 \
+    libfribidi0 \
+    libgraphite2-3 \
+    libharfbuzz0b \
+    libdatrie1
 
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/runtime
 
