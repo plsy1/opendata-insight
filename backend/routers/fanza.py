@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from modules.metadata.fanza.model import RankingType
 from modules.metadata.fanza import *
 from services.system import replace_domain_in_value
@@ -12,7 +12,9 @@ async def fetch_actress(page: int = 1):
         result = await fetch_actress_ranking(page)
         return replace_domain_in_value(result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}"
+        )
 
 
 @router.get("/monthlyworks")
@@ -21,4 +23,6 @@ async def fetch_dvd_ranking(page: int = 1, term: RankingType = RankingType.month
         result = await fetch_movie_ranking(page, term)
         return replace_domain_in_value(result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}"
+        )

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from services.emby import *
 from database import get_db
@@ -13,7 +13,7 @@ async def get_item_counts():
         result = await get_item_counts_service()
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}")
 
 
 @router.get("/get_resume")
@@ -22,7 +22,7 @@ async def get_resume():
         result = await get_resume_items_service()
         return replace_domain_in_value(result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}")
 
 
 @router.get("/get_latest")
@@ -31,7 +31,7 @@ async def get_latest():
         result = await get_latest_items_service()
         return replace_domain_in_value(result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}")
 
 
 @router.get("/get_views")
@@ -40,7 +40,7 @@ async def get_latest():
         result = await get_views_service()
         return replace_domain_in_value(result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}")
 
 
 @router.get("/get_all")
@@ -49,7 +49,7 @@ async def get_latest():
         result = await get_all_movies_service()
         return replace_domain_in_value(result)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}")
 
 
 @router.get("/exists")
@@ -60,4 +60,4 @@ async def exists(
         result = await exists_service(db, title)
         return result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed: {e}")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}")

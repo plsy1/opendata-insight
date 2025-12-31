@@ -17,15 +17,20 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @Component({
   selector: 'app-download',
   standalone: true,
-  imports: [CommonModule,
-        MatCardModule,MatIcon,
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatIcon,
     MatProgressBarModule,
     MatGridListModule,
-    MatProgressSpinnerModule,SpeedPipe,EtaPipe,FileSizePipe,MatTooltipModule
-
+    MatProgressSpinnerModule,
+    SpeedPipe,
+    EtaPipe,
+    FileSizePipe,
+    MatTooltipModule,
   ],
   templateUrl: './download.component.html',
-  styleUrls: ['./download.component.css']
+  styleUrls: ['./download.component.css'],
 })
 export class DownloadComponent implements OnInit, OnDestroy {
   torrents: DownloadingTorrent[] = [];
@@ -33,34 +38,33 @@ export class DownloadComponent implements OnInit, OnDestroy {
 
   constructor(private downloadService: DownloadService) {}
 
-ngOnInit() {
-  this.downloadService.getDownloadingTorrents().subscribe({
-    next: (data) => (this.torrents = data),
-    error: (err) => console.error('Failed to load torrents', err),
-  });
-
-  this.refreshSub = interval(3000)
-    .pipe(switchMap(() => this.downloadService.getDownloadingTorrents()))
-    .subscribe({
+  ngOnInit() {
+    this.downloadService.getDownloadingTorrents().subscribe({
       next: (data) => (this.torrents = data),
       error: (err) => console.error('Failed to load torrents', err),
     });
-}
+
+    this.refreshSub = interval(3000)
+      .pipe(switchMap(() => this.downloadService.getDownloadingTorrents()))
+      .subscribe({
+        next: (data) => (this.torrents = data),
+        error: (err) => console.error('Failed to load torrents', err),
+      });
+  }
 
   loadTorrents(): void {
     this.downloadService.getDownloadingTorrents().subscribe({
       next: (data) => (this.torrents = data),
-      error: (err) => console.error(err)
+      error: (err) => console.error(err),
     });
   }
 
   deleteTorrent(hash: string): void {
     this.downloadService.deleteTorrent(hash).subscribe({
       next: () => {
-        // 删除后刷新列表
         this.loadTorrents();
       },
-      error: (err) => console.error('Failed to delete torrent:', err)
+      error: (err) => console.error('Failed to delete torrent:', err),
     });
   }
 
