@@ -3,17 +3,20 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 480px;
+  border-radius: 8px;
+  padding: 20px;
+  box-sizing: border-box;
+  max-width: 500px;
   width: 90vw;
   max-height: 80vh;
-  overflow: auto;
+  height: auto;
+  background-color: var(--app-background);
+  opacity: 0.8;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  border: var(--border-color) 1px solid;
-  
+  overflow: hidden;
+  padding-bottom: 20px;
+  border: rgba(0, 0, 0, 0.2) 1px solid;
 }
 
 .dialog-body {
@@ -115,3 +118,4 @@ mat-form-field {
   text-align: center;
   user-select: none;
 }
+

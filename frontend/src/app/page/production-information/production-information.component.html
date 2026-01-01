@@ -31,41 +31,49 @@
     <div class="movie-right">
       <h2>Options</h2>
       <div class="movie-actions">
-        <button
-          mat-icon-button
+        <div
+          class="action-item"
+          role="button"
+          tabindex="0"
+          matTooltip="Search"
           (click)="downloadMovie()"
-          matTooltip="搜索"
-          aria-label="搜索"
         >
-          <i class="fas fa-search"></i> Search
-        </button>
+          <mat-icon>search</mat-icon>
+          <span>Search</span>
+        </div>
 
-        <button
-          mat-icon-button
+        <div
+          class="action-item"
+          role="button"
+          tabindex="0"
+          matTooltip="Subscribe"
           (click)="subscribeToMovie()"
-          matTooltip="订阅"
-          aria-label="订阅"
         >
-          <i class="fas fa-rss"></i> Subscribe
-        </button>
+          <mat-icon>rss_feed</mat-icon>
+          <span>Subscribe</span>
+        </div>
 
-        <button
-          mat-icon-button
-          (click)="toJable(movieData.work_id)"
+        <div
+          class="action-item"
+          role="button"
+          tabindex="0"
           matTooltip="Jable"
-          aria-label="Jable"
+          (click)="toJable(movieData.work_id)"
         >
-          <i class="fas fa-play-circle"></i> Jable
-        </button>
+          <mat-icon>play_circle</mat-icon>
+          <span>Jable</span>
+        </div>
 
-        <button
-          mat-icon-button
-          (click)="toMissAV(movieData.work_id)"
+        <div
+          class="action-item"
+          role="button"
+          tabindex="0"
           matTooltip="MissAV"
-          aria-label="MissAV"
+          (click)="toMissAV(movieData.work_id)"
         >
-          <i class="fas fa-video"></i> MissAV
-        </button>
+          <mat-icon>videocam</mat-icon>
+          <span>MissAV</span>
+        </div>
       </div>
 
       <h2>Details</h2>

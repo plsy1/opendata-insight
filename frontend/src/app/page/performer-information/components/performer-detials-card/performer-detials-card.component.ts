@@ -96,4 +96,5 @@ export class ActressInformationComponent {
         return 'fab fa-wikipedia-w';
     }
   }
+
 }

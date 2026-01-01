@@ -8,27 +8,23 @@
         class="actress-avatar-img"
       />
       <div class="action-icons">
-        <button
-          mat-icon-button
+        <i
+          class="fas fa-rss action-icon"
           (click)="subscribeActor()"
           matTooltip="Add to Feed"
-        >
-          <i class="fas fa-rss"></i>
-        </button>
-        <button
-          mat-icon-button
+        ></i>
+
+        <i
+          class="fas fa-heart action-icon"
           (click)="collectActor()"
           matTooltip="Add to Collection"
-        >
-          <i class="fas fa-heart"></i>
-        </button>
-        <button
-          mat-icon-button
+        ></i>
+
+        <i
+          class="fas fa-search action-icon"
           (click)="searchByName()"
           matTooltip="Search Torrents"
-        >
-          <i class="fas fa-search"></i>
-        </button>
+        ></i>
       </div>
     </div>
 
@@ -41,10 +37,10 @@
             *ngIf="platform.platform !== 'RSS'"
             [href]="platform.link"
             target="_blank"
+            rel="noopener"
+            class="social-link"
           >
-            <button mat-icon-button>
-              <i [ngClass]="getFaIcon(platform.platform)"></i>
-            </button>
+            <i [ngClass]="getFaIcon(platform.platform)" class="social-icon"></i>
           </a>
         </div>
       </div>

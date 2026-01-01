@@ -21,8 +21,11 @@
       </mat-autocomplete>
     </mat-form-field>
 
-    <div class="search-type-buttons">
-      <button mat-raised-button (click)="download()">Download</button>
-    </div>
+    <button mat-button (click)="download()" class="search-button">
+      <div class="button-content">
+        <mat-icon class="icon-left">download</mat-icon>
+        <span class="label-text">Download</span>
+      </div>
+    </button>
   </div>
 </div>

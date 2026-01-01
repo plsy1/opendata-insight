@@ -1,18 +1,13 @@
 <div class="pagination-buttons">
   <mat-icon
     class="pagination-icon"
-    (click)="page > 1 && onPrevious()"
-    [class.disabled]="page <= 1"
+    (click)="onPrevious()"
     aria-label="Previous Page"
   >
     chevron_left
   </mat-icon>
 
-  <mat-icon
-    class="pagination-icon"
-    (click)="onNext()"
-    aria-label="Next Page"
-  >
+  <mat-icon class="pagination-icon" (click)="onNext()" aria-label="Next Page">
     chevron_right
   </mat-icon>
 </div>

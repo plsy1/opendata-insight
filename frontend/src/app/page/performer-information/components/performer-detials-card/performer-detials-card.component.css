@@ -5,8 +5,6 @@
   padding: 24px;
   margin-bottom: 16px;
   width: 100%;
-  
-    border: var(--border-color) 1px solid;
 }
 
 .performer-content-wrapper {
@@ -54,15 +52,37 @@
   margin-top: 16px;
 }
 
+.action-icon {
+  cursor: pointer;
+  font-size: 20px;
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.action-icon:hover {
+  transform: scale(1.1);
+}
+
 .social-icons {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 16px;
 }
-.social-icons a {
+
+.social-link {
   text-decoration: none;
 }
+
+.social-icon {
+  cursor: pointer;
+  font-size: 20px;
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.social-icon:hover {
+  transform: scale(1.1);
+}
+
 
 .actress-info {
   display: flex;
@@ -105,19 +125,4 @@
     text-align: left;
     align-items: flex-start;
   }
-}
-
-button[mat-icon-button] {
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: transform 0.2s;
-    border: none
-}
-
-button[mat-icon-button]:hover {
-  transform: scale(1.1);
 }

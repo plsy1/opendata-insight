@@ -11,6 +11,7 @@ import { CommonService } from '../../../../common.service';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
 import { lastValueFrom } from 'rxjs';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-download-option',
@@ -24,7 +25,7 @@ import { lastValueFrom } from 'rxjs';
     MatSelectModule,
     CommonModule,
     MatAutocompleteModule,
-    MatOptionModule,
+    MatOptionModule,MatIcon
   ],
 })
 export class DownloadOptionComponent {

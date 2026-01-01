@@ -12,6 +12,7 @@ import { CommonService } from '../../common.service';
 import { MovieData } from './models/movie-data.interface';
 import { createDefaultMovieInformation } from './utils/default-movie-info';
 
+
 @Component({
   selector: 'app-production-information',
   standalone: true,
