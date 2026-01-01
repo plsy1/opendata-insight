@@ -2,9 +2,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: var(--app-background);
-  color: var(--text-color);
-  border: var(--border-color) 1px solid;
 }
 
 .stats-card mat-card-header {
@@ -28,8 +25,6 @@
   display: flex;
   align-items: center;
   padding: 8px 12px;
-  background-color: var(--app-background);
-  border: var(--border-color) 1px solid;
   transition: transform 0.2s ease;
 }
 

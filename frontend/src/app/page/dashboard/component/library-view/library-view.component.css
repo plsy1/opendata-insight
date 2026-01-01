@@ -1,8 +1,6 @@
 .views-card {
   display: flex;
   flex-direction: column;
-  background-color: var(--app-background);
-  border: 1px solid var(--border-color);
 }
 
 .items-grid {

@@ -1,7 +1,7 @@
 .tasks-card {
   flex: 1 1 100%;
   margin: 0 auto;
-  background-color: var(--app-background);
+  
   overflow-x: hidden;
 }
 

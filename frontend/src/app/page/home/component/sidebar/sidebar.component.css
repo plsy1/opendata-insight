@@ -1,19 +1,17 @@
 .sidenav-container {
   height: 100%;
-  background-color: var(--app-background);
 }
 
 .sidenav {
-  width: 200px;
+  width: 150px;
   background-color: var(--app-background);
+  color: var(--mdc-theme-on-background);
 }
 
 i {
   margin-right: 20px;
   vertical-align: middle;
-  color: var(--text-color);
 }
-
 span {
-  color: var(--text-color);
+  font-size: small;
 }

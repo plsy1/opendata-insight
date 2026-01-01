@@ -1,8 +1,8 @@
 mat-card {
   flex: 1 1 300px;
   padding: 1rem;
-  background-color: var(--app-background);
-  border: 1px solid var(--border-color);
+  
+  
   margin: 10px;
 }
 

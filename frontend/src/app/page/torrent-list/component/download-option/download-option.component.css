@@ -16,7 +16,7 @@
   overflow: hidden;
   padding-bottom: 20px;
   border: var(--border-color) 1px solid;
-  background-color: var(--app-background);
+  
 }
 
 .mat-autocomplete-panel {
