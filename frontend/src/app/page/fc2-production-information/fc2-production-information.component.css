@@ -1,6 +1,6 @@
 .thetop {
   display: grid;
-  height: 100%; 
+  height: 100%;
 }
 
 /* =====================
@@ -53,31 +53,26 @@
   gap: 4px;
 }
 
-/* =====================
-   操作按钮区（拉开层次）
-===================== */
-.movie-actions {
+.action-icons {
   display: flex;
-  gap: 8px;
-  padding: 12px 8px 8px;
-  border-top: 1px dashed rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: left;
+  margin-top: 16px;
 }
 
-.movie-actions button[mat-icon-button] {
-  flex: 1;
-  height: 40px;
-  border-radius: 8px;
-  transition: transform 0.2s ease;
+.action-icon {
+  cursor: pointer;
+  font-size: 20px;
+  transition: color 0.2s ease, transform 0.1s ease;
 }
 
-.movie-actions button[mat-icon-button]:hover {
-  transform: translateY(-2px);
+.action-icon:hover {
+  transform: scale(1.1);
 }
 
 .sample-images {
- height: 100%;
+  height: 100%;
   overflow: hidden;
   padding-top: 10px;
 }
@@ -98,7 +93,6 @@
   width: auto;
   object-fit: cover;
 }
-
 
 @media (max-width: 480px) {
   .movie-card {

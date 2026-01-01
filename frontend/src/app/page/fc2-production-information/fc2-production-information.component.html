@@ -24,19 +24,26 @@
         </span>
       </div>
 
-      <div class="movie-actions">
-        <button mat-icon-button matTooltip="搜索" (click)="onSearchClick()">
-          <i class="fas fa-search"></i> Search
-        </button>
-        <button mat-icon-button matTooltip="订阅" (click)="onSubscribeClick()">
-          <i class="fas fa-rss"></i> Subscribe
-        </button>
-        <button mat-icon-button matTooltip="Supjav" (click)="toSupjav()">
-          <i class="fas fa-play-circle"></i> Supjav
-        </button>
-        <button mat-icon-button matTooltip="MissAV" (click)="toMissAV()">
-          <i class="fas fa-video"></i> MissAV
-        </button>
+      <div class="action-icons">
+        <div class="action-item" (click)="onSearchClick()" matTooltip="搜索">
+          <i class="fas fa-search action-icon"></i>
+          <span class="action-label">Search</span>
+        </div>
+
+        <div class="action-item" (click)="onSubscribeClick()" matTooltip="订阅">
+          <i class="fas fa-rss action-icon"></i>
+          <span class="action-label">Subscribe</span>
+        </div>
+
+        <div class="action-item" (click)="toSupjav()" matTooltip="Supjav">
+          <i class="fas fa-play-circle action-icon"></i>
+          <span class="action-label">Supjav</span>
+        </div>
+
+        <div class="action-item" (click)="toMissAV()" matTooltip="MissAV">
+          <i class="fas fa-video action-icon"></i>
+          <span class="action-label">MissAV</span>
+        </div>
       </div>
     </div>
   </div>
