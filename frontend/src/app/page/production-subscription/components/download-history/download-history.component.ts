@@ -59,7 +59,21 @@ export class DownloadHistoryComponent {
       }
     );
   }
-  getActorNames(actors: any[] = []): string[] {
-    return actors.map((a) => a.name);
+  getActorNames(movie: any): string[] {
+    const actors = movie.actors || [];
+    const casts = movie.casts || [];
+
+    const names: string[] = [];
+    const seen = new Set<string>();
+
+    for (const a of [...actors, ...casts]) {
+      const name = a?.name?.trim();
+      if (name && !seen.has(name)) {
+        seen.add(name);
+        names.push(name);
+      }
+    }
+
+    return names;
   }
 }
