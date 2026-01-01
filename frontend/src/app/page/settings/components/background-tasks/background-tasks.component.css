@@ -1,23 +1,31 @@
 .tasks-card {
+  flex: 1 1 100%;
   margin: 0 auto;
   background-color: var(--app-background);
+  overflow-x: hidden;
 }
 
 .table-wrapper {
+  width: 100%;
   overflow-x: auto;
 }
 
 table {
   width: 100%;
-}
-
-th {
-  font-weight: 600;
+  table-layout: fixed;
 }
 
 td,
 th {
   padding: 12px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.mat-column-action {
+  width: 100px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .empty-state {
