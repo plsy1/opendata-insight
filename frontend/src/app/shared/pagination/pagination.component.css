@@ -4,17 +4,18 @@
   gap: 12px;
   justify-content: right;
 }
-button[mat-icon-button] {
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: transform 0.2s;
-    border: var(--border-color) 1px solid;
+
+.pagination-icon {
+  cursor: pointer;
+  font-size: 28px;
+  transition: color 0.2s, transform 0.1s;
 }
 
-button[mat-icon-button]:hover {
+.pagination-icon:hover {
   transform: scale(1.1);
+}
+
+.pagination-icon.disabled {
+  color: #aaa;
+  pointer-events: none;
 }
