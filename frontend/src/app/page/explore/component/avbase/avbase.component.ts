@@ -90,9 +90,9 @@ export class AvbaseComponent implements OnInit {
     }
   }
 
-  async posterClick(prefix: string, work_id: string) {
+  async posterClick(work_id: string) {
     try {
-      this.router.navigate(['/production', prefix + ':' + work_id]);
+      this.router.navigate(['/production', work_id]);
     } catch (error) {
       console.error('Failed:', error);
     }
@@ -112,7 +112,4 @@ export class AvbaseComponent implements OnInit {
     this.loadEverydayReleaseData();
   }
 
-  getActorNames(actors: any[] = []): string[] {
-    return actors.map((a) => a.name);
-  }
 }

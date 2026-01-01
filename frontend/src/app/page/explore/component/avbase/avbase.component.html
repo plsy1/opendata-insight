@@ -28,7 +28,7 @@
       [alt]="actress.name"
       class="avatar-img"
       loading="lazy"
-            [class.blurred]="PageExploreService.isEnableBlur$() | async"
+      [class.blurred]="PageExploreService.isEnableBlur$() | async"
     />
     <div>{{ actress.name }}</div>
   </div>
@@ -46,11 +46,11 @@
   <div class="poster-grid">
     <app-movie-card
       *ngFor="let work of group.works"
-      [id]="work.work_id"
+      [id]="work.id"
       [title]="work.title"
-      [imgUrl]="work.products[0].image_url || ''"
-      [actors]="getActorNames(work.actors)"
-      (movieClick)="posterClick(work.prefix,work.work_id)"
+      [imgUrl]="work.img_url"
+      [actors]="work.actors"
+      (movieClick)="posterClick(work.full_id)"
       [enableBlur]="PageExploreService.isEnableBlur$() | async"
     ></app-movie-card>
   </div>

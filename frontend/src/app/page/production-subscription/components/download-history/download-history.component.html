@@ -1,12 +1,12 @@
 <div class="poster-grid">
   <div class="poster-wrapper" *ngFor="let movie of keywordFeeds">
     <app-movie-card
-      [id]="movie.work_id"
+      [id]="movie.id"
       [title]="movie.title"
-      [imgUrl]="movie.products[0].image_url || ''"
-      [releaseDate]="movie.min_date || ''"
-      [actors]="getActorNames(movie)"
-      (movieClick)="posterClick(movie.prefix, movie.work_id)"
+      [imgUrl]="movie.img_url || ''"
+      [releaseDate]="movie.release_date || ''"
+      [actors]="movie.actors"
+      (movieClick)="posterClick(movie.full_id)"
       (movieDelete)="onUnsubscribeClick()"
       [showID]="true"
       [showDetialButton]="true"

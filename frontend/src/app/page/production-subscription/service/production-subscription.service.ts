@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CommonService } from '../../../common.service';
-import { MovieData } from '../../../models/movie-data.interface';
+import { MoviePoster } from '../../../models/movie-data.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -9,12 +9,12 @@ import { MovieData } from '../../../models/movie-data.interface';
 export class ProductionSubscriptionService {
   constructor(private common: CommonService) {}
 
-  getKeywordFeeds(): Observable<MovieData[]> {
-    return this.common.request<MovieData[]>('GET', 'feed/movieSubscribe');
+  getKeywordFeeds(): Observable<MoviePoster[]> {
+    return this.common.request<MoviePoster[]>('GET', 'feed/movieSubscribe');
   }
 
-  getDownloadedKeywordsFeedListGet(): Observable<MovieData[]> {
-    return this.common.request<MovieData[]>('GET', 'feed/movieDownloaded');
+  getDownloadedKeywordsFeedListGet(): Observable<MoviePoster[]> {
+    return this.common.request<MoviePoster[]>('GET', 'feed/movieDownloaded');
   }
   isEnableBlur$(): Observable<boolean> {
     return this.common.enableBlur$;

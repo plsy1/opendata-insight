@@ -1,9 +1,11 @@
 from database import ActorData, MovieData, MovieSubscribe, ActorSubscribe
-from schemas.movies import MovieDataOut
+from schemas.movies import MovieDataOut, MovieProductOut
+from copy import deepcopy
 from utils.logs import LOG_ERROR
-from services.avbase import get_actor_information_by_name_service
+from services.avbase import get_actor_information_by_name_service, MoviePoster
 from sqlalchemy.orm import selectinload, Session
 from enum import Enum
+
 
 class Operation(str, Enum):
     SUBSCRIBE = "subscribe"
@@ -78,8 +80,7 @@ async def actor_operation_service(
 
 
 def movie_subscribe_list_service(
-    db: Session,
-    status: MovieStatus
+    db: Session, status: MovieStatus
 ) -> list[MovieDataOut]:
 
     downloaded_flag = status == MovieStatus.DOWNLOADED
@@ -92,16 +93,39 @@ def movie_subscribe_list_service(
         .all()
     )
 
-    result: list[MovieDataOut] = []
+    posters: list[MoviePoster] = []
 
     for sub in subs:
         movie = sub.movie
-
         movie_out = MovieDataOut.model_validate(movie)
 
-        result.append(movie_out)
+        if not movie_out.products:
+            continue
 
-    return result
+        merged_product = _merge_products(movie_out.products)
+
+        img_url = merged_product.image_url
+        if not img_url and merged_product.thumbnail_url:
+            img_url = merged_product.thumbnail_url.replace("ps.jpg", "pl.jpg")
+
+        actor_names = {
+            actor.get("name")
+            for actor in (movie_out.actors + movie_out.casts)
+            if actor.get("name")
+        }
+
+        poster = MoviePoster(
+            id=movie_out.work_id,
+            full_id = f"{movie_out.prefix}:{movie_out.work_id}",
+            title=merged_product.title or movie_out.title,
+            release_date=merged_product.date or movie_out.min_date or "",
+            img_url=img_url or "",
+            actors=list(actor_names),
+        )
+
+        posters.append(poster)
+
+    return posters
 
 
 def actor_list_service(
@@ -178,3 +202,30 @@ def _mark_movie_downloaded(db: Session, movie: MovieData) -> bool:
 
     db.commit()
     return True
+
+
+def _merge_products(products: list[MovieProductOut]) -> MovieProductOut:
+    if not products:
+        return None
+
+    merged = deepcopy(products[0])
+
+    for prod in products[1:]:
+        for field, value in prod.model_dump().items():
+            current_value = getattr(merged, field)
+
+            if isinstance(value, list):
+                value = value or []
+                current_value = current_value or []
+                merged_list = current_value + [
+                    v for v in value if v not in current_value
+                ]
+                setattr(merged, field, merged_list)
+            else:
+                if (current_value is None or current_value == "") and value not in (
+                    None,
+                    "",
+                ):
+                    setattr(merged, field, value)
+
+    return merged

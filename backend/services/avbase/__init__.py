@@ -4,6 +4,7 @@ from schemas.movies import MovieDataOut, MovieProductOut
 from sqlalchemy.orm import Session
 from database import ActorData, avbaseNewbie, avbasePopular, MovieData, MovieProduct
 from sqlalchemy.orm import selectinload
+from copy import deepcopy
 
 
 async def get_movie_list_by_actor_name_service(
@@ -95,11 +96,13 @@ async def get_information_by_work_id_service(db: Session, full_id: str) -> Movie
         db.refresh(movie)
 
     movie_out = MovieDataOut.model_validate(movie)
+    merged_product = _merge_products(movie_out.products)
 
-    if not movie_out.products[0].image_url:
-        movie_out.products[0].image_url = movie_out.products[0].thumbnail_url.replace(
-            "ps.jpg", "pl.jpg"
-        )
+    img_url = merged_product.image_url
+    if not img_url and merged_product.thumbnail_url:
+        img_url = merged_product.thumbnail_url.replace("ps.jpg", "pl.jpg")
+
+    movie_out.products = [merged_product]
 
     return movie_out
 
@@ -174,14 +177,31 @@ async def get_release_service(db: Session, date_str: str):
             continue
 
         movie_out = MovieDataOut.model_validate(movie)
+        merged_product = _merge_products(movie_out.products)
 
-        first_product = movie_out.products[0]
+        img_url = merged_product.image_url
+        if not img_url and merged_product.thumbnail_url:
+            img_url = merged_product.thumbnail_url.replace("ps.jpg", "pl.jpg")
 
-        maker = first_product.maker or "Unknown"
+        actor_names = {
+            actor.get("name")
+            for actor in (movie_out.actors + movie_out.casts)
+            if actor.get("name")
+        }
 
-        movie_out.products = [first_product]
+        full_id = f"{movie_out.prefix}:{movie_out.work_id}"
 
-        categorized[maker].append(movie_out.model_dump())
+        poster = MoviePoster(
+            id=movie.work_id,
+            full_id=full_id,
+            title=merged_product.title or movie_out.title,
+            release_date=merged_product.date or movie_out.min_date or "",
+            img_url=img_url or "",
+            actors=list(actor_names),
+        )
+
+        maker = merged_product.maker or "Unknown"
+        categorized[maker].append(poster.model_dump())
 
     result = [
         {"maker": maker, "works": works}
@@ -192,10 +212,31 @@ async def get_release_service(db: Session, date_str: str):
         )
     ]
 
-    for group in result:
-        for work in group["works"]:
-            p = work["products"][0]
-            if not p.get("image_url") and p.get("thumbnail_url"):
-                p["image_url"] = p["thumbnail_url"].replace("ps.jpg", "pl.jpg")
-
     return result
+
+
+def _merge_products(products: list[MovieProductOut]) -> MovieProductOut:
+    if not products:
+        return None
+
+    merged = deepcopy(products[0])
+
+    for prod in products[1:]:
+        for field, value in prod.model_dump().items():
+            current_value = getattr(merged, field)
+
+            if isinstance(value, list):
+                value = value or []
+                current_value = current_value or []
+                merged_list = current_value + [
+                    v for v in value if v not in current_value
+                ]
+                setattr(merged, field, merged_list)
+            else:
+                if (current_value is None or current_value == "") and value not in (
+                    None,
+                    "",
+                ):
+                    setattr(merged, field, value)
+
+    return merged

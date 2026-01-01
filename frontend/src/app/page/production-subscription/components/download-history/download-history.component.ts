@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ProductionSubscriptionService } from '../../service/production-subscription.service';
 import { CommonModule } from '@angular/common';
-import { MovieData } from '../../../../models/movie-data.interface';
+import { MoviePoster } from '../../../../models/movie-data.interface';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
@@ -21,7 +21,7 @@ import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.com
   styleUrl: './download-history.component.css',
 })
 export class DownloadHistoryComponent {
-  keywordFeeds: MovieData[] = [];
+  keywordFeeds: MoviePoster[] = [];
   constructor(
     public ProductionSubscriptionService: ProductionSubscriptionService,
     private router: Router
@@ -30,7 +30,7 @@ export class DownloadHistoryComponent {
   ngOnInit(): void {
     this.ProductionSubscriptionService.getDownloadedKeywordsFeedListGet().subscribe(
       {
-        next: (data: MovieData[]) => {
+        next: (data: MoviePoster[]) => {
           this.keywordFeeds = data;
         },
         error: (error) => {
@@ -39,9 +39,9 @@ export class DownloadHistoryComponent {
       }
     );
   }
-  async posterClick(prefix: string, work_id: string) {
+  async posterClick(work_id: string) {
     try {
-      this.router.navigate(['/production', prefix + ':' + work_id]);
+      this.router.navigate(['/production',work_id]);
     } catch (error) {
       console.error('Failed:', error);
     }
@@ -50,7 +50,7 @@ export class DownloadHistoryComponent {
   onUnsubscribeClick(): void {
     this.ProductionSubscriptionService.getDownloadedKeywordsFeedListGet().subscribe(
       {
-        next: (data: MovieData[]) => {
+        next: (data: MoviePoster[]) => {
           this.keywordFeeds = data;
         },
         error: (error) => {
@@ -59,21 +59,5 @@ export class DownloadHistoryComponent {
       }
     );
   }
-  getActorNames(movie: any): string[] {
-    const actors = movie.actors || [];
-    const casts = movie.casts || [];
 
-    const names: string[] = [];
-    const seen = new Set<string>();
-
-    for (const a of [...actors, ...casts]) {
-      const name = a?.name?.trim();
-      if (name && !seen.has(name)) {
-        seen.add(name);
-        names.push(name);
-      }
-    }
-
-    return names;
-  }
 }

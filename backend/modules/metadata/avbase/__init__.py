@@ -354,3 +354,4 @@ async def fetch_avbase_release_by_date_and_write_db(db: Session, date_str: str):
         db.execute(stmt)
 
     db.commit()
+
