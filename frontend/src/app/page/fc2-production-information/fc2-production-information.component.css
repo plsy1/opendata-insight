@@ -87,7 +87,10 @@
   gap: 10px;
   height: 100%;
   align-items: center;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
 }
 
 .sample-image {

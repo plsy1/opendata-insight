@@ -20,8 +20,6 @@
   max-width: 38%;
 }
 
-
-
 .movie-cover-img {
   width: 100%;
   height: auto;
@@ -34,7 +32,7 @@
   gap: 6px;
   margin: 0;
   padding: 10px;
-    border: var(--border-color) 1px solid;
+  border: var(--border-color) 1px solid;
   border-radius: 8px;
   justify-content: space-between;
 }
@@ -54,7 +52,7 @@
   display: grid;
   margin: 0;
   padding: 10px;
-    border: var(--border-color) 1px solid;
+  border: var(--border-color) 1px solid;
   border-radius: 8px;
 }
 
@@ -144,14 +142,17 @@
 
 .sample-image-list {
   display: flex;
-  overflow-x: hidden;
-  overflow-y: hidden;
+
   gap: 10px;
   height: 100%;
   align-items: center;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
 }
-
-
 
 @media (max-width: 1024px) {
   .movie-actions {
