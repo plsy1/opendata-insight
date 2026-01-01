@@ -1,7 +1,7 @@
 import asyncio
 from database import get_db
 from config import _config
-from utils.logs import LOG_ERROR,LOG_INFO
+from utils.logs import LOG_ERROR, LOG_INFO
 from datetime import datetime
 from services.subscribe import *
 from services.telegram import *
@@ -9,15 +9,25 @@ from services.avbase import *
 from pathlib import Path
 from datetime import date, timedelta, datetime
 
+
 def _get_actor_name_from_db(db: Session, work_id: str):
 
     records = db.query(MovieData).filter(MovieData.work_id == work_id).first()
 
     movie_out = MovieDataOut.model_validate(records)
 
-    top_names_list = [cast["name"] for cast in movie_out.casts if cast.get("name")][:3]
+    names = []
+    seen = set()
 
-    top_names = ", ".join(top_names_list)
+    for person in (movie_out.actors or []) + (movie_out.casts or []):
+        name = person.get("name")
+        if isinstance(name, str):
+            name = name.strip()
+            if name and name not in seen:
+                seen.add(name)
+                names.append(name)
+
+    top_names = ", ".join(names[:3])
 
     return top_names
 
@@ -35,7 +45,7 @@ async def _refresh_movie_feeds():
 
         if not feeds:
             return
-        
+
         yesterday = date.today() - timedelta(days=1)
 
         for feed in feeds:
@@ -120,7 +130,7 @@ async def _refresh_actor_feeds():
                     db, item.id, DownloadStatus.ADD_SUBSCRIBE
                 )
 
-                LOG_INFO("[Scheduler] Add Movie subscribe",item.id)
+                LOG_INFO("[Scheduler] Add Movie subscribe", item.id)
 
             await asyncio.sleep(5)
 

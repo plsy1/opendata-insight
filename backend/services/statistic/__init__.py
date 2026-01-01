@@ -61,18 +61,23 @@ def stat_actors_subscribed(db: Session, limit: int = 10) -> list[dict]:
     counter = Counter()
 
     for actors_list, casts_list in rows:
-        if actors_list:
-            for actor in actors_list:
-                actor = actor.strip()
-                if actor:
-                    counter[actor] += 1
-        if casts_list:
-            top_names_list = [
-                cast.get("name").strip() for cast in casts_list if cast.get("name")
-            ]
-            for actor in top_names_list:
-                if actor:
-                    counter[actor] += 1
+        movie_actor_names = set()
+
+        for actor in actors_list or []:
+            name = actor.get("name")
+            if isinstance(name, str):
+                name = name.strip()
+                if name:
+                    movie_actor_names.add(name)
+
+        for cast in casts_list or []:
+            name = cast.get("name")
+            if isinstance(name, str):
+                name = name.strip()
+                if name:
+                    movie_actor_names.add(name)
+        for name in movie_actor_names:
+            counter[name] += 1
 
     return [
         {"actor": actor, "count": count} for actor, count in counter.most_common(limit)

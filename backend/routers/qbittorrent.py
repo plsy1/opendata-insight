@@ -66,11 +66,18 @@ async def add_torrent_url(
             if records:
                 movie_out = MovieDataOut.model_validate(records)
 
-                top_names_list = [
-                    cast["name"] for cast in movie_out.casts if cast.get("name")
-                ][:3]
+                names = []
+                seen = set()
 
-                top_names = ", ".join(top_names_list)
+                for person in (movie_out.actors or []) + (movie_out.casts or []):
+                    name = person.get("name")
+                    if isinstance(name, str):
+                        name = name.strip()
+                        if name and name not in seen:
+                            seen.add(name)
+                            names.append(name)
+
+                top_names = ", ".join(names[:3])
 
                 save_path = save_path / top_names
 
