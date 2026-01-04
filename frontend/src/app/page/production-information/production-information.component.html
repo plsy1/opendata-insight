@@ -1,13 +1,11 @@
 <div *ngIf="isLoading" class="loading">Loading...</div>
 
-<div class="thetop" *ngIf="!isLoading">
-  <div class="movie-containerr">
+<div class="top" *ngIf="!isLoading">
+  <div class="movie-container">
     <div class="movie-left">
       <h2>
-        {{ movieData.work_id }} -
         {{ movieData.title }}
       </h2>
-
       <div class="movie-cover">
         <img
           loading="eager"
@@ -17,14 +15,12 @@
         />
       </div>
 
-      <div class="tag-and-actions">
-        <div class="tag-list">
-          <mat-chip-set>
-            <mat-chip *ngFor="let genre of movieData.genres || []" class="tag">
-              {{ genre }}
-            </mat-chip>
-          </mat-chip-set>
-        </div>
+      <div class="tags">
+        <mat-chip-set>
+          <mat-chip *ngFor="let genre of movieData.genres || []">
+            {{ genre }}
+          </mat-chip>
+        </mat-chip-set>
       </div>
     </div>
 
@@ -85,6 +81,9 @@
         </p>
         <p>
           <strong>Label: </strong>{{ movieData.products[0].label || "N/A" }}
+        </p>
+                <p>
+          <strong>Series: </strong>{{ movieData.products[0].series || "N/A"}}
         </p>
         <p>
           <strong>Price: </strong>{{ movieData.products[0].price || "N/A" }}

@@ -11,7 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonService } from '../../common.service';
 import { MovieData } from './models/movie-data.interface';
 import { createDefaultMovieInformation } from './utils/default-movie-info';
-
+import { MatDivider } from '@angular/material/divider';
 
 @Component({
   selector: 'app-production-information',
@@ -21,7 +21,7 @@ import { createDefaultMovieInformation } from './utils/default-movie-info';
     MatCardModule,
     MatChipsModule,
     MatProgressSpinnerModule,
-    MatIconModule,
+    MatIconModule,MatDivider
   ],
   templateUrl: './production-information.component.html',
   styleUrl: './production-information.component.css',

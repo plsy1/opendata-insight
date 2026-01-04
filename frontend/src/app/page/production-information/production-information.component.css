@@ -1,8 +1,10 @@
-.thetop {
+.top {
   display: grid;
+  grid-template-rows: auto auto;
+  gap: 12px;
 }
 
-.movie-containerr {
+.movie-container {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -12,12 +14,12 @@
 
 .movie-left {
   flex: 1 1 100%;
-  max-width: 60%;
+  max-width: 53%;
 }
 
 .movie-right {
   flex: 1 1 100%;
-  max-width: 38%;
+  max-width: 45%;
 }
 
 .movie-cover-img {
@@ -27,35 +29,19 @@
   border-radius: 10px;
 }
 
+.tags {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
 .other-info {
   display: grid;
-  margin: 0;
   padding: 10px;
-  border: var(--border-color) 1px solid;
-  border-radius: 8px;
 }
 
 .other-info p {
   margin: 0;
-}
-
-.tag-and-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  justify-content: flex-start;
-}
-
-.tag {
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 0.9rem;
 }
 
 .actors {
@@ -65,7 +51,6 @@
   gap: 10px;
   margin: 0;
   padding: 10px;
-  border: var(--border-color) 1px solid;
   border-radius: 8px;
   max-height: calc(3 * 80px + 2 * 10px);
   overflow-y: auto;
@@ -77,7 +62,6 @@
 
 .actors::-webkit-scrollbar-thumb {
   border-radius: 3px;
-  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .actor-item {
@@ -121,19 +105,16 @@
 
 .sample-image-list {
   display: flex;
-
   gap: 10px;
   height: 100%;
   align-items: center;
-
   overflow-x: auto;
   overflow-y: hidden;
-
   -webkit-overflow-scrolling: touch;
   touch-action: pan-x;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 480px) {
   .movie-actions {
     justify-content: center;
     flex-wrap: wrap;
@@ -149,6 +130,8 @@
     overflow-x: hidden;
     overflow-y: visible;
     height: auto;
+    -webkit-overflow-scrolling: auto;
+    touch-action: pan-y;
   }
 
   .sample-image {
@@ -156,7 +139,7 @@
     height: auto;
   }
 
-  .movie-containerr {
+  .movie-container {
     flex-direction: column;
     gap: 0;
     padding: 0;
@@ -181,13 +164,10 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-
   padding: 8px 12px;
   border-radius: 8px;
-
   cursor: pointer;
   user-select: none;
-
   color: currentColor;
   transition: background-color 0.15s, transform 0.1s;
 }
@@ -201,16 +181,6 @@
   font-weight: 500;
 }
 
-
-
 :host-context(.dark-theme) .action-item:hover {
   background-color: rgba(255, 255, 255, 0.08);
-}
-
-.action-item:hover {
-  background-color: var(--mat-sys-surface-variant);
-}
-
-.action-item:focus {
-  background-color: var(--mat-sys-primary-container);
 }
