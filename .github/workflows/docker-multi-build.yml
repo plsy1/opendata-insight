@@ -4,19 +4,21 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'VERSION'
   workflow_dispatch:
 
 jobs:
   docker-amd64:
     runs-on: ubuntu-latest
     outputs:
-      ts: ${{ steps.timestamp.outputs.ts }}
+      version: ${{ steps.version.outputs.VERSION }}
     steps:
       - uses: actions/checkout@v2
 
-      - name: Get timestamp
-        id: timestamp
-        run: echo "ts=$(date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
+      - name: Get version
+        id: version
+        run: echo "VERSION=$(cat VERSION | tr -d '\n')" >> $GITHUB_OUTPUT
 
       - uses: docker/login-action@v3
         with:
@@ -31,7 +33,7 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            plsy1/kanojo:${{ steps.timestamp.outputs.ts }}-amd64
+            plsy1/kanojo:${{ steps.version.outputs.VERSION }}-amd64
             plsy1/kanojo:latest-amd64
           cache-from: type=registry,ref=plsy1/kanojo:buildcache
           cache-to: type=registry,ref=plsy1/kanojo:buildcache,mode=max
@@ -80,5 +82,6 @@ jobs:
         run: |
           docker buildx imagetools create \
             --tag plsy1/kanojo:latest \
+            --tag plsy1/kanojo:${{ needs.docker-amd64.outputs.version }} \
             plsy1/kanojo:latest-amd64
 

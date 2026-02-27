@@ -5,15 +5,18 @@ import { MatListModule } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
 import { HomeService } from '../../service/home.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [MatSidenavModule, MatListModule, RouterModule, TranslateModule],
+  imports: [MatSidenavModule, MatListModule, RouterModule, TranslateModule, CommonModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent implements OnInit, OnDestroy {
+  public version: string = '';
+
   constructor(
     public homeService: HomeService,
     private common: CommonService,
@@ -23,6 +26,11 @@ export class SidebarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.checkScreenSize();
     window.addEventListener('resize', this.checkScreenSize.bind(this));
+    this.common.getSystemVersion().subscribe((res) => {
+      if (res && res.version) {
+        this.version = res.version;
+      }
+    });
   }
 
   ngOnDestroy(): void {

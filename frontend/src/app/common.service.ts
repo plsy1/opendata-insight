@@ -152,4 +152,8 @@ export class CommonService {
       })
     );
   }
+
+  getSystemVersion(): Observable<{ version: string }> {
+    return this.request<{ version: string }>('GET', 'system/version');
+  }
 }

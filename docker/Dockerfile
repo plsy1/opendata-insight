@@ -56,6 +56,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV PLAYWRIGHT_BROWSERS_PATH=/app/runtime
 
 COPY backend /app/backend
+COPY VERSION /app/VERSION
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends nginx supervisor && \

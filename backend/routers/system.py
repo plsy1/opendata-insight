@@ -1,3 +1,4 @@
+import os
 from fastapi import APIRouter, HTTPException, Body, Query, Response, status, Depends
 from fastapi.responses import StreamingResponse
 from services.system import *
@@ -35,3 +36,12 @@ async def update_environment(
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/version")
+async def get_version():
+    # Trying to find VERSION file in project root
+    version_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "VERSION")
+    if os.path.exists(version_path):
+        with open(version_path, "r") as f:
+            return {"version": f.read().strip()}
+    return {"version": "1.0.0-dev"}
