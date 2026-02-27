@@ -83,6 +83,7 @@
             [src]="cast.image_url || 'assets/logo.svg'"
             alt="{{ cast.name || 'Unknown' }}"
             class="actor-avatar"
+            [class.blurred]="common.enableBlur$ | async"
           />
           <div class="actor-name">{{ cast.name || "Unknown" }}</div>
         </div>
@@ -101,6 +102,7 @@
         [src]="src || 'assets/logo.svg'"
         alt="Sample Image"
         class="sample-image"
+        [class.blurred]="common.enableBlur$ | async"
         (click)="openLightbox(i)"
       />
     </div>

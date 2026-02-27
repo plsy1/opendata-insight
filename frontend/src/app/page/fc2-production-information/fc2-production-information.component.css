@@ -358,3 +358,14 @@
   .lb-toolbar { top: 10px; right: 10px; }
   .lb-footer { bottom: 10px; }
 }
+
+/* Blur filter */
+.cover-img.blurred,
+.sample-image.blurred {
+  filter: blur(14px);
+  transition: filter 0.3s ease;
+}
+.cover-img.blurred:hover,
+.sample-image.blurred:hover {
+  filter: blur(0);
+}

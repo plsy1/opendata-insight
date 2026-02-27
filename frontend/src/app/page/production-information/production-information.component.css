@@ -357,3 +357,22 @@
   gap: 5px;
 }
 
+
+/* Blur filter */
+.sample-image.blurred {
+  filter: blur(14px);
+  transition: filter 0.3s ease;
+}
+.sample-image.blurred:hover {
+  filter: blur(0);
+}
+
+.actor-avatar.blurred {
+  filter: blur(14px);
+  transition: filter 0.3s ease;
+  clip-path: circle(50%);
+  transform: scale(1.1);
+}
+.actor-avatar.blurred:hover {
+  filter: blur(0);
+}

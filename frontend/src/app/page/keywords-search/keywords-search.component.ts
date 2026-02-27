@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { MovieCardComponent } from '../../shared/movie-card/movie-card.component';
@@ -22,6 +23,7 @@ import { MovieCardComponent } from '../../shared/movie-card/movie-card.component
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     MatProgressSpinnerModule,
     MatIconModule,
     MatFormFieldModule,

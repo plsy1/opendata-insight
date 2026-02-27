@@ -121,7 +121,7 @@ export class ProductionInformationComponent implements OnInit {
     private ProductionInformationService: ProductionInformationService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private common: CommonService
+    public common: CommonService
   ) {}
 
   ngOnInit(): void {

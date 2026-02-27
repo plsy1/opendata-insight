@@ -40,7 +40,7 @@
     <!-- Left: Cover Image -->
     <div class="cover-column">
       <div class="cover-wrapper glass-effect">
-        <img [src]="data.cover" alt="cover" class="cover-img" />
+        <img [src]="data.cover" alt="cover" class="cover-img" [class.blurred]="common.enableBlur$ | async" />
       </div>
     </div>
 
@@ -75,6 +75,7 @@
         *ngFor="let image of allSampleImages; let i = index"
         [src]="image"
         class="sample-image"
+        [class.blurred]="common.enableBlur$ | async"
         (click)="openLightbox(i)"
       />
     </div>

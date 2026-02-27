@@ -5,26 +5,26 @@
     <div class="login-header">
       <img src="/assets/logo.svg" alt="logo" class="title-icon" />
       <h2 class="brand-title">Kanojo</h2>
-      <p class="brand-subtitle">Manage your collection with style</p>
+      <p class="brand-subtitle">{{ 'LOGIN.SUBTITLE' | translate }}</p>
     </div>
 
     <form (ngSubmit)="onSubmit()" class="login-form">
       <mat-form-field class="form-group" appearance="outline">
-        <mat-label>Username</mat-label>
+        <mat-label>{{ 'LOGIN.USERNAME' | translate }}</mat-label>
         <input
           matInput
           type="text"
           id="username"
           [(ngModel)]="username"
           name="username"
-          placeholder="Enter your username"
+          [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate"
           required
         />
         <mat-icon matPrefix class="form-icon">person</mat-icon>
       </mat-form-field>
 
       <mat-form-field class="form-group" appearance="outline">
-        <mat-label>Password</mat-label>
+        <mat-label>{{ 'LOGIN.PASSWORD' | translate }}</mat-label>
         <input
           matInput
           type="password"
@@ -38,7 +38,7 @@
       </mat-form-field>
 
       <button class="login-submit-btn" type="submit">
-        <span>Login</span>
+        <span>{{ 'LOGIN.LOGIN_BUTTON' | translate }}</span>
         <i class="fas fa-arrow-right"></i>
       </button>
     </form>

@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
@@ -21,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatIconModule,
     FormsModule,
     CommonModule,
+    TranslateModule,
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
@@ -32,7 +34,8 @@ export class LoginComponent {
   constructor(
     private router: Router,
     private common: CommonService,
-    private snackbar: MatSnackBar
+    private snackbar: MatSnackBar,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -48,12 +51,12 @@ onSubmit(): void {
         localStorage.setItem('username', this.username);
         this.router.navigate(['']);
       } else {
-        this.showErrorSnackbar('Incorrect username or password');
+        this.translate.get('LOGIN.ERROR').subscribe(msg => this.showErrorSnackbar(msg));
       }
     },
     error: (error) => {
       console.error('Login request failed:', error);
-      this.showErrorSnackbar('Incorrect username or password');
+      this.translate.get('LOGIN.ERROR').subscribe(msg => this.showErrorSnackbar(msg));
     }
   });
 }

@@ -9,7 +9,7 @@
         "DOWNLOAD": "下载管理",
         "SUBSCRIPTIONS_HEADER": "我的订阅",
         "PERFORMERS": "演员",
-        "PRODUCTIONS": "发行商/系列",
+        "PRODUCTIONS": "影片",
         "SETTINGS": "设置",
         "LOGOUT": "退出登录"
     },
@@ -64,7 +64,9 @@
         "TOOLTIP_TITLE": "标题",
         "TOOLTIP_SIZE": "大小",
         "TOOLTIP_SEEDING": "做种数",
-        "TOOLTIP_DATE": "日期"
+        "TOOLTIP_DATE": "日期",
+        "NO_RESULTS": "暂无搜索结果",
+        "NO_RESULTS_DESC": "请通过上方搜索栏搜索种子，或前往探索页面浏览。"
     },
     "SETTINGS": {
         "LANGUAGE": "语言 / Language",
@@ -133,5 +135,17 @@
         "SALE_DAY": "发售日期",
         "DURATION": "时长",
         "LIGHTBOX_HINT": "滚动缩放 · 拖动平移"
+    },
+    "KEYWORDS_SEARCH": {
+        "NO_RESULTS": "暂无搜索结果",
+        "NO_RESULTS_DESC": "请尝试使用不同的关键字进行搜索。"
+    },
+    "LOGIN": {
+        "SUBTITLE": "优雅管理你的收藏",
+        "USERNAME": "用户名",
+        "USERNAME_PLACEHOLDER": "请输入用户名",
+        "PASSWORD": "密码",
+        "LOGIN_BUTTON": "登录",
+        "ERROR": "用户名或密码错误"
     }
 }

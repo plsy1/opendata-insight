@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 
 import { Router } from '@angular/router';
+import { CommonService } from '../../common.service';
 
 @Component({
   selector: 'app-fc2-production-information',
@@ -35,7 +36,8 @@ export class Fc2ProductionInformationComponent implements OnInit {
   constructor(
     private fc2ProductionService: fc2ProductionService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    public common: CommonService
   ) {}
 
   get allSampleImages(): string[] {

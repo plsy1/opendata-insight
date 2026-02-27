@@ -1,6 +1,6 @@
-<div class="top-bar">
+<div class="top-bar" *ngIf="discoverResults && discoverResults.length > 0">
   <mat-form-field class="search-box" appearance="outline">
-    <mat-label>Type</mat-label>
+    <mat-label>{{ 'DETAILS.FILTER_TYPE' | translate }}</mat-label>
     <mat-select
       [(ngModel)]="actressNumberFilter"
       (ngModelChange)="onFilterChange($event)"
@@ -8,17 +8,17 @@
       <mat-select-trigger>
         {{
           actressNumberFilter === "0"
-            ? "All"
+            ? ('DETAILS.FILTER_ALL' | translate)
             : actressNumberFilter === "1"
-            ? "Single"
+            ? ('DETAILS.FILTER_SINGLE' | translate)
             : actressNumberFilter === "2"
-            ? "Sale"
-            : "Type"
+            ? ('DETAILS.FILTER_SALE' | translate)
+            : ('DETAILS.FILTER_TYPE' | translate)
         }}
       </mat-select-trigger>
-      <mat-option [value]="'0'">All</mat-option>
-      <mat-option [value]="'1'">Single</mat-option>
-      <mat-option [value]="'2'">Sale</mat-option>
+      <mat-option [value]="'0'">{{ 'DETAILS.FILTER_ALL' | translate }}</mat-option>
+      <mat-option [value]="'1'">{{ 'DETAILS.FILTER_SINGLE' | translate }}</mat-option>
+      <mat-option [value]="'2'">{{ 'DETAILS.FILTER_SALE' | translate }}</mat-option>
     </mat-select>
   </mat-form-field>
 
@@ -30,7 +30,7 @@
   ></app-pagination>
 </div>
 
-<div class="poster-grid">
+<div class="poster-grid" *ngIf="discoverResults && discoverResults.length > 0">
   <ng-container *ngFor="let movie of discoverResults">
     <app-movie-card
       *ngIf="shouldShowMovie(movie)"
@@ -46,8 +46,18 @@
 </div>
 
 <app-pagination
+  *ngIf="discoverResults && discoverResults.length > 0"
   [page]="page"
   [hasNext]="searchKeyWords.length > 0"
   (previousClick)="loadPreviousPage()"
   (nextClick)="loadNextPage()"
 ></app-pagination>
+
+<!-- Empty State -->
+<div class="empty-state" *ngIf="!discoverResults || discoverResults.length === 0">
+  <div class="empty-icon">
+    <i class="fas fa-film"></i>
+  </div>
+  <h3>{{ 'KEYWORDS_SEARCH.NO_RESULTS' | translate }}</h3>
+  <p>{{ 'KEYWORDS_SEARCH.NO_RESULTS_DESC' | translate }}</p>
+</div>

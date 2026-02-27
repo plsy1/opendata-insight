@@ -1,5 +1,5 @@
 <div class="table-container">
-  <div class="filter-header">
+  <div class="filter-header" *ngIf="searchResults.length > 0">
     <div class="filter-wrapper">
       <mat-icon class="filter-search-icon">search</mat-icon>
       <input
@@ -11,7 +11,7 @@
     </div>
   </div>
 
-  <mat-table [dataSource]="dataSource" matSort>
+  <mat-table [dataSource]="dataSource" matSort *ngIf="searchResults.length > 0">
     <ng-container matColumnDef="indexer">
       <mat-header-cell *matHeaderCellDef mat-sort-header class="indexer-column">
         <i class="fas fa-database" [matTooltip]="'TORRENTS.TOOLTIP_SOURCE' | translate"></i>
@@ -81,4 +81,13 @@
       }"
     ></mat-row>
   </mat-table>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="searchResults.length === 0">
+    <div class="empty-icon">
+      <i class="fas fa-search"></i>
+    </div>
+    <h3>{{ 'TORRENTS.NO_RESULTS' | translate }}</h3>
+    <p>{{ 'TORRENTS.NO_RESULTS_DESC' | translate }}</p>
+  </div>
 </div>
