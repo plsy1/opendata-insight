@@ -9,7 +9,6 @@
     </ng-template>
     <ng-template matTabContent>
       <app-environment-variable></app-environment-variable>
-      <app-change-password></app-change-password>
     </ng-template>
   </mat-tab>
   <mat-tab>
@@ -19,6 +18,15 @@
     </ng-template>
     <ng-template matTabContent>
       <app-background-tasks></app-background-tasks>
+    </ng-template>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-key tab-icon"></i>
+      {{ 'SETTINGS.ACCOUNT_SECURITY' | translate }}
+    </ng-template>
+    <ng-template matTabContent>
+      <app-change-password></app-change-password>
     </ng-template>
   </mat-tab>
 </mat-tab-group>

@@ -81,6 +81,7 @@
         "TASK_RUN": "Run",
         "NO_TASKS": "No background tasks found.",
         "CHANGE_PASSWORD": "Change Password",
+        "ACCOUNT_SECURITY": "Account & Security",
         "OLD_PASSWORD": "Old Password",
         "NEW_PASSWORD": "New Password",
         "CONFIRM_PASSWORD": "Confirm New Password",

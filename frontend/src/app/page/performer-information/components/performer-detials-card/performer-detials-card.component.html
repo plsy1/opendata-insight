@@ -11,6 +11,7 @@
         [src]="performerInformation.avatar_url || 'assets/logo.svg'"
         alt="Actress Avatar"
         class="actress-avatar-img"
+        [class.blurred]="common.enableBlur$ | async"
       />
     </div>
 

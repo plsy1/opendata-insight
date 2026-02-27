@@ -1,6 +1,6 @@
 import { TranslateModule } from '@ngx-translate/core';
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
 import { PerformerService } from '../../service/performer.service';
@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-performer-detials-card',
   standalone: true,
-  imports: [CommonModule,
+  imports: [CommonModule, AsyncPipe,
     TranslateModule, MatCardModule, MatIconModule],
   templateUrl: './performer-detials-card.component.html',
   styleUrls: ['./performer-detials-card.component.css'],
@@ -24,7 +24,7 @@ export class ActressInformationComponent {
     private getRoute: ActivatedRoute,
     private service: PerformerService,
     private snackBar: MatSnackBar,
-    private common: CommonService,
+    public common: CommonService,
     private router: Router
   ) {}
 

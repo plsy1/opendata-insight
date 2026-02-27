@@ -1,5 +1,5 @@
 import { CommonService } from './../../../../common.service';
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, HostListener, inject } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
@@ -19,22 +19,40 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class TopbarComponent {
   dialog: MatDialog = inject(MatDialog);
+  langMenuOpen = false;
+
   constructor(
     private location: Location,
     public homeService: HomeService,
     public themeService: ThemeService,
     public commonService: CommonService,
-    public translate: TranslateService
+    public translate: TranslateService,
+    private elRef: ElementRef
   ) {}
 
   get currentLang(): string {
     return this.translate.currentLang || localStorage.getItem('appLang') || 'en';
   }
 
-  toggleLanguage() {
-    const newLang = this.currentLang === 'zh' ? 'en' : 'zh';
-    this.translate.use(newLang);
-    localStorage.setItem('appLang', newLang);
+  toggleLangMenu() {
+    this.langMenuOpen = !this.langMenuOpen;
+  }
+
+  closeLangMenu() {
+    this.langMenuOpen = false;
+  }
+
+  setLanguage(lang: string) {
+    this.translate.use(lang);
+    localStorage.setItem('appLang', lang);
+    this.langMenuOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    if (!this.elRef.nativeElement.querySelector('.lang-dropdown-wrapper')?.contains(event.target as Node)) {
+      this.langMenuOpen = false;
+    }
   }
 
   toggleSidebar() {

@@ -46,6 +46,15 @@
   transform: scale(1.05);
 }
 
+.actress-avatar-img.blurred {
+  filter: blur(14px);
+  transition: filter var(--t-normal);
+}
+
+.avatar-wrapper:hover .actress-avatar-img.blurred {
+  filter: blur(0);
+}
+
 .hero-content {
   flex: 1;
   display: flex;

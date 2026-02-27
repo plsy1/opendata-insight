@@ -81,6 +81,7 @@
         "TASK_RUN": "运行",
         "NO_TASKS": "未找到后台任务。",
         "CHANGE_PASSWORD": "修改密码",
+        "ACCOUNT_SECURITY": "账户与安全",
         "OLD_PASSWORD": "旧密码",
         "NEW_PASSWORD": "新密码",
         "CONFIRM_PASSWORD": "确认新密码",

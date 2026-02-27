@@ -17,8 +17,21 @@
     <i class="fas" [ngClass]="commonService.enableBlur ? 'fa-eye-slash' : 'fa-eye'"></i>
   </div>
   
-  <div class="icon lang-toggle" (click)="toggleLanguage()" title="Switch Language">
-    <span class="lang-label">{{ currentLang === 'zh' ? 'EN' : '中' }}</span>
+  <div class="lang-dropdown-wrapper" #langDropdown>
+    <div class="icon lang-toggle" (click)="toggleLangMenu()" title="Switch Language">
+      <i class="fas fa-language"></i>
+    </div>
+    <div class="lang-menu" [class.open]="langMenuOpen">
+      <div class="lang-option" [class.active]="currentLang === 'en'" (click)="setLanguage('en')">
+        <span class="lang-flag">🇺🇸</span><span>English</span>
+      </div>
+      <div class="lang-option" [class.active]="currentLang === 'zh'" (click)="setLanguage('zh')">
+        <span class="lang-flag">🇨🇳</span><span>中文</span>
+      </div>
+      <div class="lang-option" [class.active]="currentLang === 'ja'" (click)="setLanguage('ja')">
+        <span class="lang-flag">🇯🇵</span><span>日本語</span>
+      </div>
+    </div>
   </div>
   
   <div class="icon" (click)="OpenSearch()" title="Search">

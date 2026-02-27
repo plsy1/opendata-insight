@@ -13,16 +13,18 @@ export class AppComponent {
   title = 'test';
 
   constructor(private translate: TranslateService) {
-    this.translate.addLangs(['en', 'zh']);
+    this.translate.addLangs(['en', 'zh', 'ja']);
     this.translate.setDefaultLang('en');
     
     const savedLang = localStorage.getItem('appLang');
-    if (savedLang && savedLang.match(/en|zh/)) {
+    if (savedLang && savedLang.match(/en|zh|ja/)) {
       this.translate.use(savedLang);
     } else {
-      // Use the browser language, or default to English
+      // Auto-detect from browser, persist the result
       const browserLang = this.translate.getBrowserLang();
-      this.translate.use(browserLang?.match(/en|zh/) ? browserLang : 'en');
+      const detectedLang = browserLang?.match(/en|zh|ja/) ? browserLang : 'en';
+      this.translate.use(detectedLang);
+      localStorage.setItem('appLang', detectedLang);
     }
   }
 }
