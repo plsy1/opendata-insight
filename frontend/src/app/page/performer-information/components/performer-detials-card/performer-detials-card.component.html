@@ -16,7 +16,15 @@
     </div>
 
     <div class="hero-content">
-      <h1 class="actress-name">{{ name || "N/A" }}</h1>
+      <h1 class="actress-name">
+        <ng-container *ngIf="performerInformation.ruby; else plainName">
+          <ruby>
+            {{ name || "N/A" }}
+            <rt>{{ performerInformation.ruby }}</rt>
+          </ruby>
+        </ng-container>
+        <ng-template #plainName>{{ name || "N/A" }}</ng-template>
+      </h1>
       
       <!-- Meta Pills -->
       <div class="meta-pills">

@@ -101,6 +101,11 @@ export class TorrentListComponent implements OnInit, AfterViewInit {
       next: (results: any) => {
         this.searchResults = results;
         this.dataSource.data = this.searchResults;
+        if (this.sort) {
+          this.sort.active = 'seeders';
+          this.sort.direction = 'desc';
+          this.sort.sortChange.emit({ active: 'seeders', direction: 'desc' });
+        }
         this.TorrentService.saveState(this.searchResults, keywords);
         this.snackBar.open('Torrents search completed', 'Close', {
           duration: 3000,
@@ -114,13 +119,12 @@ export class TorrentListComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => {
-      if (this.sort) {
-        this.dataSource.sort = this.sort;
-        this.sort.active = 'seeders';
-        this.sort.direction = 'desc';
-      }
-    });
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+      this.sort.active = 'seeders';
+      this.sort.direction = 'desc';
+      this.sort.sortChange.emit({ active: 'seeders', direction: 'desc' });
+    }
   }
 
   applyFilter(event: Event): void {

@@ -21,6 +21,7 @@ class ActorData(Base):
     aliases = Column(JSON, nullable=True)
     avatar_url = Column(String, nullable=True)
     social_media = Column(JSON, nullable=True)
+    ruby = Column(String(100), nullable=True)
 
     subscribers = relationship(
         "ActorSubscribe",

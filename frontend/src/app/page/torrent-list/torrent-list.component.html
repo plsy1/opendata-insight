@@ -11,7 +11,7 @@
     </div>
   </div>
 
-  <mat-table [dataSource]="dataSource" matSort *ngIf="searchResults.length > 0">
+  <mat-table [dataSource]="dataSource" matSort [hidden]="searchResults.length === 0">
     <ng-container matColumnDef="indexer">
       <mat-header-cell *matHeaderCellDef mat-sort-header class="indexer-column">
         <i class="fas fa-database" [matTooltip]="'TORRENTS.TOOLTIP_SOURCE' | translate"></i>

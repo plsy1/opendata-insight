@@ -45,6 +45,7 @@ async def parse_actor_information(url: str) -> ActorDataOut:
             talent = page_props.get("talent", {})
             primary = talent.get("primary", {})
             data.avatar_url = f'{primary.get("image_url")}'
+            data.ruby = primary.get("ruby") or page_props.get("ruby")
 
             fanza = (primary.get("meta") or {}).get("fanza") or {}
             for k, v in fanza.items():

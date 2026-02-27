@@ -114,6 +114,12 @@ async def init_scheduler_service() -> AppScheduler:
                 name="update fc2 ranking",
                 hours=3,
             )
+            _scheduler_service.add_job(
+                update_actor_data_periodic,
+                trigger=IntervalTrigger,
+                name="update actor data periodic",
+                hours=24,
+            )
             
             LOG_INFO("AppScheduler initialized with default jobs")
     return _scheduler_service

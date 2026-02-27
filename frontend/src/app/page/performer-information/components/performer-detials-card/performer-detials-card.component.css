@@ -71,6 +71,17 @@
   letter-spacing: -0.04em;
 }
 
+.actress-name ruby {
+  ruby-align: center;
+}
+
+.actress-name rt {
+  font-size: 0.38em;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
 /* Meta Pills */
 .meta-pills {
   display: flex;

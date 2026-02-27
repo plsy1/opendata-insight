@@ -22,6 +22,7 @@ class ActorDataOut(BaseModel):
     aliases: Optional[List[str]] = Field(default_factory=list)
     avatar_url: Optional[str] = None
     social_media: Optional[List[SocialMedia]] = Field(default_factory=list)
+    ruby: Optional[str] = None
 
     model_config = {"from_attributes": True}
 

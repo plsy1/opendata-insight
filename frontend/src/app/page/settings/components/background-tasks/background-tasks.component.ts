@@ -62,14 +62,19 @@ export class BackgroundTasksComponent implements OnInit {
       return trigger;
     }
 
-    const match = trigger.match(/interval\[(\d+):(\d+):(\d+)\]/);
+    // apscheduler interval can be: 'interval[1 day, 0:00:00]', 'interval[2 days, 0:00:00]', 'interval[12:00:00]'
+    const match = trigger.match(/interval\[(?:(\d+)\s+days?,\s+)?(\d+):(\d+):(\d+)\]/);
     if (!match) {
       return trigger;
     }
 
-    const [, h, m, s] = match.map(Number);
+    const d = parseInt(match[1] || '0', 10);
+    const h = parseInt(match[2], 10);
+    const m = parseInt(match[3], 10);
+    const s = parseInt(match[4], 10);
 
     const parts: string[] = [];
+    if (d) parts.push(`${d}d`);
     if (h) parts.push(`${h}h`);
     if (m) parts.push(`${m}m`);
     if (s) parts.push(`${s}s`);
