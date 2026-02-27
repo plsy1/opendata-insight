@@ -1,6 +1,6 @@
 <div *ngIf="isLoading" class="loading-state">
   <i class="fas fa-spinner fa-spin"></i>
-  <span>Loading...</span>
+  <span>{{ 'COMMON.LOADING' | translate }}</span>
 </div>
 
 <div class="performer-page" *ngIf="!isLoading && performerInformation">
@@ -39,13 +39,13 @@
       <!-- Action Buttons -->
       <div class="actions">
         <button class="action-btn primary" (click)="subscribeActor()">
-          <mat-icon>rss_feed</mat-icon> Subscribe
+          <mat-icon>rss_feed</mat-icon> {{ 'DETAILS.SUBSCRIBE' | translate }}
         </button>
         <button class="action-btn secondary" (click)="collectActor()">
-          <mat-icon>favorite</mat-icon> Collect
+          <mat-icon>favorite</mat-icon> {{ 'DETAILS.COLLECT' | translate }}
         </button>
         <button class="action-btn ghost" (click)="searchByName()">
-          <mat-icon>search</mat-icon> Search Torrents
+          <mat-icon>search</mat-icon> {{ 'DETAILS.SEARCH_TORRENTS' | translate }}
         </button>
       </div>
 
@@ -70,18 +70,18 @@
   <!-- ② Details Grid -->
   <div class="details-grid">
     <section class="info-card">
-      <div class="section-label"><i class="fas fa-info-circle"></i> Biography</div>
+      <div class="section-label"><i class="fas fa-info-circle"></i> {{ 'DETAILS.BIOGRAPHY' | translate }}</div>
       <div class="detail-list">
         <div class="detail-row" *ngIf="performerInformation.aliases.length">
-          <span class="detail-label">Aliases</span>
+          <span class="detail-label">{{ 'DETAILS.ALIASES' | translate }}</span>
           <span class="detail-value">{{ performerInformation.aliases.join(", ") }}</span>
         </div>
         <div class="detail-row" *ngIf="performerInformation.hobby">
-          <span class="detail-label">Hobbies</span>
+          <span class="detail-label">{{ 'DETAILS.HOBBIES' | translate }}</span>
           <span class="detail-value">{{ performerInformation.hobby }}</span>
         </div>
         <div class="detail-row" *ngIf="performerInformation.bust || performerInformation.waist || performerInformation.hip">
-          <span class="detail-label">Measurements</span>
+          <span class="detail-label">{{ 'DETAILS.MEASUREMENTS' | translate }}</span>
           <span class="detail-value">
             B{{ performerInformation.bust || '?' }} / W{{ performerInformation.waist || '?' }} / H{{ performerInformation.hip || '?' }}
           </span>

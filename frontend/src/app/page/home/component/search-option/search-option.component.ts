@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
@@ -27,6 +28,7 @@ import { MatIconModule } from '@angular/material/icon';
     MatButtonToggleModule,
     MatDialogModule,
     MatIconModule,
+    TranslateModule,
   ],
   templateUrl: './search-option.component.html',
   styleUrl: './search-option.component.css',

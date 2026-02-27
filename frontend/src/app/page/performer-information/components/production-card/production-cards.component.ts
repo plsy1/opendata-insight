@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PerformerService } from '../../service/performer.service';
@@ -23,6 +24,7 @@ import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.com
   styleUrls: ['./production-cards.component.css'],
   imports: [
     CommonModule,
+    TranslateModule,
     MatProgressSpinnerModule,
     MatIconModule,
     MatFormFieldModule,

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { DashboardService } from './../../service/dashboard.service';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
@@ -7,7 +8,7 @@ import { MoviePosterComponent } from '../../../../shared/movie-poster/movie-post
 @Component({
   selector: 'app-recently-added',
   standalone: true,
-  imports: [MatCardModule, CommonModule,MoviePosterComponent],
+  imports: [MatCardModule, CommonModule,MoviePosterComponent, TranslateModule],
   templateUrl: './recently-added.component.html',
   styleUrl: './recently-added.component.css',
 })

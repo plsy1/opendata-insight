@@ -3,31 +3,31 @@
     <div class="table-wrapper" *ngIf="jobs.length; else empty">
       <table mat-table [dataSource]="jobs" class="mat-elevation-z1">
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'SETTINGS.TASK_NAME' | translate }}</th>
           <td mat-cell *matCellDef="let job">
             {{ job.name }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="trigger">
-          <th mat-header-cell *matHeaderCellDef>Trigger</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'SETTINGS.TASK_TRIGGER' | translate }}</th>
           <td mat-cell *matCellDef="let job">
             {{ formatTrigger(job.trigger) }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="nextRunTime">
-          <th mat-header-cell *matHeaderCellDef>Next Run</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'SETTINGS.TASK_NEXT_RUN' | translate }}</th>
           <td mat-cell *matCellDef="let job">
             {{ formatNextRun(job.next_run_time) }}
           </td>
         </ng-container>
 
         <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <th mat-header-cell *matHeaderCellDef>{{ 'SETTINGS.TASK_ACTION' | translate }}</th>
           <td mat-cell *matCellDef="let job">
             <button mat-raised-button color="primary" (click)="run(job.id)">
-              Run
+              {{ 'SETTINGS.TASK_RUN' | translate }}
             </button>
           </td>
         </ng-container>
@@ -38,6 +38,6 @@
     </div>
 
     <ng-template #empty>
-      <div class="empty-state">No background tasks found.</div>
+      <div class="empty-state">{{ 'SETTINGS.NO_TASKS' | translate }}</div>
     </ng-template>
   </mat-card>

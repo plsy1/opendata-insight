@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { ProductionInformationService } from './service/production-information.service';
 import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -18,6 +19,7 @@ import { MatDivider } from '@angular/material/divider';
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     MatCardModule,
     MatChipsModule,
     MatProgressSpinnerModule,

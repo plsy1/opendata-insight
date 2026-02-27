@@ -6,7 +6,7 @@
         <mat-icon>library_books</mat-icon>
       </div>
       <div class="stat-content">
-        <div class="label">Total</div>
+        <div class="label">{{ 'DASHBOARD.OVERVIEW_TOTAL' | translate }}</div>
         <div class="value">{{ data.overview.total }}</div>
       </div>
     </mat-card>
@@ -16,7 +16,7 @@
         <mat-icon>download_done</mat-icon>
       </div>
       <div class="stat-content">
-        <div class="label">Downloaded</div>
+        <div class="label">{{ 'DASHBOARD.OVERVIEW_DOWNLOADED' | translate }}</div>
         <div class="value">{{ data.overview.downloaded }}</div>
       </div>
     </mat-card>
@@ -26,7 +26,7 @@
         <mat-icon>subscriptions </mat-icon>
       </div>
       <div class="stat-content">
-        <div class="label">Subscribing</div>
+        <div class="label">{{ 'DASHBOARD.OVERVIEW_SUBSCRIBING' | translate }}</div>
         <div class="value">{{ data.overview.not_downloaded }}</div>
       </div>
     </mat-card>
@@ -36,7 +36,7 @@
   <mat-card class="chart-card">
     <h2 class="card-title">
       <mat-icon>timeline</mat-icon>
-      Download Trend
+      {{ 'DASHBOARD.DOWNLOAD_TREND' | translate }}
     </h2>
     <div echarts class="chart" [options]="dailyChartOptions"></div>
   </mat-card>
@@ -47,7 +47,7 @@
     <mat-card class="ranking-card">
       <h2 class="card-title">
         <mat-icon>business</mat-icon>
-        Label Ranking
+        {{ 'DASHBOARD.LABEL_RANKING' | translate }}
       </h2>
 
       <div
@@ -65,7 +65,7 @@
     <mat-card class="ranking-card">
       <h2 class="card-title">
         <mat-icon>person</mat-icon>
-        Actor Ranking
+        {{ 'DASHBOARD.ACTOR_RANKING' | translate }}
       </h2>
 
       <div
@@ -84,5 +84,5 @@
 
 <!-- Loading -->
 <mat-card *ngIf="!statisticData" class="loading-card">
-  Loading statistics...
+  {{ 'DASHBOARD.LOADING_STATS' | translate }}
 </mat-card>

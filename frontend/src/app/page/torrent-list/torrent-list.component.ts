@@ -1,4 +1,6 @@
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonService } from './../../common.service';
+import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
@@ -9,7 +11,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { DownloadOptionComponent } from './component/download-option/download-option.component';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { FileSizePipe } from '../../pipe/file-size.pipe';
 import { DateFormatPipe } from '../../pipe/date-format.pipe';
@@ -34,10 +35,11 @@ import { TorrentService } from './service/torrent.service';
     MatSortModule,
     MatFormFieldModule,
     MatInputModule,
-    MatTooltipModule,
     MatIconModule,
     FileSizePipe,
     DateFormatPipe,
+    TranslateModule,
+    MatTooltipModule
   ],
   templateUrl: './torrent-list.component.html',
   styleUrl: './torrent-list.component.css',

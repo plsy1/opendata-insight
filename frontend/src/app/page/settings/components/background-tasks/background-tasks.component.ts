@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { SettingsService } from '../../service/settings.service';
 import { JobInfo } from '../../models/job_info.interface';
 import { CommonModule } from '@angular/common';
@@ -12,6 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     MatCardModule,
     MatTableModule,
     MatButtonModule,

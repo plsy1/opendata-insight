@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Router } from '@angular/router';
 import { PageExploreServiceService } from '../../services/page-explore.service';
@@ -26,6 +27,7 @@ import { MatInputModule } from '@angular/material/input';
     MatDatepickerModule,
     MatNativeDateModule,
     MatInputModule,
+    TranslateModule,
   ],
   templateUrl: './avbase.component.html',
   styleUrl: './avbase.component.css',

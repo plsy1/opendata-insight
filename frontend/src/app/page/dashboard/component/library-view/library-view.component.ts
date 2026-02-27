@@ -1,4 +1,5 @@
 import { Component, OnInit,Input } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { DashboardService } from './../../service/dashboard.service';
@@ -6,7 +7,7 @@ import { EmbyView } from '../../models/dashboard.interface';
 @Component({
   selector: 'app-library-view',
   standalone: true,
-  imports: [MatCardModule, CommonModule],
+  imports: [MatCardModule, CommonModule, TranslateModule],
   templateUrl: './library-view.component.html',
   styleUrl: './library-view.component.css',
 })

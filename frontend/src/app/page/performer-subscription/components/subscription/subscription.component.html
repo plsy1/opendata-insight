@@ -25,11 +25,11 @@
   <mat-menu #menu="matMenu">
     <button mat-menu-item (click)="onClick(contextActress.title)">
       <mat-icon>info</mat-icon>
-      <span>View Details</span>
+      <span>{{ 'SUBSCRIPTION.VIEW_DETAILS' | translate }}</span>
     </button>
     <button mat-menu-item (click)="onUnsubscribeClick($event, contextActress)">
       <mat-icon>cancel</mat-icon>
-      <span>Unsubscribe</span>
+      <span>{{ 'SUBSCRIPTION.UNSUBSCRIBE' | translate }}</span>
     </button>
   </mat-menu>
 </div>

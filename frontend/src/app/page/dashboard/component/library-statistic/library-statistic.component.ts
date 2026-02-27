@@ -1,4 +1,5 @@
 import { DashboardService } from './../../service/dashboard.service';
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -6,7 +7,7 @@ import { EmbyItemCounts } from '../../models/dashboard.interface';
 @Component({
   selector: 'app-library-statistic',
   standalone: true,
-  imports: [MatCardModule, CommonModule],
+  imports: [MatCardModule, CommonModule, TranslateModule],
   templateUrl: './library-statistic.component.html',
   styleUrl: './library-statistic.component.css',
 })

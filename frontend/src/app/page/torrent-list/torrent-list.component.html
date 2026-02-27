@@ -5,7 +5,7 @@
       <input
         class="filter-input"
         (input)="applyFilter($event)"
-        placeholder="Instant filter by title, indexer or metadata..."
+        [placeholder]="'TORRENTS.FILTER_PLACEHOLDER' | translate"
         spellcheck="false"
       />
     </div>
@@ -14,13 +14,13 @@
   <mat-table [dataSource]="dataSource" matSort>
     <ng-container matColumnDef="indexer">
       <mat-header-cell *matHeaderCellDef mat-sort-header class="indexer-column">
-        <i class="fas fa-database" matTooltip="Source"></i>
+        <i class="fas fa-database" [matTooltip]="'TORRENTS.TOOLTIP_SOURCE' | translate"></i>
       </mat-header-cell>
       <mat-cell
         *matCellDef="let element"
         class="indexer-column"
         (click)="onTitleClick(element)"
-        [matTooltip]="'Open Source Page'"
+        [matTooltip]="'TORRENTS.TOOLTIP_OPEN_SOURCE' | translate"
         matTooltipPosition="right"
       >
         {{ element.indexer }}
@@ -29,7 +29,7 @@
 
     <ng-container matColumnDef="title">
       <mat-header-cell *matHeaderCellDef mat-sort-header class="title-column">
-        <i class="fas fa-heading" matTooltip="Title"></i>
+        <i class="fas fa-heading" [matTooltip]="'TORRENTS.TOOLTIP_TITLE' | translate"></i>
       </mat-header-cell>
       <mat-cell
         *matCellDef="let element"
@@ -42,7 +42,7 @@
 
     <ng-container matColumnDef="size">
       <mat-header-cell *matHeaderCellDef mat-sort-header class="size-column">
-        <i class="fas fa-file-archive" matTooltip="Size"></i>
+        <i class="fas fa-file-archive" [matTooltip]="'TORRENTS.TOOLTIP_SIZE' | translate"></i>
       </mat-header-cell>
       <mat-cell *matCellDef="let element" class="size-column">
         {{ element.size | fileSize }}
@@ -51,7 +51,7 @@
 
     <ng-container matColumnDef="seeders">
       <mat-header-cell *matHeaderCellDef mat-sort-header class="seeders-column">
-        <i class="fas fa-upload" matTooltip="Seeding"></i>
+        <i class="fas fa-upload" [matTooltip]="'TORRENTS.TOOLTIP_SEEDING' | translate"></i>
       </mat-header-cell>
       <mat-cell *matCellDef="let element" class="seeders-column">
         {{ element.seeders }}
@@ -64,7 +64,7 @@
         mat-sort-header
         class="publishDate-column"
       >
-        <i class="fas fa-calendar-alt" matTooltip="Date"></i>
+        <i class="fas fa-calendar-alt" [matTooltip]="'TORRENTS.TOOLTIP_DATE' | translate"></i>
       </mat-header-cell>
       <mat-cell *matCellDef="let element" class="publishDate-column">
         {{ element.publishDate | dateFormat }}

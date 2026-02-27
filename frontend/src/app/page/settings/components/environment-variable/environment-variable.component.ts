@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { EnvironmentConfig } from '../../models/settings.interface';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -13,6 +14,7 @@ import { SettingsService } from '../../service/settings.service';
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     FormsModule,
     MatCardModule,
     MatFormFieldModule,

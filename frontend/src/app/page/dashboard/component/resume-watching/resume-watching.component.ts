@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { DashboardService } from './../../service/dashboard.service';
@@ -7,7 +8,7 @@ import { MoviePosterComponent } from '../../../../shared/movie-poster/movie-post
 @Component({
   selector: 'app-resume-watching',
   standalone: true,
-  imports: [CommonModule, MatCardModule,MoviePosterComponent],
+  imports: [CommonModule, MatCardModule,MoviePosterComponent, TranslateModule],
   templateUrl: './resume-watching.component.html',
   styleUrl: './resume-watching.component.css',
 })

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { PageExploreServiceService } from '../../../services/page-explore.service';
 import { fc2RankingItem, RankingType } from '../../../models/fc2.interface';
 import { MovieCardComponent } from '../../../../../shared/movie-card/movie-card.component';
@@ -18,6 +19,7 @@ import { FormsModule } from '@angular/forms';
     MatFormFieldModule,
     MatSelectModule,
     FormsModule,
+    TranslateModule,
   ],
   templateUrl: './fc2.component.html',
   styleUrl: './fc2.component.css',
@@ -85,11 +87,11 @@ export class Fc2Component implements OnInit {
   }
 
   rankingTypeLabels: Record<RankingType, string> = {
-    [RankingType.Realtime]: 'Realtime',
-    [RankingType.Daily]: 'Daily',
-    [RankingType.Weekly]: 'Weekly',
-    [RankingType.Monthly]: 'Monthly',
-    [RankingType.Yearly]: 'Yearly',
+    [RankingType.Realtime]: 'EXPLORE.REALTIME',
+    [RankingType.Daily]: 'EXPLORE.DAILY',
+    [RankingType.Weekly]: 'EXPLORE.WEEKLY',
+    [RankingType.Monthly]: 'EXPLORE.MONTHLY',
+    [RankingType.Yearly]: 'EXPLORE.YEARLY',
   };
 
   onWorkRankingTypeChange(newType: RankingType) {

@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component, OnInit, HostListener } from '@angular/core';
 import { fc2ProductionService } from './services/fc2-productrion.services';
 import { FC2ProductionInformation } from './model/fc2-production.interface';
@@ -17,6 +18,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     MatCardModule,
     MatChipsModule,
     MatProgressSpinnerModule,

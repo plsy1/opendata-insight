@@ -4,11 +4,12 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
 import { HomeService } from '../../service/home.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [MatSidenavModule, MatListModule, RouterModule],
+  imports: [MatSidenavModule, MatListModule, RouterModule, TranslateModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css'],
 })

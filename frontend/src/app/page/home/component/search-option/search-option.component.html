@@ -2,7 +2,7 @@
   <div class="dialog-header">
     <div class="header-title">
       <mat-icon>search</mat-icon>
-      <span>Deep Search</span>
+      <span>{{ 'SEARCH_OPTION.TITLE' | translate }}</span>
     </div>
     <button mat-icon-button (click)="close()" class="close-btn">
       <mat-icon>close</mat-icon>
@@ -12,12 +12,12 @@
   <div class="dialog-body">
     <div class="search-input-wrapper">
       <mat-form-field appearance="outline" class="search-field">
-        <mat-label>Search anything...</mat-label>
+        <mat-label>{{ 'SEARCH_OPTION.INPUT_LABEL' | translate }}</mat-label>
         <input
           matInput
           [(ngModel)]="searchVaule"
           (keydown.enter)="searchKeywords()"
-          placeholder="Keyword, Actress, or ID..."
+          [placeholder]="'SEARCH_OPTION.INPUT_PLACEHOLDER' | translate"
           autocomplete="off"
         />
         <mat-icon matSuffix class="search-suffix-icon">search</mat-icon>
@@ -27,7 +27,7 @@
     <div *ngIf="filteredOptions?.length" class="recent-searches">
       <div class="recent-title">
         <mat-icon>history</mat-icon>
-        <span>Recent Activity</span>
+        <span>{{ 'SEARCH_OPTION.RECENT_ACTIVITY' | translate }}</span>
       </div>
       <div class="recent-list">
         <div
@@ -47,7 +47,7 @@
     </div>
 
     <div class="search-divider">
-      <span>Search Methods</span>
+      <span>{{ 'SEARCH_OPTION.SEARCH_METHODS' | translate }}</span>
     </div>
 
     <div class="search-type-buttons">
@@ -59,8 +59,8 @@
       >
         <mat-icon>cloud_download</mat-icon>
         <div class="btn-text">
-          <span class="main-label">Torrents</span>
-          <span class="sub-label">Search magnetic links</span>
+          <span class="main-label">{{ 'SEARCH_OPTION.METHOD_TORRENTS' | translate }}</span>
+          <span class="sub-label">{{ 'SEARCH_OPTION.METHOD_TORRENTS_DESC' | translate }}</span>
         </div>
       </button>
 
@@ -72,8 +72,8 @@
       >
         <mat-icon>stars</mat-icon>
         <div class="btn-text">
-          <span class="main-label">Performers</span>
-          <span class="sub-label">Find by actress name</span>
+          <span class="main-label">{{ 'SEARCH_OPTION.METHOD_PERFORMERS' | translate }}</span>
+          <span class="sub-label">{{ 'SEARCH_OPTION.METHOD_PERFORMERS_DESC' | translate }}</span>
         </div>
       </button>
 
@@ -85,8 +85,8 @@
       >
         <mat-icon>auto_awesome</mat-icon>
         <div class="btn-text">
-          <span class="main-label">General</span>
-          <span class="sub-label">Search all metadata</span>
+          <span class="main-label">{{ 'SEARCH_OPTION.METHOD_GENERAL' | translate }}</span>
+          <span class="sub-label">{{ 'SEARCH_OPTION.METHOD_GENERAL_DESC' | translate }}</span>
         </div>
       </button>
     </div>

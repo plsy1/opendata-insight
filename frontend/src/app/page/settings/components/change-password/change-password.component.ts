@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -13,6 +14,7 @@ import { SettingsService } from '../../service/settings.service';
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     FormsModule,
     MatCardModule,
     MatFormFieldModule,

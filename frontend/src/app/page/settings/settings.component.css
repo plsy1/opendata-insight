@@ -23,3 +23,59 @@
 ::ng-deep .mat-mdc-tab-body-wrapper {
   padding: 24px !important;
 }
+
+/* ── Language Switcher ── */
+.lang-switcher-card {
+  background: transparent;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.lang-switcher-card label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lang-switcher-card label i {
+  color: var(--primary);
+}
+
+.lang-buttons {
+  display: flex;
+  gap: 8px;
+  background: var(--bg-raised);
+  padding: 4px;
+  border-radius: var(--radius-md);
+}
+
+.lang-buttons button {
+  background: transparent;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.lang-buttons button:hover {
+  color: var(--text-main);
+}
+
+.lang-buttons button.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}

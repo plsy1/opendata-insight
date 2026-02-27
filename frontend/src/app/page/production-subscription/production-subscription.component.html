@@ -5,7 +5,7 @@
   <mat-tab>
     <ng-template mat-tab-label>
       <i class="fas fa-star tab-icon"></i>
-      Subscription
+      {{ 'SUBSCRIPTION.TAB_SUBSCRIPTION' | translate }}
     </ng-template>
     <ng-template matTabContent>
       <app-production-subscription-list></app-production-subscription-list>
@@ -14,7 +14,7 @@
   <mat-tab>
     <ng-template mat-tab-label>
       <i class="fas fa-history tab-icon"></i>
-      History
+      {{ 'SUBSCRIPTION.TAB_HISTORY' | translate }}
     </ng-template>
     <ng-template matTabContent>
       <app-download-history></app-download-history>

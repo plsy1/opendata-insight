@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Router } from '@angular/router';
 import { PageExploreServiceService } from '../../services/page-explore.service';
@@ -25,7 +26,7 @@ import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.com
     MatIconModule,
     MatFormFieldModule,
     MatSelectModule,
-    FormsModule,MatTooltipModule,PaginationComponent
+    FormsModule,MatTooltipModule,PaginationComponent, TranslateModule
   ],
   templateUrl: './fanza.component.html',
   styleUrl: './fanza.component.css',

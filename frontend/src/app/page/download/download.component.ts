@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { DownloadingTorrent } from './models/torrent.interface';
 import { DownloadService } from './service/download.service';
 import { switchMap } from 'rxjs/operators';
@@ -19,6 +20,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     MatCardModule,
     MatIcon,
     MatProgressBarModule,

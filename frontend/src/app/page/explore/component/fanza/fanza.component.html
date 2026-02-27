@@ -1,4 +1,4 @@
-<h2>Monthly Ranking of Actress</h2>
+<h2>{{ 'EXPLORE.FANZA_ACTRESS_RANKING' | translate }}</h2>
 
 <div>
   <div class="card-grid">
@@ -28,9 +28,9 @@
   (nextClick)="nextPage()"
 ></app-pagination>
 
-<h2>Ranking of Works</h2>
+<h2>{{ 'EXPLORE.WORK_RANKING' | translate }}</h2>
 <mat-form-field appearance="outline">
-  <mat-label>Ranking Type</mat-label>
+  <mat-label>{{ 'EXPLORE.RANKING_TYPE' | translate }}</mat-label>
   <mat-select
     [(ngModel)]="workRankingType"
     (ngModelChange)="onWorkRankingTypeChange($event)"
@@ -38,18 +38,18 @@
     <mat-select-trigger>
       {{
         workRankingType === RankingTypeOfWorks.Daily
-          ? "Daily"
+          ? ('EXPLORE.DAILY' | translate)
           : workRankingType === RankingTypeOfWorks.Weekly
-          ? "Weekly"
+          ? ('EXPLORE.WEEKLY' | translate)
           : workRankingType === RankingTypeOfWorks.Monthly
-          ? "Monthly"
-          : "Select Type"
+          ? ('EXPLORE.MONTHLY' | translate)
+          : ('EXPLORE.SELECT_TYPE' | translate)
       }}
     </mat-select-trigger>
 
-    <mat-option [value]="RankingTypeOfWorks.Daily">Daily</mat-option>
-    <mat-option [value]="RankingTypeOfWorks.Weekly">Weekly</mat-option>
-    <mat-option [value]="RankingTypeOfWorks.Monthly">Monthly</mat-option>
+    <mat-option [value]="RankingTypeOfWorks.Daily">{{ 'EXPLORE.DAILY' | translate }}</mat-option>
+    <mat-option [value]="RankingTypeOfWorks.Weekly">{{ 'EXPLORE.WEEKLY' | translate }}</mat-option>
+    <mat-option [value]="RankingTypeOfWorks.Monthly">{{ 'EXPLORE.MONTHLY' | translate }}</mat-option>
   </mat-select>
 </mat-form-field>
 

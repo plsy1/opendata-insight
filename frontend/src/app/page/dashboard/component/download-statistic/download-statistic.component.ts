@@ -4,13 +4,14 @@ import { MatCardModule } from '@angular/material/card';
 import { NgxEchartsModule } from 'ngx-echarts';
 import { MatIconModule } from '@angular/material/icon';
 import { DashboardService } from './../../service/dashboard.service';
+import { TranslateModule } from '@ngx-translate/core';
 import { StatAllResponse } from '../../models/statistic.interface';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-download-statistic',
   standalone: true,
-  imports: [CommonModule, MatCardModule, NgxEchartsModule,MatIconModule],
+  imports: [CommonModule, MatCardModule, NgxEchartsModule,MatIconModule, TranslateModule],
   templateUrl: './download-statistic.component.html',
   styleUrl: './download-statistic.component.css',
 })

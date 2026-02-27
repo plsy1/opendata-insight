@@ -5,9 +5,18 @@
   <mat-tab>
     <ng-template mat-tab-label>
       <i class="fas fa-user-cog tab-icon"></i>
-      Environments & Password
+      {{ 'SETTINGS.ENV_PASSWORD' | translate }}
     </ng-template>
     <ng-template matTabContent>
+      <!-- Language Switcher Section -->
+      <div class="lang-switcher-card">
+        <label><i class="fas fa-globe"></i> {{ 'SETTINGS.LANGUAGE' | translate }}</label>
+        <div class="lang-buttons">
+          <button [class.active]="currentLang === 'zh'" (click)="changeLanguage('zh')">{{ 'SETTINGS.CHINESE' | translate }}</button>
+          <button [class.active]="currentLang === 'en'" (click)="changeLanguage('en')">{{ 'SETTINGS.ENGLISH' | translate }}</button>
+        </div>
+      </div>
+
       <app-environment-variable></app-environment-variable>
       <app-change-password></app-change-password>
     </ng-template>
@@ -15,7 +24,7 @@
   <mat-tab>
     <ng-template mat-tab-label>
       <i class="fas fa-tasks tab-icon"></i>
-      Background Tasks
+      {{ 'SETTINGS.BACKGROUND_TASKS' | translate }}
     </ng-template>
     <ng-template matTabContent>
       <app-background-tasks></app-background-tasks>

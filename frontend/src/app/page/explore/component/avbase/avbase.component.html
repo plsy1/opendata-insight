@@ -1,4 +1,4 @@
-<h2>Newbie</h2>
+<h2>{{ 'EXPLORE.AVBASE_NEWBIE' | translate }}</h2>
 <div class="card-grid">
   <div
     *ngFor="let actress of avbaseIndexData?.newbie_talents"
@@ -18,7 +18,7 @@
   </div>
 </div>
 
-<h2>Popular</h2>
+<h2>{{ 'EXPLORE.AVBASE_POPULAR' | translate }}</h2>
 <div class="card-grid">
   <div
     *ngFor="let actress of avbaseIndexData?.popular_talents"
@@ -41,7 +41,7 @@
 <div class="release-header">
   <div class="date-jump" (click)="picker.open()">
     <h2 class="jump-title">
-      Released on {{ currentDate | date : "yyyy-MM-dd" }}
+      {{ 'EXPLORE.RELEASED_ON' | translate }} {{ currentDate | date : "yyyy-MM-dd" }}
     </h2>
     <mat-icon class="calendar-icon">calendar_month</mat-icon>
     <input

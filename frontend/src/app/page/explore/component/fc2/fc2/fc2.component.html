@@ -1,21 +1,21 @@
-<h2>FC2 Ranking</h2>
+<h2>{{ 'EXPLORE.FC2_RANKING' | translate }}</h2>
 
 <div style="margin-bottom: 16px;">
   <mat-form-field appearance="outline" style="width: 200px;">
-    <mat-label>Ranking Type</mat-label>
+    <mat-label>{{ 'EXPLORE.RANKING_TYPE' | translate }}</mat-label>
   <mat-select
     [(ngModel)]="currentRankingType"
     (ngModelChange)="onWorkRankingTypeChange($event)"
   >
     <mat-select-trigger>
-      {{ rankingTypeLabels[currentRankingType] || "Select Type" }}
+      {{ (rankingTypeLabels[currentRankingType] || "EXPLORE.SELECT_TYPE") | translate }}
     </mat-select-trigger>
 
-    <mat-option [value]="RankingType.Realtime">Realtime</mat-option>
-    <mat-option [value]="RankingType.Daily">Daily</mat-option>
-    <mat-option [value]="RankingType.Weekly">Weekly</mat-option>
-    <mat-option [value]="RankingType.Monthly">Monthly</mat-option>
-    <mat-option [value]="RankingType.Yearly">Yearly</mat-option>
+    <mat-option [value]="RankingType.Realtime">{{ 'EXPLORE.REALTIME' | translate }}</mat-option>
+    <mat-option [value]="RankingType.Daily">{{ 'EXPLORE.DAILY' | translate }}</mat-option>
+    <mat-option [value]="RankingType.Weekly">{{ 'EXPLORE.WEEKLY' | translate }}</mat-option>
+    <mat-option [value]="RankingType.Monthly">{{ 'EXPLORE.MONTHLY' | translate }}</mat-option>
+    <mat-option [value]="RankingType.Yearly">{{ 'EXPLORE.YEARLY' | translate }}</mat-option>
   </mat-select>
 </mat-form-field>
 

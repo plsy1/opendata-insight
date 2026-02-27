@@ -9,7 +9,7 @@
         <button
           class="delete-btn"
           (click)="deleteTorrent(torrent.hash)"
-          matTooltip="Cancel Download"
+          [matTooltip]="'DOWNLOAD_PAGE.CANCEL' | translate"
         >
           <i class="fas fa-times"></i>
         </button>
@@ -18,7 +18,7 @@
       <!-- Main Progress -->
       <div class="progress-section">
         <div class="progress-info">
-          <span class="progress-label">Downloading...</span>
+          <span class="progress-label">{{ 'DOWNLOAD_PAGE.DOWNLOADING' | translate }}</span>
           <span class="progress-value">{{ (torrent.progress * 100) | number : '1.0-1' }}%</span>
         </div>
         <mat-progress-bar
@@ -30,15 +30,15 @@
 
       <!-- Detailed Stats Grid -->
       <div class="stats-grid">
-        <div class="stat-item" matTooltip="Download Speed">
+        <div class="stat-item" [matTooltip]="'DOWNLOAD_PAGE.SPEED' | translate">
           <i class="fas fa-arrow-down icon-speed"></i>
           <span>{{ torrent.download_speed | speed }}</span>
         </div>
-        <div class="stat-item" matTooltip="Time Remaining">
+        <div class="stat-item" [matTooltip]="'DOWNLOAD_PAGE.ETA' | translate">
           <i class="fas fa-clock icon-eta"></i>
           <span>{{ torrent.eta | eta }}</span>
         </div>
-        <div class="stat-item" matTooltip="Total Size">
+        <div class="stat-item" [matTooltip]="'DOWNLOAD_PAGE.SIZE' | translate">
           <i class="fas fa-weight-hanging icon-size"></i>
           <span>{{ torrent.size | fileSize }}</span>
         </div>
@@ -52,6 +52,6 @@
   <div class="empty-icon">
     <i class="fas fa-cloud-download-alt"></i>
   </div>
-  <h3>No Active Downloads</h3>
-  <p>Your ongoing downloads will appear here.</p>
+  <h3>{{ 'DOWNLOAD_PAGE.NO_ACTIVE' | translate }}</h3>
+  <p>{{ 'DOWNLOAD_PAGE.NO_ACTIVE_DESC' | translate }}</p>
 </div>

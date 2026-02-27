@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { PerformerSubscriptionService } from '../../service/performer-subscription.service';
 import { Router } from '@angular/router';
@@ -13,6 +14,7 @@ import { Actress } from '../../model/actor-information.interface';
   standalone: true,
   imports: [
     CommonModule,
+    TranslateModule,
     MatIconModule,
     MatCardModule,
     MatButtonModule,

@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,6 +12,7 @@ import { MatTabsModule } from '@angular/material/tabs';
   imports: [
     MatIconModule,
     CommonModule,
+    TranslateModule,
     ProductionSubscriptionListComponent,
     DownloadHistoryComponent,
     MatTabsModule,

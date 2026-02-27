@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 import { PageExploreServiceService } from '../../services/page-explore.service';
 import { JavtrailersDailyRelease } from '../../models/page-explore';
 import { MatCardModule } from '@angular/material/card';
@@ -17,7 +18,7 @@ import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.com
     MatCardModule,
     MatIconModule,
     MatTooltipModule,
-    PaginationComponent,MovieCardComponent
+    PaginationComponent,MovieCardComponent, TranslateModule
   ],
   templateUrl: './javtrailers.component.html',
   styleUrls: ['./javtrailers.component.css'],

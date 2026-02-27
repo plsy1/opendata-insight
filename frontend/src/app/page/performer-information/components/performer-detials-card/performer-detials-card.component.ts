@@ -1,3 +1,4 @@
+import { TranslateModule } from '@ngx-translate/core';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -10,7 +11,8 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-performer-detials-card',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule],
+  imports: [CommonModule,
+    TranslateModule, MatCardModule, MatIconModule],
   templateUrl: './performer-detials-card.component.html',
   styleUrls: ['./performer-detials-card.component.css'],
 })

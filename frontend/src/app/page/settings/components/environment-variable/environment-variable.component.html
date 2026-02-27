@@ -1,5 +1,5 @@
 <mat-card class="env-card">
-  <mat-card-title>Environment Variables</mat-card-title>
+  <mat-card-title>{{ 'SETTINGS.ENV_VARIABLES' | translate }}</mat-card-title>
   <mat-card-content>
     <form (ngSubmit)="saveEnv()" #envForm="ngForm" class="env-form">
       <div class="env-row">
@@ -87,7 +87,7 @@
         </mat-form-field>
       </div>
 
-      <button mat-raised-button type="submit">Save</button>
+      <button mat-raised-button type="submit">{{ 'COMMON.SAVE' | translate }}</button>
     </form>
   </mat-card-content>
 </mat-card>

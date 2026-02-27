@@ -14,45 +14,45 @@
     <mat-nav-list>
       <a mat-list-item routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <i class="fas fa-th-large"></i>
-        <span>Dashboard</span>
+        <span>{{ 'NAV.DASHBOARD' | translate }}</span>
       </a>
       <a mat-list-item routerLink="/explore" routerLinkActive="active">
         <i class="fas fa-compass"></i>
-        <span>Explore</span>
+        <span>{{ 'NAV.EXPLORE' | translate }}</span>
       </a>
       <a mat-list-item routerLink="/torrents" routerLinkActive="active">
         <i class="fas fa-magnet"></i>
-        <span>Torrents</span>
+        <span>{{ 'NAV.TORRENTS' | translate }}</span>
       </a>
       <a mat-list-item routerLink="/keywords" routerLinkActive="active">
         <i class="fas fa-search"></i>
-        <span>Search</span>
+        <span>{{ 'NAV.SEARCH' | translate }}</span>
       </a>
       <a mat-list-item routerLink="/download" routerLinkActive="active">
         <i class="fas fa-download"></i>
-        <span>Download</span>
+        <span>{{ 'NAV.DOWNLOAD' | translate }}</span>
       </a>
       
-      <div style="margin: 24px 0 8px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Subscriptions</div>
+      <div style="margin: 24px 0 8px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">{{ 'NAV.SUBSCRIPTIONS_HEADER' | translate }}</div>
       
       <a mat-list-item routerLink="/subscription/performer" routerLinkActive="active">
         <i class="fas fa-star"></i>
-        <span>Performers</span>
+        <span>{{ 'NAV.PERFORMERS' | translate }}</span>
       </a>
       <a mat-list-item routerLink="/subscription/production" routerLinkActive="active">
         <i class="fas fa-video"></i>
-        <span>Productions</span>
+        <span>{{ 'NAV.PRODUCTIONS' | translate }}</span>
       </a>
 
       <div style="flex: 1"></div>
 
       <a mat-list-item routerLink="/settings" routerLinkActive="active">
         <i class="fas fa-sliders-h"></i>
-        <span>Settings</span>
+        <span>{{ 'NAV.SETTINGS' | translate }}</span>
       </a>
       <a mat-list-item (click)="logout()" class="logout-item">
         <i class="fas fa-power-off"></i>
-        <span>Logout</span>
+        <span>{{ 'NAV.LOGOUT' | translate }}</span>
       </a>
     </mat-nav-list>
   </mat-sidenav>
