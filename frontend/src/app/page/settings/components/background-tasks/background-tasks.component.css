@@ -1,8 +1,15 @@
+/* Override MDC card token so the card inherits sidebar color */
+:host {
+  --mdc-elevated-card-container-color: var(--bg-sidebar);
+  --mdc-outlined-card-container-color: var(--bg-sidebar);
+}
+
 .tasks-card {
-  flex: 1 1 100%;
-  margin: 0 auto;
-  
-  overflow-x: hidden;
+  border: 1px solid var(--border-soft) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+  padding: 0 !important;
+  overflow: hidden;
 }
 
 .table-wrapper {
@@ -10,26 +17,52 @@
   overflow-x: auto;
 }
 
-table {
+table.mat-mdc-table {
   width: 100%;
-  table-layout: fixed;
+  background: transparent !important;
 }
 
-td,
-th {
-  padding: 12px;
-  white-space: normal;
-  word-break: break-word;
+th.mat-mdc-header-cell {
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary) !important;
+  border-bottom: 1px solid var(--border-soft) !important;
+  padding: 12px 16px !important;
+  background: transparent !important;
 }
 
-.mat-column-action {
-  width: 100px;
-  text-align: center;
-  white-space: nowrap;
+td.mat-mdc-cell {
+  padding: 14px 16px !important;
+  font-size: 14px;
+  color: var(--text-main) !important;
+  border-bottom: 1px solid var(--border-soft) !important;
+}
+
+tr.mat-mdc-row { transition: background 0.15s; }
+tr.mat-mdc-row:hover td { background: var(--bg-hover) !important; }
+tr.mat-mdc-row:last-child td { border-bottom: none !important; }
+
+button[mat-raised-button][color="primary"] {
+  background: var(--primary-gradient) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 0 16px !important;
+  height: 32px !important;
+  box-shadow: none !important;
+  transition: opacity 0.15s, transform 0.15s !important;
+}
+button[mat-raised-button][color="primary"]:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
 }
 
 .empty-state {
-  padding: 24px;
+  padding: 48px;
   text-align: center;
-  opacity: 0.7;
+  color: var(--text-muted);
+  font-size: 14px;
 }

@@ -1,5 +1,5 @@
 import { ProductionInformationService } from './service/production-information.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -30,6 +30,89 @@ export class ProductionInformationComponent implements OnInit {
   movieData: MovieData = createDefaultMovieInformation();
   movieId: string = '';
   isLoading: boolean = false;
+
+  // ── Lightbox ──────────────────────────
+  lightboxIndex: number = -1;
+  lbScale   = 1;
+  lbTx      = 0;   // translateX in px
+  lbTy      = 0;   // translateY in px
+  lbDragging = false;
+  private lbDragStart = { x: 0, y: 0, tx: 0, ty: 0 };
+
+  get lightboxOpen(): boolean { return this.lightboxIndex >= 0; }
+  /** Cover image prepended to sample images — used for both strip and lightbox */
+  get allSampleImages(): string[] {
+    const cover   = this.movieData?.products?.[0]?.image_url || '';
+    const samples = (this.movieData?.products?.[0]?.sample_image_urls || []).map((s: any) => s['l'] || '');
+    return cover ? [cover, ...samples] : samples;
+  }
+  get lightboxImages(): string[] { return this.allSampleImages; }
+  get lightboxSrc(): string { return this.lightboxImages[this.lightboxIndex] || ''; }
+  get lbTransform(): string {
+    return `translate(${this.lbTx}px, ${this.lbTy}px) scale(${this.lbScale})`;
+  }
+  get lbCursor(): string {
+    if (this.lbDragging) return 'grabbing';
+    return this.lbScale > 1 ? 'grab' : 'default';
+  }
+
+  private resetLbTransform(): void { this.lbScale = 1; this.lbTx = 0; this.lbTy = 0; }
+
+  openLightbox(index: number): void { this.lightboxIndex = index; this.resetLbTransform(); }
+  closeLightbox(): void  { this.lightboxIndex = -1; this.resetLbTransform(); }
+  prevImage(): void {
+    this.resetLbTransform();
+    this.lightboxIndex = (this.lightboxIndex - 1 + this.lightboxImages.length) % this.lightboxImages.length;
+  }
+  nextImage(): void {
+    this.resetLbTransform();
+    this.lightboxIndex = (this.lightboxIndex + 1) % this.lightboxImages.length;
+  }
+
+  /** Wheel-to-zoom centred on the cursor */
+  onLbWheel(event: WheelEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const img  = event.currentTarget as HTMLElement;
+    const rect = img.getBoundingClientRect();
+
+    // Mouse position relative to the image's current rendered top-left corner
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    // New scale clamped to [1, 5]
+    const factor   = event.deltaY < 0 ? 1.12 : 1 / 1.12;
+    const newScale = Math.min(5, Math.max(1, this.lbScale * factor));
+    const ratio    = newScale / this.lbScale;
+
+    // Correct zoom-to-cursor formula (derived from transform-origin:0 0):
+    // newTx = tx + mouseX * (1 - ratio)
+    // This keeps the screen-space position of (mouseX, mouseY) fixed as scale changes.
+    this.lbTx    = this.lbTx + mouseX * (1 - ratio);
+    this.lbTy    = this.lbTy + mouseY * (1 - ratio);
+    this.lbScale = newScale;
+
+    if (newScale === 1) { this.lbTx = 0; this.lbTy = 0; }
+  }
+
+  /** Pan by dragging when zoomed */
+  onLbMouseDown(event: MouseEvent): void {
+    if (this.lbScale <= 1) return;
+    this.lbDragging = true;
+    this.lbDragStart = { x: event.clientX, y: event.clientY, tx: this.lbTx, ty: this.lbTy };
+    event.preventDefault();
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onLbMouseMove(event: MouseEvent): void {
+    if (!this.lbDragging) return;
+    this.lbTx = this.lbDragStart.tx + (event.clientX - this.lbDragStart.x);
+    this.lbTy = this.lbDragStart.ty + (event.clientY - this.lbDragStart.y);
+  }
+
+  @HostListener('document:mouseup')
+  onLbMouseUp(): void { this.lbDragging = false; }
 
   constructor(
     private getRoute: ActivatedRoute,

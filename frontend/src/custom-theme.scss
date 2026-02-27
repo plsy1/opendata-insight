@@ -6,11 +6,15 @@ $light-theme: mat.define-theme(
   (
     color: (
       theme-type: light,
-      primary: mat.$azure-palette,
-      tertiary: mat.$red-palette,
+      primary: mat.$violet-palette,
+      tertiary: mat.$rose-palette,
+    ),
+    typography: (
+      plain-family: 'Plus Jakarta Sans, sans-serif',
+      brand-family: 'Plus Jakarta Sans, sans-serif',
     ),
     density: (
-      scale: 0,
+      scale: -1,
     ),
   )
 );
@@ -19,27 +23,159 @@ $dark-theme: mat.define-theme(
   (
     color: (
       theme-type: dark,
-      primary: mat.$azure-palette,
-      tertiary: mat.$red-palette,
+      primary: mat.$violet-palette,
+      tertiary: mat.$rose-palette,
+    ),
+    typography: (
+      plain-family: 'Plus Jakarta Sans, sans-serif',
+      brand-family: 'Plus Jakarta Sans, sans-serif',
     ),
     density: (
-      scale: 0,
+      scale: -1,
     ),
   )
 );
 
+/* ─────────────────────────────────────────────────────────
+   Apply themes, then aggressively override every surface
+   token so Material components blend with our custom CSS.
+   ───────────────────────────────────────────────────────── */
+
 :root {
   @include mat.all-component-themes($light-theme);
-  --app-background: #faf9fd;
-  --text-color: black;
-  --border-color: #ccc;
-  --mat-table-background-color: #faf9fd;
+
+  /* ── Structural backgrounds ── */
+  --mat-sidenav-container-background-color: transparent;
+  --mat-sidenav-content-background-color:  transparent;
+  --mat-toolbar-container-background-color: transparent;
+  --mat-toolbar-container-text-color: var(--text-main);
+
+  /* ── Cards ── */
+  --mat-card-container-background-color: var(--bg-card);
+  --mat-card-container-elevation-shadow:  var(--shadow-sm);
+  --mat-card-container-color: var(--text-main);
+  --mdc-elevated-card-container-color: var(--bg-card);
+  --mdc-outlined-card-container-color: var(--bg-card);
+  --mdc-outlined-card-outline-color: var(--border-soft);
+
+  /* ── Menus / Select / Autocomplete ── */
+  --mat-menu-container-color: var(--bg-card);
+  --mat-menu-item-label-text-color: var(--text-main);
+  --mat-menu-item-icon-color: var(--text-muted);
+  --mat-menu-item-hover-state-layer-color: var(--bg-hover);
+  --mat-select-panel-background-color: var(--bg-card);
+  --mat-autocomplete-background-color: var(--bg-card);
+
+  /* ── List / Nav List ── */
+  --mat-list-active-indicator-color: var(--primary);
+  --mdc-list-list-item-container-color: transparent;
+  --mdc-list-list-item-label-text-color: var(--text-main);
+  --mdc-list-list-item-supporting-text-color: var(--text-muted);
+
+  /* ── Chips ── */
+  --mdc-chip-container-color: var(--bg-raised);
+  --mdc-chip-label-text-color: var(--text-main);
+  --mdc-chip-outline-color: var(--border-soft);
+  --mat-chip-selected-trailing-icon-color: var(--text-on-primary);
+
+  /* ── Table ── */
+  --mat-table-background-color: var(--bg-card);
+  --mat-table-header-headline-color: var(--text-main);
+  --mat-table-row-item-label-text-color: var(--text-main);
+  --mat-table-row-item-outline-color: var(--border-soft);
+
+  /* ── Dialog ── */
+  --mdc-dialog-container-color: var(--bg-card);
+  --mdc-dialog-subhead-color: var(--text-main);
+  --mdc-dialog-supporting-text-color: var(--text-muted);
+
+  /* ── Tabs ── */
+  --mat-tab-header-divider-color: var(--border-soft);
+  --mat-tab-header-inactive-label-text-color: var(--text-muted);
+  --mat-tab-header-active-label-text-color: var(--primary);
+  --mat-tab-header-active-focus-indicator-color: var(--primary);
+  --mat-tab-header-active-hover-indicator-color: var(--primary);
+
+  /* ── Progress / Spinner ── */
+  --mdc-linear-progress-track-color: var(--border-soft);
+  --mdc-circular-progress-active-indicator-color: var(--primary);
+
+  /* ── Form fields ── */
+  --mdc-filled-text-field-container-color: var(--bg-raised);
+  --mdc-outlined-text-field-container-color: transparent;
+  --mdc-outlined-text-field-outline-color: var(--border-medium);
+  --mdc-outlined-text-field-hover-outline-color: var(--primary);
+
+  /* ── Paginator ── */
+  --mat-paginator-container-background-color: var(--bg-card);
+  --mat-paginator-container-text-color: var(--text-main);
+
+  /* ── Expansion panel ── */
+  --mat-expansion-container-background-color: var(--bg-card);
+  --mat-expansion-container-text-color: var(--text-main);
+  --mat-expansion-header-collapsed-state-height: 48px;
+
+  /* ── Bottom sheet ── */
+  --mat-bottom-sheet-container-background-color: var(--bg-card);
+  --mat-bottom-sheet-container-text-color: var(--text-main);
 }
 
+/* ─────────────────────────────────────────────────────────
+   Dark theme overrides
+   ───────────────────────────────────────────────────────── */
 .dark-theme {
   @include mat.all-component-colors($dark-theme);
-  --app-background: #1e1e1e;
-  --text-color: white;
-  --border-color: #444;
-  --mat-table-background-color: #1e1e1e;
+
+  --mat-sidenav-container-background-color: transparent;
+  --mat-sidenav-content-background-color:  transparent;
+  --mat-toolbar-container-background-color: transparent;
+  --mat-toolbar-container-text-color: var(--text-main);
+
+  --mat-card-container-background-color: var(--bg-card);
+  --mat-card-container-elevation-shadow:  var(--shadow-md);
+  --mat-card-container-color: var(--text-main);
+  --mdc-elevated-card-container-color: var(--bg-card);
+  --mdc-outlined-card-container-color: var(--bg-card);
+  --mdc-outlined-card-outline-color: var(--border-soft);
+
+  --mat-menu-container-color: var(--bg-raised);
+  --mat-menu-item-label-text-color: var(--text-main);
+  --mat-menu-item-icon-color: var(--text-muted);
+  --mat-menu-item-hover-state-layer-color: var(--bg-hover);
+  --mat-select-panel-background-color: var(--bg-raised);
+  --mat-autocomplete-background-color: var(--bg-raised);
+
+  --mdc-list-list-item-container-color: transparent;
+  --mdc-list-list-item-label-text-color: var(--text-main);
+  --mdc-list-list-item-supporting-text-color: var(--text-muted);
+
+  --mdc-chip-container-color: var(--bg-raised);
+  --mdc-chip-label-text-color: var(--text-main);
+  --mdc-chip-outline-color: var(--border-medium);
+
+  --mat-table-background-color: var(--bg-card);
+  --mat-table-header-headline-color: var(--text-main);
+  --mat-table-row-item-label-text-color: var(--text-main);
+  --mat-table-row-item-outline-color: var(--border-soft);
+
+  --mdc-dialog-container-color: var(--bg-raised);
+  --mdc-dialog-subhead-color: var(--text-main);
+  --mdc-dialog-supporting-text-color: var(--text-muted);
+
+  --mat-tab-header-divider-color: var(--border-soft);
+  --mat-tab-header-inactive-label-text-color: var(--text-muted);
+  --mat-tab-header-active-label-text-color: var(--primary-light);
+
+  --mdc-filled-text-field-container-color: var(--bg-raised);
+  --mdc-outlined-text-field-outline-color: var(--border-medium);
+  --mdc-outlined-text-field-hover-outline-color: var(--primary-light);
+
+  --mat-paginator-container-background-color: var(--bg-card);
+  --mat-paginator-container-text-color: var(--text-main);
+
+  --mat-expansion-container-background-color: var(--bg-card);
+  --mat-expansion-container-text-color: var(--text-main);
+
+  --mat-bottom-sheet-container-background-color: var(--bg-raised);
+  --mat-bottom-sheet-container-text-color: var(--text-main);
 }

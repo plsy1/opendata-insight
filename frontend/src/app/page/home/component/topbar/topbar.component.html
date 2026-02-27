@@ -1,23 +1,23 @@
-<mat-toolbar color="primary" class="toolbar">
-  <i class="fas fa-arrow-left icon" (click)="goBack()" aria-label="Back"></i>
-  <i
-    class="fas fa-bars toolbar-icon icon"
-    (click)="toggleSidebar()"
-    aria-label="Toggle Sidebar"
-  ></i>
+<mat-toolbar class="toolbar glass-effect">
+  <div class="icon" (click)="goBack()" title="Back">
+    <i class="fas fa-chevron-left"></i>
+  </div>
+  <div class="icon toolbar-icon" (click)="toggleSidebar()" title="Toggle Sidebar">
+    <i class="fas fa-outdent" *ngIf="!homeService.isSidebarOpen"></i>
+    <i class="fas fa-indent" *ngIf="homeService.isSidebarOpen"></i>
+  </div>
+  
   <span class="spacer"></span>
-  <i
-    class="fas"
-    [ngClass]="themeService.getThemeIcon() + ' icon'"
-    (click)="themeService.toggleTheme()"
-    aria-label="changeTheme"
-  >
-  </i>
-  <i
-    class="fas"
-    [ngClass]="commonService.enableBlur ? 'fa-eye-slash' : 'fa-eye'"
-    (click)="commonService.toggleBlur()"
-    aria-label="image-blur"
-  ></i>
-  <i class="fas fa-search icon" (click)="OpenSearch()" aria-label="Search"></i>
+  
+  <div class="icon" (click)="themeService.toggleTheme()" [title]="themeService.getThemeIcon()">
+    <i class="fas" [ngClass]="themeService.getThemeIcon()"></i>
+  </div>
+  
+  <div class="icon" (click)="commonService.toggleBlur()" title="Toggle Blur">
+    <i class="fas" [ngClass]="commonService.enableBlur ? 'fa-eye-slash' : 'fa-eye'"></i>
+  </div>
+  
+  <div class="icon" (click)="OpenSearch()" title="Search">
+    <i class="fas fa-search"></i>
+  </div>
 </mat-toolbar>

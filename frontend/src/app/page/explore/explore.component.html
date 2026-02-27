@@ -2,20 +2,33 @@
   [(selectedIndex)]="selectedTabIndex"
   (selectedTabChange)="onTabChange($event)"
 >
-  <mat-tab label="AvBase">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-film tab-icon"></i>
+      AvBase
+    </ng-template>
     <ng-template matTabContent>
       <app-avbase></app-avbase>
     </ng-template>
   </mat-tab>
-  <mat-tab label="Fanza">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-tv tab-icon"></i>
+      Fanza
+    </ng-template>
     <ng-template matTabContent>
       <app-fanza></app-fanza>
     </ng-template>
   </mat-tab>
-  <mat-tab label="FC2">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-video tab-icon"></i>
+      FC2
+    </ng-template>
     <ng-template matTabContent>
       <app-fc2></app-fc2>
     </ng-template>
   </mat-tab>
 </mat-tab-group>
+
 

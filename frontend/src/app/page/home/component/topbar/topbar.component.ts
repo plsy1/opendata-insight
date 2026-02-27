@@ -20,7 +20,7 @@ export class TopbarComponent {
   dialog: MatDialog = inject(MatDialog);
   constructor(
     private location: Location,
-    private homeService: HomeService,
+    public homeService: HomeService,
     public themeService: ThemeService,
     public commonService: CommonService
   ) {}

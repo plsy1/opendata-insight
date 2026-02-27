@@ -1,0 +1,50 @@
+/* ── Tab Group styling ────────────────────────── */
+::ng-deep .mat-mdc-tab-group {
+  --mdc-tab-indicator-active-indicator-color: var(--primary);
+  --mat-tab-header-active-label-text-color: var(--primary);
+  --mat-tab-header-inactive-label-text-color: var(--text-muted);
+  --mat-tab-header-active-focus-indicator-color: var(--primary);
+  --mat-tab-header-active-hover-indicator-color: var(--primary);
+  --mat-tab-header-divider-color: var(--border-soft);
+}
+
+::ng-deep .mat-mdc-tab-header {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border: 1px solid var(--border-soft);
+  border-bottom: none;
+  padding: 0 8px;
+  box-shadow: var(--shadow-xs);
+}
+
+::ng-deep .mat-mdc-tab-body-wrapper {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-top: none;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  padding: 20px;
+}
+
+::ng-deep .mat-mdc-tab {
+  min-width: 100px;
+  height: 52px !important;
+  opacity: 1 !important;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: all var(--t-fast);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+::ng-deep .mat-mdc-tab:hover {
+  background: var(--bg-hover);
+}
+
+::ng-deep .mat-mdc-tab.mdc-tab--active {
+  background: var(--bg-hover);
+}
+
+.tab-icon {
+  margin-right: 8px;
+  font-size: 14px;
+  opacity: 0.85;
+}

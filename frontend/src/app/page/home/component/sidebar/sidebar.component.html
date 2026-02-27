@@ -6,9 +6,16 @@
     [opened]="homeService.isSidebarOpen"
     (openedChange)="homeService.setSidebarOpen($event)"
   >
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <i class="fas fa-play"></i>
+      </div>
+      <span class="logo-text">KANOJO</span>
+    </div>
+
     <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="active">
-        <i class="fas fa-home"></i>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+        <i class="fas fa-th-large"></i>
         <span>Dashboard</span>
       </a>
       <a mat-list-item routerLink="/explore" routerLinkActive="active">
@@ -27,31 +34,28 @@
         <i class="fas fa-download"></i>
         <span>Download</span>
       </a>
-      <a
-        mat-list-item
-        routerLink="/subscription/performer"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-heart"></i>
-        <span>Performer</span>
+      
+      <div style="margin: 24px 0 8px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Subscriptions</div>
+      
+      <a mat-list-item routerLink="/subscription/performer" routerLinkActive="active">
+        <i class="fas fa-star"></i>
+        <span>Performers</span>
       </a>
-      <a
-        mat-list-item
-        routerLink="/subscription/production"
-        routerLinkActive="active"
-      >
-        <i class="fas fa-film"></i>
-        <span>Production</span>
+      <a mat-list-item routerLink="/subscription/production" routerLinkActive="active">
+        <i class="fas fa-video"></i>
+        <span>Productions</span>
       </a>
 
+      <div style="flex: 1"></div>
+
       <a mat-list-item routerLink="/settings" routerLinkActive="active">
-        <i class="fas fa-cog"></i>
+        <i class="fas fa-sliders-h"></i>
         <span>Settings</span>
       </a>
-      <a mat-list-item (click)="logout()">
-        <i class="fas fa-sign-out-alt"></i>
+      <a mat-list-item (click)="logout()" class="logout-item">
+        <i class="fas fa-power-off"></i>
         <span>Logout</span>
       </a>
     </mat-nav-list>
-  </mat-sidenav></mat-sidenav-container
->
+  </mat-sidenav>
+</mat-sidenav-container>

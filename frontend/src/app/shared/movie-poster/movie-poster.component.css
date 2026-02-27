@@ -1,101 +1,162 @@
 .poster-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 28px;
+  padding: 16px 0;
 }
 
 .poster-card {
-  flex: 0 0 160px;
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  border-radius: 8px;
-  padding: 5px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: var(--radius-xl);
+  padding: 0;
+  transition: all var(--transition-normal);
   position: relative;
+  background: var(--bg-card);
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-sm);
+  will-change: transform, box-shadow;
 }
 
 .poster-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-lg), var(--glow-primary);
+  border-color: var(--border-accent);
 }
 
 .poster-card .image-wrapper {
   position: relative;
   width: 100%;
-  padding-top: 150%;
+  aspect-ratio: 2 / 3;
   overflow: hidden;
+  border-radius: calc(var(--radius-xl) - 1px) calc(var(--radius-xl) - 1px) 0 0;
 }
 
 .poster-card .poster-image {
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 8px;
-  transition: transform 0.3s;
+  transition: transform var(--transition-slow);
+  will-change: transform;
 }
 
+.poster-card:hover .poster-image {
+  transform: scale(1.08);
+}
+
+/* Always use a dark gradient overlay so the white title is readable regardless of theme */
 .poster-card .image-wrapper .hover-name {
   position: absolute;
   bottom: 0;
+  left: 0;
   width: 100%;
+  height: 60%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
   text-align: center;
   font-size: 14px;
-  padding: 4px 0;
+  padding: 16px 16px 20px;
+  box-sizing: border-box;
   opacity: 0;
-  transition: opacity 0.3s;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
+  transition: all var(--t-normal);
+  background: linear-gradient(to top, rgba(9, 9, 11, 0.96) 0%, rgba(9, 9, 11, 0.6) 60%, transparent 100%);
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+  z-index: 5;
+  word-break: break-word;
 }
 
-.poster-card .image-wrapper:hover .poster-image {
-  transform: scale(1.05);
-}
-
-.poster-card .image-wrapper:hover .hover-name {
+.poster-card:hover .hover-name {
   opacity: 1;
 }
 
 .poster-card .movie-info {
-  padding: 6px 4px;
+  padding: 20px;
+  background: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .poster-card .movie-info .movie-title {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 800;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 2px;
+  color: var(--text-main);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
 }
 
 .poster-card .movie-info .movie-meta {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .poster-card .movie-info .movie-meta .movie-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px;
+  gap: 8px;
 }
 
 .poster-card .movie-info .movie-meta .movie-tags .movie-tag {
-  background: rgba(0, 0, 0, 0.1);
-  padding: 1px 4px;
-  border-radius: 4px;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
   font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  transition: all var(--t-fast);
 }
 
-.poster-card .movie-info .movie-meta .more-tags {
-  font-size: 11px;
+.poster-card:hover .movie-info .movie-meta .movie-tags .movie-tag {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.dark-theme .poster-card .movie-info .movie-meta .movie-tags .movie-tag {
+  background: rgba(129, 140, 248, 0.12);
+  color: var(--primary-light);
+  border-color: rgba(129, 140, 248, 0.25);
+}
+
+.dark-theme .poster-card:hover .movie-info .movie-meta .movie-tags .movie-tag {
+  background: var(--primary);
+  color: #fff;
 }
 
 .poster-card .library-icon {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 16px;
+  right: 16px;
   font-size: 16px;
+  color: #fff;
+  z-index: 10;
+  background: rgba(15, 23, 42, 0.4);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all var(--transition-fast);
+}
+
+.poster-card:hover .library-icon {
+  background: var(--primary);
+  border-color: transparent;
+  transform: scale(1.1);
+  box-shadow: var(--glow-primary);
 }

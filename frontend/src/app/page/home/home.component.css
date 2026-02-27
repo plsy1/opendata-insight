@@ -2,25 +2,50 @@
   display: flex;
   height: 100vh;
   overflow: hidden;
+  background-color: var(--bg-main);
+  transition: background-color 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: var(--app-background);
-  color: var(--mdc-theme-on-background);
+  min-width: 0;
+  position: relative;
 }
 
+/* Floating topbar wrapper */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 12px 20px 0;
+  flex-shrink: 0;
+}
+
+/* Main scrollable content area */
 .dashboard {
   flex: 1;
-  padding: 16px;
+  padding: 20px 24px 32px;
   overflow-y: auto;
   box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
 @media (max-width: 768px) {
-  .main-content {
-    flex: 1;
+  .topbar {
+    padding: 8px 12px 0;
+  }
+  .dashboard {
+    padding: 16px 14px 24px;
   }
 }

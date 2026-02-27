@@ -1,133 +1,151 @@
-<div *ngIf="isLoading" class="loading">Loading...</div>
+<div *ngIf="isLoading" class="loading-state">
+  <i class="fas fa-spinner fa-spin"></i>
+  <span>Loading...</span>
+</div>
 
-<div class="top" *ngIf="!isLoading">
-  <div class="movie-container">
-    <div class="movie-left">
-      <h2>
-        {{ movieData.title }}
-      </h2>
-      <div class="movie-cover">
-        <img
-          loading="eager"
-          [src]="movieData.products[0].image_url || 'assets/favicon.ico'"
-          alt="Movie Cover"
-          class="movie-cover-img"
-        />
-      </div>
+<div class="page" *ngIf="!isLoading">
 
-      <div class="tags">
-        <mat-chip-set>
-          <mat-chip *ngFor="let genre of movieData.genres || []">
-            {{ genre }}
-          </mat-chip>
-        </mat-chip-set>
-      </div>
+  <!-- ② Title + actions — 封面下方 -->
+  <div class="head-row">
+    <h1 class="movie-title">{{ movieData.title }}</h1>
+    <div class="meta-pills">
+      <span class="meta-pill"><i class="fas fa-hashtag"></i>{{ movieData.work_id }}</span>
+      <span class="meta-pill" *ngIf="movieData.min_date">
+        <i class="fas fa-calendar-alt"></i>{{ movieData.min_date }}
+      </span>
+      <span class="meta-pill" *ngIf="movieData.products[0]?.volume">
+        <i class="fas fa-clock"></i>{{ movieData.products[0].volume }} min
+      </span>
+      <span class="meta-pill" *ngIf="movieData.products[0]?.price">
+        <i class="fas fa-yen-sign"></i>{{ movieData.products[0].price }}
+      </span>
     </div>
+    <div class="actions">
+      <button class="action-btn primary" (click)="downloadMovie()">
+        <mat-icon>search</mat-icon> Search
+      </button>
+      <button class="action-btn secondary" (click)="subscribeToMovie()">
+        <mat-icon>rss_feed</mat-icon> Subscribe
+      </button>
+      <button class="action-btn ghost" (click)="toJable(movieData.work_id)">
+        <mat-icon>play_circle</mat-icon> Jable
+      </button>
+      <button class="action-btn ghost" (click)="toMissAV(movieData.work_id)">
+        <mat-icon>videocam</mat-icon> MissAV
+      </button>
+    </div>
+  </div>
 
-    <div class="movie-right">
-      <h2>Options</h2>
-      <div class="movie-actions">
-        <div
-          class="action-item"
-          role="button"
-          tabindex="0"
-          matTooltip="Search"
-          (click)="downloadMovie()"
-        >
-          <mat-icon>search</mat-icon>
-          <span>Search</span>
+  <!-- ③ 两栏正文 -->
+  <div class="body-grid">
+
+    <!-- 左: Details + Genres -->
+    <section class="info-card">
+      <div class="section-label"><i class="fas fa-info-circle"></i> Details</div>
+      <div class="detail-list">
+        <div class="detail-row">
+          <span class="detail-label">Maker</span>
+          <span class="detail-value">{{ movieData.products[0].maker || "N/A" }}</span>
         </div>
-
-        <div
-          class="action-item"
-          role="button"
-          tabindex="0"
-          matTooltip="Subscribe"
-          (click)="subscribeToMovie()"
-        >
-          <mat-icon>rss_feed</mat-icon>
-          <span>Subscribe</span>
+        <div class="detail-row">
+          <span class="detail-label">Label</span>
+          <span class="detail-value">{{ movieData.products[0].label || "N/A" }}</span>
         </div>
-
-        <div
-          class="action-item"
-          role="button"
-          tabindex="0"
-          matTooltip="Jable"
-          (click)="toJable(movieData.work_id)"
-        >
-          <mat-icon>play_circle</mat-icon>
-          <span>Jable</span>
+        <div class="detail-row">
+          <span class="detail-label">Series</span>
+          <span class="detail-value">{{ movieData.products[0].series || "N/A" }}</span>
         </div>
-
-        <div
-          class="action-item"
-          role="button"
-          tabindex="0"
-          matTooltip="MissAV"
-          (click)="toMissAV(movieData.work_id)"
-        >
-          <mat-icon>videocam</mat-icon>
-          <span>MissAV</span>
+        <div class="detail-row">
+          <span class="detail-label">Price</span>
+          <span class="detail-value">{{ movieData.products[0].price || "N/A" }}</span>
         </div>
       </div>
 
-      <h2>Details</h2>
-      <div class="other-info">
-        <p><strong>ID: </strong>{{ movieData.work_id }}</p>
-        <p><strong>Release Date: </strong>{{ movieData.min_date || "N/A" }}</p>
-        <p>
-          <strong>Maker: </strong>{{ movieData.products[0].maker || "N/A" }}
-        </p>
-        <p>
-          <strong>Label: </strong>{{ movieData.products[0].label || "N/A" }}
-        </p>
-                <p>
-          <strong>Series: </strong>{{ movieData.products[0].series || "N/A"}}
-        </p>
-        <p>
-          <strong>Price: </strong>{{ movieData.products[0].price || "N/A" }}
-        </p>
-        <p>
-          <strong>Duration: </strong>
-          {{ movieData.products[0].volume || "N/A" }}
-          <span>minutes</span>
-        </p>
+      <div class="section-label" style="margin-top: 20px;" *ngIf="(movieData.genres || []).length">
+        <i class="fas fa-tags"></i> Genres
       </div>
+      <div class="genre-chips" *ngIf="(movieData.genres || []).length">
+        <span *ngFor="let genre of movieData.genres || []" class="genre-chip">{{ genre }}</span>
+      </div>
+    </section>
 
-      <h2>Performers</h2>
+    <!-- 右: Performers -->
+    <section class="info-card" *ngIf="(actors || []).length">
+      <div class="section-label"><i class="fas fa-users"></i> Performers</div>
       <div class="actors">
-        <div *ngFor="let cast of actors || []" class="actor-item">
+        <div
+          *ngFor="let cast of actors || []"
+          class="actor-item"
+          (click)="searchByActressName(cast.name || '')"
+        >
           <img
             loading="lazy"
             [src]="cast.image_url || 'assets/favicon.ico'"
             alt="{{ cast.name || 'Unknown' }}"
             class="actor-avatar"
-            (click)="searchByActressName(cast.name || '')"
           />
-          <div
-            class="actor-name"
-            (click)="searchByActressName(cast.name || '')"
-          >
-            {{ cast.name || "Unknown" }}
-          </div>
+          <div class="actor-name">{{ cast.name || "Unknown" }}</div>
         </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Samples (cover prepended as first image) -->
+  <div class="sample-section" *ngIf="allSampleImages.length">
+    <div class="section-label"><i class="fas fa-images"></i> Samples</div>
+    <div class="sample-image-list" (wheel)="onWheelScroll($event)">
+      <img
+        loading="lazy"
+        *ngFor="let src of allSampleImages; let i = index"
+        [src]="src || 'assets/favicon.ico'"
+        alt="Sample Image"
+        class="sample-image"
+        (click)="openLightbox(i)"
+      />
+    </div>
+  </div>
+
+  <!-- ⑤ Lightbox -->
+  <div class="lightbox-overlay" *ngIf="lightboxOpen" (click)="closeLightbox()">
+    <div class="lightbox-inner" (click)="$event.stopPropagation()">
+
+      <!-- Toolbar: close only -->
+      <div class="lb-toolbar">
+        <button class="lb-btn" (click)="closeLightbox()" title="Close (Esc)">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Prev -->
+      <button class="lb-btn lb-prev" (click)="prevImage()" [hidden]="lightboxImages.length <= 1">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+
+      <!-- Main image — wheel to zoom, drag to pan -->
+      <img
+        [src]="lightboxSrc"
+        alt="Sample"
+        class="lb-img"
+        [style.transform]="lbTransform"
+        [style.cursor]="lbCursor"
+        (wheel)="onLbWheel($event)"
+        (mousedown)="onLbMouseDown($event)"
+      />
+
+      <!-- Next -->
+      <button class="lb-btn lb-next" (click)="nextImage()" [hidden]="lightboxImages.length <= 1">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+
+      <!-- Bottom bar: counter + hint -->
+      <div class="lb-footer">
+        <div class="lb-counter">{{ lightboxIndex + 1 }} / {{ lightboxImages.length }}</div>
+        <div class="lb-hint"><i class="fas fa-scroll"></i> Scroll to zoom · Drag to pan</div>
       </div>
     </div>
   </div>
 
-  <div
-    class="sample-images"
-    *ngIf="(movieData.products[0]?.sample_image_urls || []).length"
-  >
-    <div class="sample-image-list" (wheel)="onWheelScroll($event)">
-      <img
-        loading="lazy"
-        *ngFor="let sample of movieData.products[0]?.sample_image_urls || []"
-        [src]="sample['l'] || 'assets/favicon.ico'"
-        alt="Sample Image"
-        class="sample-image"
-      />
-    </div>
-  </div>
+
+
 </div>

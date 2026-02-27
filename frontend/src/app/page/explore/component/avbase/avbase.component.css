@@ -2,9 +2,10 @@
   width: 97%;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 8px;
   box-sizing: border-box;
+  contain: content; /* skip layout recalculation outside this container */
 }
 
 .poster-image-wrapper {
@@ -13,7 +14,7 @@
 
 @media (max-width: 720px) {
   .card-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
   }
   .poster-grid {
     grid-template-columns: repeat(1, 1fr);

@@ -1,24 +1,46 @@
-.toolbar {
+.toolbar.glass-effect {
+  background: var(--bg-topbar) !important;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border) !important;
+  color: var(--text-main) !important;
   display: flex;
   align-items: center;
-  padding: 0 16px;
-  height: 64px;
-  background-color: var(--app-background);
-  color: var(--mdc-theme-on-background);
+  padding: 0 20px !important;
+  height: 58px !important;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--t-normal), background var(--t-normal);
 }
 
-.spacer {
-  flex: 1;
-}
-
-.toolbar i {
-  margin-right: 8px;
-}
-
-.toolbar i:hover {
-  cursor: pointer;
+.toolbar.glass-effect:hover {
+  box-shadow: var(--shadow-md);
 }
 
 .icon {
-  color: var(--text-color);
+  cursor: pointer;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  color: var(--text-muted);
+  transition: all var(--t-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon:hover {
+  background: var(--bg-hover);
+  color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.toolbar-icon {
+  margin-right: 8px;
+}
+
+.spacer {
+  flex: 1 1 auto;
 }
