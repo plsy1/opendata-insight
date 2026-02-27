@@ -49,7 +49,8 @@ export class ChangePasswordComponent {
 
     if (this.newPassword !== this.confirmPassword) {
       this.snackBar.open('The two new passwords do not match.', 'Close', {
-        duration: 2000,
+        duration: 3000,
+        panelClass: ['error-snackbar']
       });
       return;
     }
@@ -62,7 +63,8 @@ export class ChangePasswordComponent {
         next: (success) => {
           if (success) {
             this.snackBar.open('Password changed successfully.', 'Close', {
-              duration: 2000,
+              duration: 3000,
+              panelClass: ['success-snackbar']
             });
             this.oldPassword = '';
             this.newPassword = '';

@@ -1,7 +1,15 @@
 <div class="table-container">
-  <mat-form-field appearance="outline">
-    <input matInput (input)="applyFilter($event)" placeholder="Filter" />
-  </mat-form-field>
+  <div class="filter-header">
+    <div class="filter-wrapper">
+      <mat-icon class="filter-search-icon">search</mat-icon>
+      <input
+        class="filter-input"
+        (input)="applyFilter($event)"
+        placeholder="Instant filter by title, indexer or metadata..."
+        spellcheck="false"
+      />
+    </div>
+  </div>
 
   <mat-table [dataSource]="dataSource" matSort>
     <ng-container matColumnDef="indexer">
@@ -68,6 +76,8 @@
       *matRowDef="let row; columns: displayedColumns"
       [ngClass]="{
         success: row.success,
+        loading: row.loading,
+        error: row.error
       }"
     ></mat-row>
   </mat-table>

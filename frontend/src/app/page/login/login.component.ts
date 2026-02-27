@@ -63,7 +63,7 @@ onSubmit(): void {
       duration: 3000,
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
-      panelClass: ['snackbar-error'],
+      panelClass: ['error-snackbar'],
     });
   }
 }

@@ -1,55 +1,108 @@
 .views-card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   display: flex;
   flex-direction: column;
 }
 
-.items-grid {
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 4px;
   display: flex;
-  gap: 12px;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background: var(--primary-gradient);
+  border-radius: var(--radius-full);
+}
+
+.views-card mat-card-header {
+  padding: 0 0 16px 0;
+}
+
+.views-card mat-card-content {
+  padding: 0 !important;
+}
+
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.item-card {
+  text-decoration: none;
+  display: block;
+}
+
+.image-wrapper {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--t-spring);
+  aspect-ratio: 16 / 9;
 }
 
 .item-image {
   width: 100%;
+  height: 100%;
   display: block;
   object-fit: cover;
-  aspect-ratio: 16 / 9;
-  transition: filter 0.2s;
+  transition: transform var(--t-slow), filter var(--t-normal);
 }
 
 .item-image.blurred {
-  filter: blur(8px);
+  filter: blur(12px);
 }
 
-.image-wrapper:hover .item-image {
+.item-card:hover .image-wrapper {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md), var(--glow-primary);
+  border-color: var(--primary);
+}
+
+.item-card:hover .item-image {
+  transform: scale(1.1);
   filter: blur(0);
 }
 
 .hover-name {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
   color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px;
+  text-align: center;
   opacity: 0;
+  transform: translateY(10px);
+  transition: all var(--t-normal);
+  z-index: 2;
+}
+
+.item-card:hover .hover-name {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 @media (max-width: 768px) {
   .items-grid {
-    display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
+    gap: 12px;
   }
-
-  .item-image {
-    aspect-ratio: 16 / 9;
-  }
-}
-
-mat-card-header {
-  padding: 16px;
-}
-
-.image-wrapper:hover .hover-name {
-  opacity: 1;
 }

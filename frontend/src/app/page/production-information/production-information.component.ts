@@ -82,7 +82,7 @@ export class ProductionInformationComponent implements OnInit {
     const mouseY = event.clientY - rect.top;
 
     // New scale clamped to [1, 5]
-    const factor   = event.deltaY < 0 ? 1.12 : 1 / 1.12;
+    const factor   = event.deltaY < 0 ? 1.08 : 1 / 1.08;
     const newScale = Math.min(5, Math.max(1, this.lbScale * factor));
     const ratio    = newScale / this.lbScale;
 
@@ -171,12 +171,16 @@ export class ProductionInformationComponent implements OnInit {
       this.movieData.work_id
     ).subscribe({
       next: (results) => {
-        this.snackBar.open('Added successfully.', 'Close', { duration: 2000 });
+        this.snackBar.open('Added successfully.', 'Close', { 
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
       },
       error: (error) => {
         console.error('Failed:', error);
         this.snackBar.open('Failed to add subscription.', 'Close', {
-          duration: 2000,
+          duration: 3000,
+          panelClass: ['error-snackbar']
         });
       },
     });

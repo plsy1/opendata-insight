@@ -1,47 +1,179 @@
 .table-container {
   width: 100%;
   overflow-x: auto;
+  padding-bottom: 24px;
 }
 
-.mat-table {
+.filter-header {
+  margin-bottom: 24px;
   display: flex;
-  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.filter-wrapper {
+  display: flex;
+  align-items: center;
+  background: transparent; /* DE-BOXED */
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  padding: 0 16px;
+  height: 48px;
   width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s var(--ease-out);
 }
 
-.mat-header-row,
+.filter-wrapper:focus-within {
+  background: var(--bg-raised);
+  border-color: var(--primary);
+  box-shadow: var(--glow-primary);
+  transform: translateY(-1px);
+}
+
+.filter-search-icon {
+  color: var(--text-faint);
+  margin-right: 12px;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.filter-wrapper:focus-within .filter-search-icon {
+  color: var(--primary);
+}
+
+.filter-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+}
+
+.filter-input::placeholder {
+  color: var(--text-faint);
+  opacity: 0.6;
+}
+
+mat-table, .mat-mdc-table {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  background: transparent !important; /* DE-BOXED */
+  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--border-soft) !important;
+  overflow: hidden !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.mat-header-row {
+  display: flex !important;
+  background: rgba(255, 255, 255, 0.03) !important; /* Subtle distinction */
+  border-bottom: 1px solid var(--border-medium) !important;
+  min-height: 52px !important;
+}
+
 .mat-row {
-  display: flex;
+  display: flex !important;
+  border-bottom: 1px solid var(--border-soft) !important;
+  transition: all 0.2s ease !important;
+  min-height: 52px !important;
+  background: transparent !important;
+}
+
+.mat-row:last-child {
+  border-bottom: none !important;
+}
+
+.mat-row:hover {
+  background: var(--bg-hover) !important;
+}
+
+.mat-header-cell {
+  color: var(--text-muted) !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.mat-cell {
+  color: var(--text-main) !important;
+  font-size: 14px !important;
 }
 
 .mat-header-cell,
 .mat-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 8px 16px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.mat-cell.title-column {
+  justify-content: flex-start !important;
+  font-weight: 500 !important;
+  color: var(--primary) !important;
 }
 
 .indexer-column {
-  flex: 3; /* 10% */
+  flex: 3;
 }
 .title-column {
-  flex: 20; /* 50% */
+  flex: 20;
 }
 .size-column {
-  flex: 3; /* 20% */
+  flex: 3;
 }
 .seeders-column {
-  flex: 1; /* 10% */
+  flex: 1.5;
 }
 .publishDate-column {
-  flex: 3; /* 10% */
+  flex: 3.5;
 }
 
 .success {
-  background-color: #4caf50;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  border-left: 4px solid var(--primary) !important;
+}
+
+.error {
+  background-color: rgba(239, 68, 68, 0.1) !important;
+  border-left: 4px solid #ef4444 !important;
+}
+
+.loading {
+  background-color: var(--bg-hover) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.1),
+    transparent
+  );
+  animation: loading-pulse 1.5s infinite;
+}
+
+@keyframes loading-pulse {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 
@@ -51,12 +183,15 @@ mat-cell.title-column:hover {
 }
 
 @media (max-width: 768px) {
-  .indexer-column {
-    display: none;
+  .table-container {
+    padding-bottom: 24px;
+  }
+
+  mat-table, .mat-mdc-table {
+    min-width: 700px; /* Force minimum width to trigger scrollbar */
   }
 
   .seeders-column {
-    max-width: 8ch;
     white-space: nowrap;
   }
 }

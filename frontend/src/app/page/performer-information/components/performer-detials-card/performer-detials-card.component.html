@@ -1,37 +1,56 @@
-<div *ngIf="isLoading" class="loading">Loading...</div>
-<mat-card class="performer-card" *ngIf="!isLoading && performerInformation">
-  <div class="performer-content-wrapper">
-    <div class="avatar-section">
+<div *ngIf="isLoading" class="loading-state">
+  <i class="fas fa-spinner fa-spin"></i>
+  <span>Loading...</span>
+</div>
+
+<div class="performer-page" *ngIf="!isLoading && performerInformation">
+  <!-- ① Hero Section: Avatar + Title + Actions -->
+  <div class="hero-section">
+    <div class="avatar-wrapper">
       <img
         [src]="performerInformation.avatar_url || 'assets/logo.svg'"
         alt="Actress Avatar"
         class="actress-avatar-img"
       />
-      <div class="action-icons">
-        <i
-          class="fas fa-rss action-icon"
-          (click)="subscribeActor()"
-          matTooltip="Add to Feed"
-        ></i>
-
-        <i
-          class="fas fa-heart action-icon"
-          (click)="collectActor()"
-          matTooltip="Add to Collection"
-        ></i>
-
-        <i
-          class="fas fa-search action-icon"
-          (click)="searchByName()"
-          matTooltip="Search Torrents"
-        ></i>
-      </div>
     </div>
 
-    <div class="performer-info-section">
-      <h2 class="actress-name">{{ name || "N/A" }}</h2>
-      <div class="social-title"><strong>Social Media</strong></div>
-      <div class="social-icons">
+    <div class="hero-content">
+      <h1 class="actress-name">{{ name || "N/A" }}</h1>
+      
+      <!-- Meta Pills -->
+      <div class="meta-pills">
+        <span class="meta-pill" *ngIf="performerInformation.birthday">
+          <i class="fas fa-calendar-alt"></i>{{ performerInformation.birthday }}
+        </span>
+        <span class="meta-pill" *ngIf="performerInformation.height">
+          <i class="fas fa-arrows-alt-v"></i>{{ performerInformation.height }} cm
+        </span>
+        <span class="meta-pill" *ngIf="performerInformation.cup">
+          <i class="fas fa-glass-whiskey"></i>Cup {{ performerInformation.cup }}
+        </span>
+        <span class="meta-pill" *ngIf="performerInformation.blood_type">
+          <i class="fas fa-tint"></i>Type {{ performerInformation.blood_type }}
+        </span>
+        <span class="meta-pill" *ngIf="performerInformation.prefectures">
+          <i class="fas fa-map-marker-alt"></i>{{ performerInformation.prefectures }}
+        </span>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions">
+        <button class="action-btn primary" (click)="subscribeActor()">
+          <mat-icon>rss_feed</mat-icon> Subscribe
+        </button>
+        <button class="action-btn secondary" (click)="collectActor()">
+          <mat-icon>favorite</mat-icon> Collect
+        </button>
+        <button class="action-btn ghost" (click)="searchByName()">
+          <mat-icon>search</mat-icon> Search Torrents
+        </button>
+      </div>
+
+      <!-- Social Media (Clean Row) -->
+      <div class="social-row" *ngIf="performerInformation.social_media?.length">
         <div *ngFor="let platform of performerInformation.social_media">
           <a
             *ngIf="platform.platform !== 'RSS'"
@@ -39,56 +58,35 @@
             target="_blank"
             rel="noopener"
             class="social-link"
+            [title]="platform.platform"
           >
             <i [ngClass]="getFaIcon(platform.platform)" class="social-icon"></i>
           </a>
         </div>
       </div>
-
-      <div class="actress-info">
-        <p *ngIf="performerInformation.aliases.length">
-          <strong>Alias:</strong> {{ performerInformation.aliases.join(", ") }}
-        </p>
-        <p *ngIf="performerInformation.hobby">
-          <strong>Hobbies:</strong> {{ performerInformation.hobby }}
-        </p>
-        <p *ngIf="performerInformation.birthday">
-          <strong>Birth:</strong> {{ performerInformation.birthday }}
-        </p>
-        <p *ngIf="performerInformation.height">
-          <strong>Height:</strong> {{ performerInformation.height }} cm
-        </p>
-        <p
-          *ngIf="
-            performerInformation.bust ||
-            performerInformation.waist ||
-            performerInformation.hip ||
-            performerInformation.cup
-          "
-        >
-          <strong>Measurements:</strong>
-          {{
-            performerInformation.bust ? performerInformation.bust + " cm" : ""
-          }}
-          {{
-            performerInformation.waist
-              ? "/ " + performerInformation.waist + " cm"
-              : ""
-          }}
-          {{
-            performerInformation.hip
-              ? "/ " + performerInformation.hip + " cm"
-              : ""
-          }}
-          {{ performerInformation.cup ? "/ " + performerInformation.cup : "" }}
-        </p>
-        <p *ngIf="performerInformation.prefectures">
-          <strong>Region:</strong> {{ performerInformation.prefectures }}
-        </p>
-        <p *ngIf="performerInformation.blood_type">
-          <strong>Blood Type:</strong> {{ performerInformation.blood_type }}
-        </p>
-      </div>
     </div>
   </div>
-</mat-card>
+
+  <!-- ② Details Grid -->
+  <div class="details-grid">
+    <section class="info-card">
+      <div class="section-label"><i class="fas fa-info-circle"></i> Biography</div>
+      <div class="detail-list">
+        <div class="detail-row" *ngIf="performerInformation.aliases.length">
+          <span class="detail-label">Aliases</span>
+          <span class="detail-value">{{ performerInformation.aliases.join(", ") }}</span>
+        </div>
+        <div class="detail-row" *ngIf="performerInformation.hobby">
+          <span class="detail-label">Hobbies</span>
+          <span class="detail-value">{{ performerInformation.hobby }}</span>
+        </div>
+        <div class="detail-row" *ngIf="performerInformation.bust || performerInformation.waist || performerInformation.hip">
+          <span class="detail-label">Measurements</span>
+          <span class="detail-value">
+            B{{ performerInformation.bust || '?' }} / W{{ performerInformation.waist || '?' }} / H{{ performerInformation.hip || '?' }}
+          </span>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

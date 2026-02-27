@@ -51,14 +51,16 @@ export class PerformerSubscriptionListComponent {
     this.PerformerSubscriptionService.removeFeedsRSS(movie.name).subscribe({
       next: () => {
         this.snackBar.open('Unsubscribed successfully', 'Close', {
-          duration: 2000,
+          duration: 3000,
+          panelClass: ['success-snackbar']
         });
         this.loadActressFeed();
       },
       error: (error) => {
         console.error('Failed to unsubscribe:', error);
         this.snackBar.open('Failed to unsubscribe', 'Close', {
-          duration: 2000,
+          duration: 3000,
+          panelClass: ['error-snackbar']
         });
       },
     });

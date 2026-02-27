@@ -60,7 +60,10 @@ export class DownloadOptionComponent {
 
   async download(): Promise<void> {
     try {
-      this.snackBar.open('Sending......', 'Close', { duration: 2000 });
+      this.snackBar.open('Sending......', 'Close', { 
+        duration: 2000,
+        panelClass: ['info-snackbar']
+      });
 
         const name = this.common.isJumpFromProductionPage
         ? this.common.currentPerformer
@@ -98,7 +101,8 @@ export class DownloadOptionComponent {
         message: 'Failed. Please try again.',
       });
       this.snackBar.open('Failed. Please try again.', 'Close', {
-        duration: 2000,
+        duration: 3000,
+        panelClass: ['error-snackbar']
       });
     }
   }

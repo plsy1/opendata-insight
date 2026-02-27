@@ -105,9 +105,9 @@
 }
 
 .poster-card .movie-info .movie-meta .movie-tags .movie-tag {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(59, 130, 246, 0.1);
   color: var(--primary);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   padding: 4px 10px;
   border-radius: var(--radius-full);
   font-size: 11px;

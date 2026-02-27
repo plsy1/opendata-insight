@@ -24,6 +24,7 @@
     [alt]="title"
     class="movie-img"
     [class.blurred]="enableBlur"
+    [class.error-image]="isImageError"
     loading="lazy"
     (load)="onImageLoad()"
     (error)="onImageError($event)"

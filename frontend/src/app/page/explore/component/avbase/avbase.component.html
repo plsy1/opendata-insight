@@ -5,13 +5,15 @@
     class="actress-card"
     (click)="cardClick(actress.name)"
   >
-    <img
-      [src]="actress.avatar_url || 'assets/logo.svg'"
-      [alt]="actress.name"
-      class="avatar-img"
-      loading="lazy"
-      [class.blurred]="PageExploreService.isEnableBlur$() | async"
-    />
+    <div class="avatar-wrapper">
+      <img
+        [src]="actress.avatar_url || 'assets/logo.svg'"
+        [alt]="actress.name"
+        class="avatar-img"
+        loading="lazy"
+        [class.blurred]="PageExploreService.isEnableBlur$() | async"
+      />
+    </div>
     <div>{{ actress.name }}</div>
   </div>
 </div>
@@ -23,18 +25,35 @@
     class="actress-card"
     (click)="cardClick(actress.name)"
   >
-    <img
-      [src]="actress.avatar_url"
-      [alt]="actress.name"
-      class="avatar-img"
-      loading="lazy"
-      [class.blurred]="PageExploreService.isEnableBlur$() | async"
-    />
+    <div class="avatar-wrapper">
+      <img
+        [src]="actress.avatar_url"
+        [alt]="actress.name"
+        class="avatar-img"
+        loading="lazy"
+        [class.blurred]="PageExploreService.isEnableBlur$() | async"
+      />
+    </div>
     <div>{{ actress.name }}</div>
   </div>
 </div>
 
-<h2>Released on {{ currentDate | date : "yyyy-MM-dd" }}</h2>
+<div class="release-header">
+  <div class="date-jump" (click)="picker.open()">
+    <h2 class="jump-title">
+      Released on {{ currentDate | date : "yyyy-MM-dd" }}
+    </h2>
+    <mat-icon class="calendar-icon">calendar_month</mat-icon>
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [value]="currentDate"
+      (dateChange)="onDateChange($event)"
+      class="hidden-input"
+    />
+    <mat-datepicker #picker></mat-datepicker>
+  </div>
+</div>
 
 <app-pagination
   (previousClick)="prevDay()"

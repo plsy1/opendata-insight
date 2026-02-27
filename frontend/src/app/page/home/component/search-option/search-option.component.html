@@ -1,62 +1,92 @@
-<div class="dialog-container">
+<div class="dialog-container glass-effect">
+  <div class="dialog-header">
+    <div class="header-title">
+      <mat-icon>search</mat-icon>
+      <span>Deep Search</span>
+    </div>
+    <button mat-icon-button (click)="close()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
   <div class="dialog-body">
-    <mat-form-field appearance="outline">
-      <mat-label>Keywords</mat-label>
-      <input
-        matInput
-        [(ngModel)]="searchVaule"
-        (keydown.enter)="searchKeywords()"
-        placeholder="Enter Keywords"
-      />
-    </mat-form-field>
+    <div class="search-input-wrapper">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search anything...</mat-label>
+        <input
+          matInput
+          [(ngModel)]="searchVaule"
+          (keydown.enter)="searchKeywords()"
+          placeholder="Keyword, Actress, or ID..."
+          autocomplete="off"
+        />
+        <mat-icon matSuffix class="search-suffix-icon">search</mat-icon>
+      </mat-form-field>
+    </div>
 
     <div *ngIf="filteredOptions?.length" class="recent-searches">
-      <div class="recent-title">Recent Searches</div>
+      <div class="recent-title">
+        <mat-icon>history</mat-icon>
+        <span>Recent Activity</span>
+      </div>
       <div class="recent-list">
-        <span
+        <div
           class="recent-item"
           *ngFor="let option of filteredOptions"
           (click)="searchVaule = option"
         >
-          {{ option }}
-        </span>
+          <span class="recent-text">{{ option }}</span>
+          <mat-icon
+            class="delete-recent"
+            (click)="removeRecentSearch(option, $event)"
+          >
+            close
+          </mat-icon>
+        </div>
       </div>
+    </div>
+
+    <div class="search-divider">
+      <span>Search Methods</span>
     </div>
 
     <div class="search-type-buttons">
       <button
         mat-button
-        [class.selected]="searchType === '1'"
+        [class.active]="searchType === '1'"
         (click)="searchType = '1'; searchTorrents()"
-        class="search-button"
+        class="type-btn torrents-btn"
       >
-        <div class="button-content">
-          <mat-icon class="icon-left">cloud_download</mat-icon>
-          <span class="label-text">Torrents</span>
+        <mat-icon>cloud_download</mat-icon>
+        <div class="btn-text">
+          <span class="main-label">Torrents</span>
+          <span class="sub-label">Search magnetic links</span>
         </div>
       </button>
 
       <button
         mat-button
-        [class.selected]="searchType === '2'"
+        [class.active]="searchType === '2'"
         (click)="searchType = '2'; searchPerformer()"
-        class="search-button"
+        class="type-btn actress-btn"
       >
-        <div class="button-content">
-          <mat-icon class="icon-left">person</mat-icon>
-          <span class="label-text">Actress</span>
+        <mat-icon>stars</mat-icon>
+        <div class="btn-text">
+          <span class="main-label">Performers</span>
+          <span class="sub-label">Find by actress name</span>
         </div>
       </button>
 
       <button
         mat-button
-        [class.selected]="searchType === '3'"
+        [class.active]="searchType === '3'"
         (click)="searchType = '3'; searchKeywords()"
-        class="search-button"
+        class="type-btn keywords-btn"
       >
-        <div class="button-content">
-          <mat-icon class="icon-left">search</mat-icon>
-          <span class="label-text">Keywords</span>
+        <mat-icon>auto_awesome</mat-icon>
+        <div class="btn-text">
+          <span class="main-label">General</span>
+          <span class="sub-label">Search all metadata</span>
         </div>
       </button>
     </div>

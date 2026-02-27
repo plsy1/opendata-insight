@@ -5,6 +5,7 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { MatIconModule } from '@angular/material/icon';
 import { DashboardService } from './../../service/dashboard.service';
 import { StatAllResponse } from '../../models/statistic.interface';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-download-statistic',
@@ -20,7 +21,14 @@ export class DownloadStatisticComponent implements OnInit {
   studioChartOptions: any;
   actorChartOptions: any;
 
-  constructor(private dashboardService: DashboardService) {}
+  constructor(
+    private dashboardService: DashboardService,
+    private router: Router
+  ) {}
+
+  goActor(name: string): void {
+    this.router.navigate(['/performer', name]);
+  }
 
   ngOnInit(): void {
     this.dashboardService.getAllStatistic().subscribe({
@@ -42,19 +50,55 @@ export class DownloadStatisticComponent implements OnInit {
   // ===============================
   initDailyChart(data: StatAllResponse): void {
     this.dailyChartOptions = {
-      tooltip: { trigger: 'axis' },
+      grid: {
+        top: '15%',
+        left: '3%',
+        right: '4%',
+        bottom: '15%',
+        containLabel: true,
+      },
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        borderColor: '#007bff',
+        textStyle: { color: '#fff' },
+      },
       xAxis: {
         type: 'category',
         data: data.daily.map(d => d.date),
+        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.15)' } },
+        axisLabel: { 
+          color: '#8a8a8a', 
+          fontSize: 10,
+          margin: 12
+        },
       },
       yAxis: {
         type: 'value',
+        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } },
+        axisLabel: { color: '#8a8a8a' },
       },
       series: [
         {
           name: 'Downloads',
           type: 'line',
           smooth: true,
+          symbolSize: 8,
+          itemStyle: { color: '#007bff' },
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                { offset: 0, color: 'rgba(0, 123, 255, 0.3)' },
+                { offset: 1, color: 'rgba(0, 123, 255, 0)' },
+              ],
+            },
+          },
+          lineStyle: { width: 4, color: '#007bff' },
           data: data.daily.map(d => d.count),
         },
       ],

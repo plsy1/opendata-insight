@@ -56,9 +56,15 @@ saveEnv() {
   this.SettingsService.updateEnvironment(this.env).subscribe({
     next: (success: boolean) => {
       if (success) {
-        this.snackBar.open('Saved successfully.', 'Close', { duration: 2000 });
+        this.snackBar.open('Saved successfully.', 'Close', { 
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
       } else {
-        this.snackBar.open('Failed. Please try again.', 'Close', { duration: 2000 });
+        this.snackBar.open('Failed. Please try again.', 'Close', { 
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
       }
     },
     error: (error) => {

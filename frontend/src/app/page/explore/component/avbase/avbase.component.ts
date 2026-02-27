@@ -9,6 +9,9 @@ import { AvbaseEverydayReleaseByPrefix } from '../../models/avbase-everyday-rele
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PaginationComponent } from '../../../../shared/pagination/pagination.component';
 import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-avbase',
@@ -20,6 +23,9 @@ import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.com
     MatIconModule,
     MatTooltipModule,
     PaginationComponent,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatInputModule,
   ],
   templateUrl: './avbase.component.html',
   styleUrl: './avbase.component.css',
@@ -112,4 +118,10 @@ export class AvbaseComponent implements OnInit {
     this.loadEverydayReleaseData();
   }
 
+  onDateChange(event: any) {
+    if (event.value) {
+      this.currentDate = new Date(event.value);
+      this.loadEverydayReleaseData();
+    }
+  }
 }

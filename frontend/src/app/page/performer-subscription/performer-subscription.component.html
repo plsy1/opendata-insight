@@ -3,12 +3,20 @@
   (selectedTabChange)="onTabChange($event)"
 >
 
-  <mat-tab label="Subscriptions">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-star tab-icon"></i>
+      Subscription
+    </ng-template>
     <ng-template matTabContent>
       <app-performer-subscription-list></app-performer-subscription-list>
     </ng-template>
   </mat-tab>
-    <mat-tab label="Collections">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-heart tab-icon"></i>
+      Collections
+    </ng-template>
     <ng-template matTabContent>
       <app-list-performer-collect></app-list-performer-collect>
     </ng-template>

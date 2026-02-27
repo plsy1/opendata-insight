@@ -1,36 +1,57 @@
 <div class="download-container">
   <mat-card class="download-card" *ngFor="let torrent of torrents">
-    <div class="card-header">
-      <h3 class="torrent-title" matTooltip="{{ torrent.name }}">
-        {{ torrent.name }}
-      </h3>
+    <div class="card-content">
+      <!-- Title & Action -->
+      <div class="card-top-row">
+        <h3 class="torrent-title" [matTooltip]="torrent.name">
+          {{ torrent.name }}
+        </h3>
+        <button
+          class="delete-btn"
+          (click)="deleteTorrent(torrent.hash)"
+          matTooltip="Cancel Download"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Main Progress -->
+      <div class="progress-section">
+        <div class="progress-info">
+          <span class="progress-label">Downloading...</span>
+          <span class="progress-value">{{ (torrent.progress * 100) | number : '1.0-1' }}%</span>
+        </div>
+        <mat-progress-bar
+          mode="determinate"
+          [value]="torrent.progress * 100"
+          class="custom-progress"
+        ></mat-progress-bar>
+      </div>
+
+      <!-- Detailed Stats Grid -->
+      <div class="stats-grid">
+        <div class="stat-item" matTooltip="Download Speed">
+          <i class="fas fa-arrow-down icon-speed"></i>
+          <span>{{ torrent.download_speed | speed }}</span>
+        </div>
+        <div class="stat-item" matTooltip="Time Remaining">
+          <i class="fas fa-clock icon-eta"></i>
+          <span>{{ torrent.eta | eta }}</span>
+        </div>
+        <div class="stat-item" matTooltip="Total Size">
+          <i class="fas fa-weight-hanging icon-size"></i>
+          <span>{{ torrent.size | fileSize }}</span>
+        </div>
+      </div>
     </div>
-
-    <p class="torrent-size">
-      <strong>Size: </strong>{{ torrent.size | fileSize }}
-    </p>
-
-    <div class="progress-wrapper">
-      <mat-progress-bar
-        mode="determinate"
-        [value]="torrent.progress * 100"
-        aria-label="Download progress"
-      ></mat-progress-bar>
-      <span class="progress-text">
-        {{ torrent.progress * 100 | number : "1.0-0" }}%
-      </span>
-    </div>
-
-    <p><strong>Speed: </strong>{{ torrent.download_speed | speed }}</p>
-    <p><strong>Finishes In: </strong>{{ torrent.eta | eta }}</p>
-
-    <button
-      class="delete-btn"
-      color="primary"
-      (click)="deleteTorrent(torrent.hash)"
-      aria-label="Delete torrent"
-    >
-      <i class="fas fa-trash"></i>
-    </button>
   </mat-card>
+</div>
+
+<!-- Empty State -->
+<div class="empty-state" *ngIf="torrents.length === 0">
+  <div class="empty-icon">
+    <i class="fas fa-cloud-download-alt"></i>
+  </div>
+  <h3>No Active Downloads</h3>
+  <p>Your ongoing downloads will appear here.</p>
 </div>

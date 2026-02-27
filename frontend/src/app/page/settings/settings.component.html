@@ -2,13 +2,21 @@
   [(selectedIndex)]="selectedTabIndex"
   (selectedTabChange)="onTabChange($event)"
 >
-  <mat-tab label="Environments & Password">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-user-cog tab-icon"></i>
+      Environments & Password
+    </ng-template>
     <ng-template matTabContent>
       <app-environment-variable></app-environment-variable>
       <app-change-password></app-change-password>
     </ng-template>
   </mat-tab>
-    <mat-tab label="Background Tasks">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-tasks tab-icon"></i>
+      Background Tasks
+    </ng-template>
     <ng-template matTabContent>
       <app-background-tasks></app-background-tasks>
     </ng-template>

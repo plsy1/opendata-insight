@@ -57,12 +57,16 @@ export class SearchOptionComponent {
   async searchTorrents(): Promise<void> {
     try {
       this.common.isJumpFromProductionPage = false;
-      this.snackBar.open('Searching......', 'Close', { duration: 2000 });
+      this.snackBar.open('Searching......', 'Close', { 
+        duration: 2000,
+        panelClass: ['info-snackbar']
+      });
       this.router.navigate(['/torrents', this.searchVaule]);
       this.setRecentlySearch();
     } catch (error) {
       this.snackBar.open('Failed. Please try again.', 'Close', {
-        duration: 2000,
+        duration: 3000,
+        panelClass: ['error-snackbar']
       });
     } finally {
       this.dialogRef.close();
@@ -71,12 +75,16 @@ export class SearchOptionComponent {
 
   async searchPerformer(): Promise<void> {
     try {
-      this.snackBar.open('Searching......', 'Close', { duration: 2000 });
+      this.snackBar.open('Searching......', 'Close', { 
+        duration: 2000,
+        panelClass: ['info-snackbar']
+      });
       this.router.navigate([`/performer/${this.searchVaule}`]);
       this.setRecentlySearch();
     } catch (error) {
       this.snackBar.open('Failed. Please try again.', 'Close', {
-        duration: 2000,
+        duration: 3000,
+        panelClass: ['error-snackbar']
       });
     } finally {
       this.dialogRef.close();
@@ -85,12 +93,16 @@ export class SearchOptionComponent {
 
   async searchKeywords(): Promise<void> {
     try {
-      this.snackBar.open('Searching......', 'Close', { duration: 2000 });
+      this.snackBar.open('Searching......', 'Close', { 
+        duration: 2000,
+        panelClass: ['info-snackbar']
+      });
       this.router.navigate([`/keywords/${this.searchVaule}`]);
       this.setRecentlySearch();
     } catch (error) {
       this.snackBar.open('Failed. Please try again.', 'Close', {
-        duration: 2000,
+        duration: 3000,
+        panelClass: ['error-snackbar']
       });
     } finally {
       this.dialogRef.close();
@@ -102,7 +114,7 @@ export class SearchOptionComponent {
       this.searchVaule &&
       !this.searchKeywordsOptions.includes(this.searchVaule)
     ) {
-      this.searchKeywordsOptions.push(this.searchVaule);
+      this.searchKeywordsOptions.unshift(this.searchVaule); // Use unshift to add to front
 
       localStorage.setItem(
         'searchKeywordsOptions',
@@ -111,6 +123,18 @@ export class SearchOptionComponent {
 
       this.filteredOptions = [...this.searchKeywordsOptions];
     }
+  }
+
+  removeRecentSearch(option: string, event: Event) {
+    event.stopPropagation(); // Prevent triggering the search
+    this.searchKeywordsOptions = this.searchKeywordsOptions.filter(
+      (o) => o !== option
+    );
+    this.filteredOptions = [...this.searchKeywordsOptions];
+    localStorage.setItem(
+      'searchKeywordsOptions',
+      JSON.stringify(this.searchKeywordsOptions)
+    );
   }
 
   close() {

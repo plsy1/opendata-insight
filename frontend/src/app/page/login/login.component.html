@@ -1,11 +1,14 @@
 <div class="login-container">
+  <div class="login-overlay"></div>
+  
   <mat-card class="login-card">
-    <h2 mat-card-title>
+    <div class="login-header">
       <img src="/assets/logo.svg" alt="logo" class="title-icon" />
-      Kanojo
-    </h2>
+      <h2 class="brand-title">Kanojo</h2>
+      <p class="brand-subtitle">Manage your collection with style</p>
+    </div>
 
-    <form (ngSubmit)="onSubmit()">
+    <form (ngSubmit)="onSubmit()" class="login-form">
       <mat-form-field class="form-group" appearance="outline">
         <mat-label>Username</mat-label>
         <input
@@ -14,7 +17,10 @@
           id="username"
           [(ngModel)]="username"
           name="username"
+          placeholder="Enter your username"
+          required
         />
+        <mat-icon matPrefix class="form-icon">person</mat-icon>
       </mat-form-field>
 
       <mat-form-field class="form-group" appearance="outline">
@@ -25,10 +31,20 @@
           id="password"
           [(ngModel)]="password"
           name="password"
+          placeholder="••••••••"
+          required
         />
+        <mat-icon matPrefix class="form-icon">lock</mat-icon>
       </mat-form-field>
 
-      <button mat-raised-button color="primary" type="submit">Login</button>
+      <button class="login-submit-btn" type="submit">
+        <span>Login</span>
+        <i class="fas fa-arrow-right"></i>
+      </button>
     </form>
+    
+    <div class="login-footer">
+      <p>&copy; 2026 Kanojo Project</p>
+    </div>
   </mat-card>
 </div>

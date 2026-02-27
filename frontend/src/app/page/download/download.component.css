@@ -1,73 +1,169 @@
 .download-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 16px;
-  box-sizing: border-box;
-}
-
-.download-card h3 {
-  margin: 0 0 8px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.progress-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.progress-wrapper mat-progress-bar {
-  flex: 1;
-}
-
-.progress-text {
-  white-space: nowrap;
-}
-
-.download-card h3 {
-  margin: 0 0 8px 0;
-}
-
-.download-card p {
-  margin: 4px 0;
-}
-
-@media (max-width: 480px) {
-  .download-container {
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 12px;
-  }
-
-  .download-card h3 {
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
-    word-break: break-word;
-  }
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  padding: 8px 0;
 }
 
 .download-card {
   position: relative;
-  padding: 16px;
-  box-sizing: border-box;
-  /*  */
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-soft) !important;
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
+  transition: all var(--t-spring) !important;
+}
+
+.download-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md) !important;
+  border-color: var(--border-accent) !important;
+}
+
+.card-content {
+  padding: 20px;
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.torrent-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.4;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--text-main);
 }
 
 .delete-btn {
-  position: absolute;
-  bottom: 8px;
-  right: 8px;
-  background: none;
+  background: var(--bg-hover);
   border: none;
+  color: var(--text-muted);
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 1.2rem;
-  padding: 6px;
-  border-radius: 50%;
+  transition: all var(--t-fast);
+  flex-shrink: 0;
 }
 
 .delete-btn:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  transform: scale(1.1);
+}
+
+/* Progress Section */
+.progress-section {
+  margin-bottom: 20px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.progress-label {
+  color: var(--text-muted);
+}
+
+.progress-value {
+  color: var(--primary);
+}
+
+/* Deep override for MDC progress bar colors */
+.custom-progress {
+  height: 10px !important;
+  border-radius: var(--radius-full) !important;
+  background-color: var(--bg-hover) !important;
+}
+
+/* Deep override for MDC progress bar colors */
+::ng-deep .custom-progress .mdc-linear-progress__bar-inner {
+  border-color: transparent !important;
+  background-color: var(--accent) !important; /* Pure Accent Blue */
+  background-image: none !important;
+}
+
+::ng-deep .custom-progress .mdc-linear-progress__track {
+  background-color: var(--bg-raised) !important;
+  opacity: 1 !important;
+}
+
+::ng-deep .custom-progress .mdc-linear-progress__track {
+  background-color: var(--border-soft) !important;
+  opacity: 0.5;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.stat-item i {
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.icon-speed { color: #10b981; }
+.icon-eta { color: #f59e0b; }
+.icon-size { color: var(--primary); }
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.empty-state h3 {
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .download-container {
+    grid-template-columns: 1fr;
+  }
 }

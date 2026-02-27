@@ -101,7 +101,8 @@ export class TorrentListComponent implements OnInit, AfterViewInit {
         this.dataSource.data = this.searchResults;
         this.TorrentService.saveState(this.searchResults, keywords);
         this.snackBar.open('Torrents search completed', 'Close', {
-          duration: 2000,
+          duration: 3000,
+          panelClass: ['success-snackbar'],
         });
       },
       error: (error) => {
@@ -142,21 +143,25 @@ export class TorrentListComponent implements OnInit, AfterViewInit {
         id: this.movieId,
         keywords: this.keywords,
       },
+      panelClass: 'custom-dialog-container'
     });
 
+    row.loading = true;
+    row.error = false;
+    row.success = false;
     this.dataSource.data = [...this.dataSource.data];
 
     dialogRef.afterClosed().subscribe((result) => {
+      row.loading = false;
       if (result) {
         if (result.success) {
-          row.loading = false;
           row.success = true;
-          this.dataSource.data = [...this.dataSource.data];
+          row.error = false;
         } else {
-          row.loading = false;
           row.success = false;
-          this.dataSource.data = [...this.dataSource.data];
+          row.error = true;
         }
+        this.dataSource.data = [...this.dataSource.data];
       }
     });
   }

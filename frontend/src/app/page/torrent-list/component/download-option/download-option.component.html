@@ -1,31 +1,42 @@
-<div class="dialog-container">
+<div class="dialog-container glass-effect">
   <div class="dialog-header">
-    <h2>Download Option</h2>
+    <div class="header-title">
+      <mat-icon>download_manager</mat-icon>
+      <span>Download Options</span>
+    </div>
+    <button mat-icon-button (click)="close()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
 
   <div class="dialog-body">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Save Path</mat-label>
-      <input
-        matInput
-        [(ngModel)]="savePath"
-        [matAutocomplete]="auto"
-        (keydown.enter)="download()"
-        placeholder="Enter or Select Save Path"
-      />
+    <div class="input-section">
+      <mat-form-field appearance="outline" class="save-path-field">
+        <mat-label>Target Save Path</mat-label>
+        <input
+          matInput
+          [(ngModel)]="savePath"
+          [matAutocomplete]="auto"
+          (keydown.enter)="download()"
+          placeholder="Path to save your torrent..."
+          autocomplete="off"
+        />
+        <mat-icon matSuffix class="input-suffix-icon">folder_open</mat-icon>
+        
+        <mat-autocomplete #auto="matAutocomplete" class="custom-autocomplete">
+          <mat-option *ngFor="let option of filteredOptions" [value]="option">
+            <mat-icon class="option-icon">history</mat-icon>
+            {{ option }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
 
-      <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let option of filteredOptions" [value]="option">
-          {{ option }}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
-
-    <button mat-button (click)="download()" class="search-button">
-      <div class="button-content">
-        <mat-icon class="icon-left">download</mat-icon>
-        <span class="label-text">Download</span>
-      </div>
-    </button>
+    <div class="action-section">
+      <button mat-button (click)="download()" class="premium-download-btn">
+        <mat-icon>rocket_launch</mat-icon>
+        <span>Initialize Download</span>
+      </button>
+    </div>
   </div>
 </div>

@@ -70,6 +70,13 @@
   /* Compat aliases */
   --transition-fast:   var(--t-fast);
   --transition-normal: var(--t-normal);
+
+  /* Material Datepicker Overrides */
+  --mat-datepicker-calendar-date-selected-state-background-color: var(--primary);
+  --mat-datepicker-calendar-date-selected-state-text-color: #fff;
+  --mat-datepicker-calendar-date-today-state-outline-color: var(--primary);
+  --mat-datepicker-calendar-date-focus-state-background-color: var(--bg-hover);
+  --mat-datepicker-calendar-date-hover-state-background-color: var(--bg-hover);
 }
 
 /* ── Dark Theme ──────────────────────────────── */
@@ -97,9 +104,18 @@
 
   --glass-bg:     rgba(15, 15, 20, 0.7);
   --glass-border: rgba(255, 255, 255, 0.06);
+
+  /* Material Datepicker Overrides */
+  --mat-datepicker-calendar-date-selected-state-background-color: var(--primary);
+  --mat-datepicker-calendar-date-today-state-outline-color: var(--primary-light);
 }
 
 /* ── Base ────────────────────────────────────── */
+::selection {
+  background: rgba(59, 130, 246, 0.2);
+  color: var(--primary);
+}
+
 html, body {
   height: 100%;
   margin: 0;
@@ -196,7 +212,7 @@ a:hover { opacity: 0.8; }
 /* ── Poster Grid ─────────────────────────────── */
 .poster-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
   padding: 12px 0;
 }
@@ -230,12 +246,311 @@ a:hover { opacity: 0.8; }
 button, i { transition: all var(--t-fast); }
 
 /* ── Material Card global theme ─────────────── */
-/* Override MDC tokens so mat-card always matches the sidebar color */
+/* DE-BOXED: Making cards transparent to blend with theme background */
 .mat-mdc-card {
-  --mdc-elevated-card-container-color: var(--bg-sidebar);
-  --mdc-outlined-card-container-color: var(--bg-sidebar);
-  background-color: var(--bg-sidebar) !important;
+  background-color: transparent !important;
   border: 1px solid var(--border-soft) !important;
   border-radius: var(--radius-lg) !important;
   box-shadow: var(--shadow-sm) !important;
+}
+
+/* ── Material Component Overrides ──────────────── */
+
+/* Global mat-tab-group Styles (Premium Transparent Look) */
+.mat-mdc-tab-group {
+  --mdc-tab-indicator-active-indicator-color: var(--primary);
+  --mat-tab-header-active-label-text-color: var(--primary);
+  --mat-tab-header-inactive-label-text-color: var(--text-muted);
+  --mat-tab-header-active-focus-indicator-color: var(--primary);
+  --mat-tab-header-active-hover-indicator-color: var(--primary);
+  --mat-tab-header-divider-color: var(--border-soft);
+  --mdc-tab-indicator-active-indicator-height: 3px;
+}
+
+.mat-mdc-tab-header {
+  background: transparent !important;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0 !important;
+  border: 1px solid var(--border-soft) !important;
+  border-bottom: none !important;
+  padding: 0 !important;
+  box-shadow: var(--shadow-xs) !important;
+  overflow: hidden !important;
+}
+
+.mat-mdc-tab-body-wrapper {
+  background: transparent !important;
+  border: 1px solid var(--border-soft) !important;
+  border-top: none !important;
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+  padding: 24px !important;
+}
+
+.mat-mdc-tab {
+  min-width: 100px;
+  height: 52px !important;
+  opacity: 1 !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+  transition: all var(--t-fast) !important;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0 !important;
+  font-family: 'Outfit', sans-serif !important;
+}
+
+.mat-mdc-tab:hover, 
+.mat-mdc-tab.mdc-tab--active {
+  background: var(--bg-hover) !important;
+}
+
+.mat-mdc-tab .mdc-tab__text-label {
+  font-size: 15px !important;
+}
+
+.tab-icon {
+  margin-right: 8px;
+  font-size: 15px;
+  opacity: 0.9;
+}
+
+/* Global Outline Form Fields (Inputs & Selects) */
+.mat-mdc-form-field-appearance-outline {
+  --mdc-outlined-text-field-focus-outline-color: var(--primary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--primary);
+  --mdc-outlined-text-field-caret-color: var(--primary);
+  --mdc-outlined-text-field-container-shape: var(--radius-lg);
+}
+
+/* Target the actual MDC text field wrapper for rounding */
+.mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+  border-radius: var(--radius-lg) !important;
+  background: var(--bg-raised) !important;
+  transition: all var(--t-normal) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-text-field-wrapper.mdc-text-field--outlined {
+  background: var(--bg-card) !important;
+  box-shadow: var(--glow-primary);
+}
+
+/* Force rounding on the notched outline components */
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__leading {
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg) !important;
+  width: var(--radius-lg) !important;
+  border-right: none !important;
+}
+
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__trailing {
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0 !important;
+  border-left: none !important;
+}
+
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch {
+  border-left: none !important;
+  border-right: none !important;
+}
+
+/* Remove internal padding/background that might clash */
+.mat-mdc-form-field-flex {
+  border-radius: inherit !important;
+  background: transparent !important;
+}
+
+/* Global Select Theme */
+.mat-mdc-select-arrow {
+  color: var(--text-faint) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mat-mdc-select-arrow {
+  color: var(--primary) !important;
+}
+
+/* Dropdown Panel */
+.mat-mdc-select-panel {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-soft) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.mat-mdc-option {
+  color: var(--text-main) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: var(--bg-hover) !important;
+}
+
+.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background: var(--bg-hover) !important;
+}
+
+.mat-mdc-option .mdc-list-item__primary-text {
+  color: inherit !important;
+}
+
+/* ============================================================
+   SNACKBAR BEAUTIFICATION — GLASSMORPHISM & PREMIUM STATES
+   ============================================================ */
+.mat-mdc-snack-bar-container {
+  --mdc-snackbar-container-color: var(--glass-bg);
+  --mdc-snackbar-supporting-text-color: var(--text-main);
+  --mdc-snackbar-container-shape: var(--radius-lg);
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(0,0,0,0.1) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__label {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  padding: 12px 16px !important;
+}
+
+.mat-mdc-snack-bar-container .mat-mdc-button {
+  --mdc-text-button-label-text-color: var(--primary) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 1px !important;
+}
+
+/* Specific States */
+.success-snackbar .mdc-snackbar__surface {
+  border-left: 4px solid #10b981 !important; /* Emerald 500 */
+}
+.success-snackbar .mdc-snackbar__label::before {
+  content: '\f058'; /* fa-check-circle */
+  font-family: 'Font Awesome 5 Free';
+  margin-right: 8px;
+  color: #10b981;
+}
+
+.error-snackbar .mdc-snackbar__surface {
+  border-left: 4px solid #ef4444 !important; /* Red 500 */
+}
+.error-snackbar .mdc-snackbar__label::before {
+  content: '\f06a'; /* fa-exclamation-circle */
+  font-family: 'Font Awesome 5 Free';
+  margin-right: 8px;
+  color: #ef4444;
+}
+
+.info-snackbar .mdc-snackbar__surface {
+  border-left: 4px solid var(--primary) !important;
+}
+.info-snackbar .mdc-snackbar__label::before {
+  content: '\f05a'; /* fa-info-circle */
+  font-family: 'Font Awesome 5 Free';
+  margin-right: 8px;
+  color: var(--primary);
+}
+/* ============================================================
+   FORCED FOCUS OVERRIDES — ERADICATING PURPLE VESTIGES
+   ============================================================ */
+::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--primary) !important;
+  border-width: 2px !important;
+}
+
+/* Caret / Cursor color */
+::ng-deep input {
+  caret-color: var(--primary) !important;
+}
+
+.dark-theme ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__leading,
+.dark-theme ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__notch,
+.dark-theme ::ng-deep .mat-mdc-form-field.mat-focused .mdc-notched-outline__trailing {
+  border-color: var(--primary-light) !important;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label,
+::ng-deep .mat-mdc-form-field.mat-focused mat-label,
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label,
+::ng-deep .mat-mdc-form-field.mat-focused .mdc-floating-label {
+  color: var(--primary) !important;
+}
+
+.dark-theme ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label,
+.dark-theme ::ng-deep .mat-mdc-form-field.mat-focused mat-label,
+.dark-theme ::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-floating-label,
+.dark-theme ::ng-deep .mat-mdc-form-field.mat-focused .mdc-floating-label {
+  color: var(--primary-light) !important;
+}
+
+::ng-deep .mat-mdc-form-field.mat-focused .mat-mdc-form-field-icon-prefix {
+  color: var(--primary) !important;
+}
+
+/* Radio button & Checkbox (if any) */
+::ng-deep .mdc-radio__native-control:enabled:checked+.mdc-radio__background .mdc-radio__outer-circle {
+  border-color: var(--primary) !important;
+}
+::ng-deep .mdc-radio__native-control:enabled+.mdc-radio__background .mdc-radio__inner-circle {
+  border-color: var(--primary) !important;
+}
+
+/* ── Calendar & Focus Ring Nuke ──────────────── */
+::ng-deep :focus-visible {
+  outline-color: var(--primary) !important;
+}
+
+::ng-deep .mat-focus-indicator::before,
+::ng-deep .mat-mdc-button-persistent-ripple::before,
+::ng-deep .mat-mdc-button-touch-target {
+  outline-color: var(--primary) !important;
+}
+
+::ng-deep .mat-calendar-body-cell-container .mat-focus-indicator {
+  border-color: var(--primary) !important;
+}
+
+::ng-deep .mat-datepicker-content {
+  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--border-soft) !important;
+  box-shadow: var(--shadow-xl) !important;
+  background-color: var(--bg-card) !important;
+}
+
+::ng-deep .mat-calendar-body-selected {
+  outline: none !important;
+  background-color: var(--primary) !important;
+  color: #fff !important;
+}
+
+/* 彻底摧毁选中态残余的紫色轮廓 */
+::ng-deep .mat-calendar-body-cell-selected::before {
+  border-color: var(--primary) !important;
+  background-color: var(--primary) !important;
+}
+
+::ng-deep .mat-calendar-body-selected:focus {
+  box-shadow: 0 0 0 2px var(--bg-card), 0 0 0 4px var(--primary) !important;
+}
+
+::ng-deep .mat-calendar-body-cell-selected {
+  --mdc-theme-primary: var(--primary) !important;
+  --mdc-filled-button-container-color: var(--primary) !important;
+}
+
+::ng-deep .mat-datepicker-content .mat-calendar-body-cell-selected {
+  background-color: var(--primary) !important;
+}
+
+/* 即使是聚焦或被触摸的状态也必须是蓝色 */
+::ng-deep .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+  background-color: var(--bg-hover) !important;
+}
+
+::ng-deep .mat-calendar-body-cell-preview {
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
 }

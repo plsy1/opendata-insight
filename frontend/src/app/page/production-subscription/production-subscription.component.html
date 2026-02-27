@@ -2,12 +2,20 @@
   [(selectedIndex)]="selectedTabIndex"
   (selectedTabChange)="onTabChange($event)"
 >
-  <mat-tab label="Subscription">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-star tab-icon"></i>
+      Subscription
+    </ng-template>
     <ng-template matTabContent>
       <app-production-subscription-list></app-production-subscription-list>
     </ng-template>
   </mat-tab>
-  <mat-tab label="History">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-history tab-icon"></i>
+      History
+    </ng-template>
     <ng-template matTabContent>
       <app-download-history></app-download-history>
     </ng-template>

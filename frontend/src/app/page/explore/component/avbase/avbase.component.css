@@ -1,26 +1,142 @@
 .card-grid {
-  width: 97%;
-  margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 8px;
-  box-sizing: border-box;
-  contain: content; /* skip layout recalculation outside this container */
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 16px;
+  padding: 12px 0;
 }
 
-.poster-image-wrapper {
+.actress-card {
+  text-align: center;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
+  transition: all var(--t-spring);
+  cursor: pointer;
+  padding: 12px 8px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.actress-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-accent);
+  background: var(--bg-hover);
+}
+
+.avatar-wrapper {
   position: relative;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 10px;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid transparent;
+  box-shadow: 0 0 0 2px var(--border-soft);
+  transition: all var(--t-normal);
+}
+
+.actress-card:hover .avatar-img {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.avatar-img.blurred {
+  filter: blur(14px);
+}
+
+.actress-card:hover .avatar-img.blurred {
+  filter: blur(0);
+}
+
+.actress-card div:last-child {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  transition: color var(--t-fast);
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.actress-card:hover div:last-child {
+  color: var(--primary);
+}
+
+.poster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
 }
 
 @media (max-width: 720px) {
   .card-grid {
-    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px;
   }
   .poster-grid {
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }
 
-.avatar-img.blurred {
-  filter: blur(8px);
+.release-header {
+  margin: 32px 0 16px 0;
+  display: flex;
+  align-items: center;
+}
+
+.date-jump {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  transition: all var(--t-fast);
+  position: relative;
+}
+
+.date-jump:hover {
+  border-color: var(--primary);
+  background: var(--bg-hover);
+  box-shadow: var(--shadow-sm), var(--glow-primary);
+  transform: translateY(-2px);
+}
+
+.jump-title {
+  margin: 0 !important;
+  font-size: 1.25rem !important;
+  font-weight: 800 !important;
+  color: var(--text-main);
+}
+
+.calendar-icon {
+  color: var(--primary);
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  transition: transform var(--t-normal);
+}
+
+.date-jump:hover .calendar-icon {
+  transform: rotate(15deg) scale(1.1);
+}
+
+.hidden-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
 }

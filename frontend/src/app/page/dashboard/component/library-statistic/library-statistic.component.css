@@ -1,59 +1,109 @@
 .stats-card {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-title::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background: var(--primary-gradient);
+  border-radius: var(--radius-full);
+}
+
 .stats-card mat-card-header {
-  padding-bottom: 8px;
+  padding: 0 0 16px 0;
 }
 
 .stats-card mat-card-content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  padding: 0 !important;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 16px;
   width: 100%;
 }
 
 .count-card {
+  background: transparent !important;
+  border: 1px solid var(--border-soft) !important;
+  border-radius: var(--radius-lg) !important;
   display: flex;
   align-items: center;
-  padding: 8px 12px;
-  transition: transform 0.2s ease;
+  padding: 16px !important;
+  transition: all var(--t-spring) !important;
+  box-shadow: none !important;
 }
 
 .count-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md), var(--glow-primary) !important;
+  border-color: var(--primary) !important;
+  background: var(--bg-hover) !important;
 }
 
 .count-content {
   display: flex;
   align-items: center;
   width: 100%;
+  gap: 12px;
 }
 
 .count-content i {
-  font-size: 24px;
-  margin-right: 10px;
+  font-size: 20px;
+  color: var(--primary);
+  background: var(--bg-hover);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  transition: all var(--t-fast);
+}
+
+.count-card:hover i {
+  background: var(--primary);
+  color: white;
+  transform: rotate(-10deg);
 }
 
 .count-text {
   display: flex;
   flex-direction: column;
+  gap: 2px;
 }
 
 .count-name {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .count-value {
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-main);
 }

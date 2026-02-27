@@ -143,9 +143,9 @@
 }
 .genre-chip {
   padding: 4px 12px;
-  background: rgba(99, 102, 241, 0.09);
+  background: rgba(59, 130, 246, 0.09);
   color: var(--primary);
-  border: 1px solid rgba(99, 102, 241, 0.18);
+  border: 1px solid rgba(59, 130, 246, 0.18);
   border-radius: var(--radius-full);
   font-size: 12px;
   font-weight: 600;

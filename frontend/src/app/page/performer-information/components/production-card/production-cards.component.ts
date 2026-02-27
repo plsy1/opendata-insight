@@ -65,6 +65,7 @@ export class MovieCards implements OnInit {
   loadDiscoverData(name: string, page: number): void {
     if (this.isLoading) return;
     this.isLoading = true;
+    this.discoverResults = [];
     this.service.getMoviesByActorName(name, page).subscribe({
       next: (data) => {
         this.discoverResults = data;

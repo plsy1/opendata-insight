@@ -8,13 +8,15 @@
       (click)="cardClick(actress.name)"
     >
       <div class="rank-badge">{{ actress.rank }}</div>
-      <img
-        [src]="actress.image || 'assets/logo.svg'"
-        [alt]="actress.name"
-        class="avatar-img"
-        [class.blurred]="PageExploreService.isEnableBlur$() | async"
-        loading="lazy"
-      />
+      <div class="avatar-wrapper">
+        <img
+          [src]="actress.image || 'assets/logo.svg'"
+          [alt]="actress.name"
+          class="avatar-img"
+          [class.blurred]="PageExploreService.isEnableBlur$() | async"
+          loading="lazy"
+        />
+      </div>
       <div>{{ actress.name }}</div>
     </div>
   </div>

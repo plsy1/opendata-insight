@@ -3,10 +3,8 @@
   display: inline-block;
 }
 
-/* Match explore's 5-column layout */
 .poster-grid {
   padding: 1rem;
-  grid-template-columns: repeat(5, 1fr);
 }
 
 

@@ -1,13 +1,26 @@
-<div class="pagination-buttons">
-  <mat-icon
-    class="pagination-icon"
-    (click)="onPrevious()"
-    aria-label="Previous Page"
+<div class="pagination-container">
+  <button 
+    class="nav-btn prev" 
+    (click)="onPrevious()" 
+    [disabled]="page <= 1"
+    title="Previous Page"
   >
-    chevron_left
-  </mat-icon>
+    <i class="fas fa-chevron-left"></i>
+  </button>
 
-  <mat-icon class="pagination-icon" (click)="onNext()" aria-label="Next Page">
-    chevron_right
-  </mat-icon>
+  <div class="page-pill">
+    <div class="page-info">
+      <span class="label">PAGE</span>
+      <span class="number">{{ page }}</span>
+    </div>
+  </div>
+
+  <button 
+    class="nav-btn next" 
+    (click)="onNext()" 
+    [disabled]="!hasNext"
+    title="Next Page"
+  >
+    <i class="fas fa-chevron-right"></i>
+  </button>
 </div>

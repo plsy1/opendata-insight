@@ -1,5 +1,9 @@
 <mat-tab-group>
-  <mat-tab label="Library">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-th-large tab-icon"></i>
+      Library
+    </ng-template>
     <ng-template matTabContent>
       <div class="top-row">
         <div class="left">
@@ -13,7 +17,11 @@
       <div class="section"><app-resume-watching></app-resume-watching></div>
     </ng-template>
   </mat-tab>
-  <mat-tab label="Statistic">
+  <mat-tab>
+    <ng-template mat-tab-label>
+      <i class="fas fa-chart-bar tab-icon"></i>
+      Statistic
+    </ng-template>
     <ng-template matTabContent>
       <app-download-statistic></app-download-statistic>
     </ng-template>

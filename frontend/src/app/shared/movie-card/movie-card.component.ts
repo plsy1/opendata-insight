@@ -26,6 +26,7 @@ export class MovieCardComponent {
 
   inLibrary: boolean = false;
   libraryLink?: string;
+  isImageError = false;
   imageLoaded = false;
 
   @Output() movieClick = new EventEmitter<string>();
@@ -37,7 +38,8 @@ export class MovieCardComponent {
   ) {}
 
   onImageError(event: Event) {
-    (event.target as HTMLImageElement).src = '';
+    this.isImageError = true;
+    (event.target as HTMLImageElement).src = 'assets/logo.svg';
   }
 
   onClick() {

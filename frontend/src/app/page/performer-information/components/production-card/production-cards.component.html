@@ -1,55 +1,59 @@
-<div *ngIf="isLoading" class="loading">
+<div *ngIf="isLoading" class="loading-state">
+  <i class="fas fa-spinner fa-spin"></i>
+  <span>Loading works...</span>
 </div>
 
-<div class="top-bar" *ngIf="!isLoading">
-  <!-- 筛选框 -->
-  <mat-form-field class="search-box" appearance="outline">
-    <mat-label>Type</mat-label>
-    <mat-select
-      [(ngModel)]="actressNumberFilter"
-      (ngModelChange)="onFilterChange($event)"
-    >
-      <mat-select-trigger>
-        {{
-          actressNumberFilter === "0"
-            ? "All"
-            : actressNumberFilter === "1"
-            ? "Single"
-            : actressNumberFilter === "2"
-            ? "Sale"
-            : "Type"
-        }}
-      </mat-select-trigger>
-      <mat-option [value]="'0'">All</mat-option>
-      <mat-option [value]="'1'">Single</mat-option>
-      <mat-option [value]="'2'">Sale</mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
+<ng-container *ngIf="!isLoading">
+  <div class="top-bar">
+    <!-- 筛选框 -->
+    <mat-form-field class="search-box" appearance="outline">
+      <mat-label>Type</mat-label>
+      <mat-select
+        [(ngModel)]="actressNumberFilter"
+        (ngModelChange)="onFilterChange($event)"
+      >
+        <mat-select-trigger>
+          {{
+            actressNumberFilter === "0"
+              ? "All"
+              : actressNumberFilter === "1"
+              ? "Single"
+              : actressNumberFilter === "2"
+              ? "Sale"
+              : "Type"
+          }}
+        </mat-select-trigger>
+        <mat-option [value]="'0'">All</mat-option>
+        <mat-option [value]="'1'">Single</mat-option>
+        <mat-option [value]="'2'">Sale</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
 
-<app-pagination
-  [page]="this.page"
-  (previousClick)="loadPreviousPage()"
-  (nextClick)="loadNextPage()"
-></app-pagination>
+  <app-pagination
+    [page]="this.page"
+    (previousClick)="loadPreviousPage()"
+    (nextClick)="loadNextPage()"
+  ></app-pagination>
 
-<div class="poster-grid">
-  <ng-container *ngFor="let movie of discoverResults">
-    <app-movie-card
-      *ngIf="shouldShowMovie(movie)"
-      [id]="movie.id"
-      [title]="movie.title"
-      [imgUrl]="movie.img_url"
-      [releaseDate]="movie.release_date"
-      [actors]="movie.actors"
-      (movieClick)="onMovieClick(movie)"
-            [enableBlur]="service.isEnableBlur$() | async"
-    ></app-movie-card>
-  </ng-container>
-</div>
+  <div class="poster-grid">
+    <ng-container *ngFor="let movie of discoverResults">
+      <app-movie-card
+        *ngIf="shouldShowMovie(movie)"
+        [id]="movie.id"
+        [title]="movie.title"
+        [imgUrl]="movie.img_url"
+        [releaseDate]="movie.release_date"
+        [actors]="movie.actors"
+        (movieClick)="onMovieClick(movie)"
+              [enableBlur]="service.isEnableBlur$() | async"
+      ></app-movie-card>
+    </ng-container>
+  </div>
 
-<app-pagination
-  [page]="this.page"
-  (previousClick)="loadPreviousPage()"
-  (nextClick)="loadNextPage()"
-></app-pagination>
+  <app-pagination
+    [page]="this.page"
+    (previousClick)="loadPreviousPage()"
+    (nextClick)="loadNextPage()"
+  ></app-pagination>
+</ng-container>

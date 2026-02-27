@@ -1,6 +1,8 @@
 <h2>FC2 Ranking</h2>
-<mat-form-field appearance="outline">
-  <mat-label>Ranking Type</mat-label>
+
+<div style="margin-bottom: 16px;">
+  <mat-form-field appearance="outline" style="width: 200px;">
+    <mat-label>Ranking Type</mat-label>
   <mat-select
     [(ngModel)]="currentRankingType"
     (ngModelChange)="onWorkRankingTypeChange($event)"

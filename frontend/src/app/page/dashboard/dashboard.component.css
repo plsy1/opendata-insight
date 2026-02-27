@@ -18,31 +18,8 @@
   margin-bottom: 48px;
 }
 
-/* Tab Styling Overrides for Premium Feel */
-::ng-deep .mat-mdc-tab-group {
-  --mdc-tab-indicator-active-indicator-color: var(--primary);
-  --mdc-tab-indicator-active-indicator-height: 4px;
-}
-
-::ng-deep .mat-mdc-tab .mdc-tab__text-label {
-  color: var(--text-muted);
-  font-weight: 600;
-  font-family: 'Outfit', sans-serif;
-  letter-spacing: 0.5px;
-  font-size: 16px;
-  transition: color var(--transition-fast);
-}
-
-::ng-deep .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
-  color: var(--primary);
-}
-
-::ng-deep .mat-mdc-tab-group .mat-mdc-tab-labels {
-  border-bottom: 1px solid var(--border-soft);
-  margin-bottom: 24px;
-}
-
 /* Card titles */
+
 ::ng-deep .card-title {
   font-size: 20px !important;
   font-weight: 700 !important;

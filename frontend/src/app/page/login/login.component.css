@@ -1,139 +1,148 @@
 .login-container {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-image: url("https://www.loliapi.com/acg/");
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 80px;
-  box-sizing: border-box;
-  position: relative;
   overflow: hidden;
 }
 
-.login-container::after {
-  content: '';
+.login-overlay {
+  display: block;
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
   z-index: 0;
 }
 
-mat-card.login-card {
+.login-card {
   width: 100%;
-  max-width: 450px;
-  padding: 36px 48px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 20px;
+  max-width: 420px;
+  padding: 48px 40px !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-xl) !important;
+  box-shadow: var(--shadow-xl), 0 0 40px rgba(0,0,0,0.1) !important;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-  position: relative;
   z-index: 1;
-  transform: translateY(-50px);
-  opacity: 0;
-  animation: fadeInUp 0.6s ease forwards;
+  animation: loginAppear 0.8s var(--ease-spring) forwards;
 }
 
-@keyframes fadeInUp {
-  0% {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
+@keyframes loginAppear {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-@keyframes rainbow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-.login-card h2 {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  font-weight: 700;
-  background: linear-gradient(270deg, #ff6ec4, #7873f5, #00f2fe, #ff6ec4);
-  background-size: 600% 600%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: rainbow 3s ease infinite;
-  text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
 }
 
 .title-icon {
-  width: 48px;
-  height: 48px;
-  margin-right: 12px;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  filter: drop-shadow(var(--glow-primary));
 }
 
+.brand-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -1.5px;
+}
 
-mat-form-field.form-group {
+.brand-subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group {
   width: 100%;
-  margin-bottom: 22px;
 }
 
-.mat-form-field-outline {
-  border-radius: 8px;
+.form-icon {
+  color: var(--primary) !important;
+  margin-right: 8px;
+  font-size: 20px;
 }
 
-input[matInput] {
-  font-size: 16px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  color: #222;
+/* Material Field Overrides for Login */
+::ng-deep .login-card .mat-mdc-form-field-flex {
+  background: rgba(255, 255, 255, 0.05) !important;
 }
 
-button[mat-raised-button] {
-  width: 100%;
-  padding: 14px 0;
-  font-size: 16px;
-  border-radius: 10px;
-  font-weight: 600;
-  background: linear-gradient(90deg, #4facfe, #00f2fe);
+.login-submit-btn {
+  margin-top: 12px;
+  height: 52px;
+  background: var(--primary-gradient);
+  border: none;
+  border-radius: var(--radius-md);
   color: #fff;
-  transition: all 0.25s ease-in-out;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   cursor: pointer;
+  transition: all var(--t-fast);
+  box-shadow: var(--glow-primary);
 }
 
-button[mat-raised-button]:hover {
+.login-submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  filter: brightness(1.1);
 }
 
-button[mat-raised-button]:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.login-submit-btn i {
+  font-size: 14px;
+  transition: transform var(--t-fast);
 }
 
+.login-submit-btn:hover i {
+  transform: translateX(4px);
+}
+
+.login-footer {
+  margin-top: 40px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-faint);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
 
 @media (max-width: 480px) {
-  mat-card.login-card {
-    padding: 28px 20px;
+  .login-card {
+    max-width: 90%;
+    padding: 40px 24px !important;
+    margin: 20px;
   }
-
-  .login-card h2 {
-    font-size: 24px;
-  }
-
-  .title-icon {
-    width: 36px;
-    height: 36px;
-    margin-right: 8px;
-  }
-
-  button[mat-raised-button] {
-    font-size: 14px;
-    padding: 12px 0;
+  
+  .brand-title {
+    font-size: 28px;
   }
 }

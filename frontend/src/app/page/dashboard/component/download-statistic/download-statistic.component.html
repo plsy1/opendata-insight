@@ -69,9 +69,10 @@
       </h2>
 
       <div
-        class="ranking-item"
+        class="ranking-item clickable"
         *ngFor="let a of data.actors; index as i"
         [ngClass]="'rank-' + (i + 1)"
+        (click)="goActor(a.actor)"
       >
         <span class="rank">{{ i + 1 }}</span>
         <span class="name">{{ a.actor }}</span>

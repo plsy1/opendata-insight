@@ -41,6 +41,7 @@ export class ActressInformationComponent {
 
   loadActorInformation(name: string): void {
     this.isLoading = true;
+    this.performerInformation = null;
     this.service.getActorInformation(name).subscribe({
       next: (data) => {
         this.performerInformation = data;
@@ -57,10 +58,16 @@ export class ActressInformationComponent {
   subscribeActor(): void {
     this.service.addActorSubscribe(this.name).subscribe({
       next: (response) => {
-        this.snackBar.open('Added successfully', 'Close', { duration: 2000 });
+        this.snackBar.open('Added successfully', 'Close', { 
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
       },
       error: (error) => {
-        this.snackBar.open('Failed to add', 'Close', { duration: 2000 });
+        this.snackBar.open('Failed to add', 'Close', { 
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
       },
     });
   }
@@ -68,10 +75,16 @@ export class ActressInformationComponent {
   collectActor(): void {
     this.service.addActorCollect(this.name).subscribe({
       next: (response) => {
-        this.snackBar.open('Added successfully', 'Close', { duration: 2000 });
+        this.snackBar.open('Added successfully', 'Close', { 
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
       },
       error: (error) => {
-        this.snackBar.open('Failed to add', 'Close', { duration: 2000 });
+        this.snackBar.open('Failed to add', 'Close', { 
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
       },
     });
   }
