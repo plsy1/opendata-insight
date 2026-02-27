@@ -34,7 +34,7 @@
 ### 1. 克隆代码库
 
 ```bash
-git clone https://github.com/your-org/opendata-insight.git
+git clone https://github.com/plsy1/opendata-insight.git
 cd opendata-insight
 ```
 
