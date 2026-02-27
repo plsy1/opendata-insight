@@ -17,6 +17,10 @@
     <i class="fas" [ngClass]="commonService.enableBlur ? 'fa-eye-slash' : 'fa-eye'"></i>
   </div>
   
+  <div class="icon lang-toggle" (click)="toggleLanguage()" title="Switch Language">
+    <span class="lang-label">{{ currentLang === 'zh' ? 'EN' : '中' }}</span>
+  </div>
+  
   <div class="icon" (click)="OpenSearch()" title="Search">
     <i class="fas fa-search"></i>
   </div>

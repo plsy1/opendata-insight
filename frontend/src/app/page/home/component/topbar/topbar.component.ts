@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SearchOptionComponent } from '../search-option/search-option.component';
 import { ThemeService } from '../../../../theme.service';
 import { CommonModule } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-topbar',
   standalone: true,
@@ -22,8 +23,19 @@ export class TopbarComponent {
     private location: Location,
     public homeService: HomeService,
     public themeService: ThemeService,
-    public commonService: CommonService
+    public commonService: CommonService,
+    public translate: TranslateService
   ) {}
+
+  get currentLang(): string {
+    return this.translate.currentLang || localStorage.getItem('appLang') || 'en';
+  }
+
+  toggleLanguage() {
+    const newLang = this.currentLang === 'zh' ? 'en' : 'zh';
+    this.translate.use(newLang);
+    localStorage.setItem('appLang', newLang);
+  }
 
   toggleSidebar() {
     this.homeService.setSidebarOpen(!this.homeService.isSidebarOpen);

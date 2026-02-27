@@ -8,15 +8,6 @@
       {{ 'SETTINGS.ENV_PASSWORD' | translate }}
     </ng-template>
     <ng-template matTabContent>
-      <!-- Language Switcher Section -->
-      <div class="lang-switcher-card">
-        <label><i class="fas fa-globe"></i> {{ 'SETTINGS.LANGUAGE' | translate }}</label>
-        <div class="lang-buttons">
-          <button [class.active]="currentLang === 'zh'" (click)="changeLanguage('zh')">{{ 'SETTINGS.CHINESE' | translate }}</button>
-          <button [class.active]="currentLang === 'en'" (click)="changeLanguage('en')">{{ 'SETTINGS.ENGLISH' | translate }}</button>
-        </div>
-      </div>
-
       <app-environment-variable></app-environment-variable>
       <app-change-password></app-change-password>
     </ng-template>
