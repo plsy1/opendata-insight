@@ -51,18 +51,13 @@
   flex-shrink: 0;
 }
 
-.logo-icon {
+.logo-img {
   width: 42px;
   height: 42px;
-  background: var(--primary-gradient);
   border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 18px;
   box-shadow: var(--glow-primary);
   flex-shrink: 0;
+  object-fit: contain;
 }
 
 .logo-text {

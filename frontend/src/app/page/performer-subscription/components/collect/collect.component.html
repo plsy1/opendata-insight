@@ -2,7 +2,7 @@
   <mat-card *ngFor="let actress of ActressList" class="actress-card">
     <div class="card-content" (click)="onClick(actress.name)">
       <img
-        [src]="actress.avatar_url || 'assets/favicon.ico'"
+        [src]="actress.avatar_url || 'assets/logo.svg'"
         alt="Actress Avatar"
         class="avatar-img"
         [class.blurred]="PerformerSubscriptionService.isEnableBlur$() | async"

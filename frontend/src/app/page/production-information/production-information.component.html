@@ -80,7 +80,7 @@
         >
           <img
             loading="lazy"
-            [src]="cast.image_url || 'assets/favicon.ico'"
+            [src]="cast.image_url || 'assets/logo.svg'"
             alt="{{ cast.name || 'Unknown' }}"
             class="actor-avatar"
           />
@@ -98,7 +98,7 @@
       <img
         loading="lazy"
         *ngFor="let src of allSampleImages; let i = index"
-        [src]="src || 'assets/favicon.ico'"
+        [src]="src || 'assets/logo.svg'"
         alt="Sample Image"
         class="sample-image"
         (click)="openLightbox(i)"

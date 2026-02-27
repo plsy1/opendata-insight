@@ -16,6 +16,6 @@ export class MoviePosterComponent {
   @Input() enableBlur: boolean | null = false;
 
   onImageError(event: Event) {
-    (event.target as HTMLImageElement).src = 'assets/favicon.png';
+    (event.target as HTMLImageElement).src = 'assets/logo.svg';
   }
 }
