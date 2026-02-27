@@ -216,6 +216,11 @@ a:hover { opacity: 0.8; }
   gap: 20px;
   padding: 12px 0;
 }
+@media (max-width: 600px) {
+  .poster-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 .image-wrapper {
   position: relative;
