@@ -412,7 +412,6 @@ Thumbs.db
 
 .venv/
 .data/
-docker-compose.yml
 .idea/angular-project.iml
 .idea/jsLibraryMappings.xml
 .idea/libraries/

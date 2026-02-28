@@ -1,0 +1,12 @@
+services:
+  kanojo:
+    image: ghcr.io/plsy1/kanojo:latest
+    container_name: kanojo
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/backend/data
+      - ./runtime:/app/runtime
+    ports:
+      - "8080:80"
+    environment:
+      - TZ=Asia/Shanghai
