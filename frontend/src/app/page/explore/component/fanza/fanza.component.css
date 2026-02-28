@@ -65,6 +65,8 @@
 
 .avatar-img.blurred {
   filter: blur(14px);
+  clip-path: circle(50%);
+  transform: scale(1.1);
 }
 
 .actress-card:hover .avatar-img.blurred {
