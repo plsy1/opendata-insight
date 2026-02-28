@@ -22,7 +22,11 @@ else
     echo "$CONFIG_FILE already exists. Skipping generation."
 fi
 
-# Playwright browsers are pre-installed in the Docker image.
-# If /app/runtime is mapped to a volume, you might need to handle persistence.
+if [ ! -d "$PLAYWRIGHT_BROWSERS_PATH" ] || [ -z "$(ls -A $PLAYWRIGHT_BROWSERS_PATH)" ]; then
+    echo "Installing Playwright browsers..."
+    # Dependencies are already in the image, so we just need the binary
+    playwright install chromium
+    echo "Playwright browsers installed."
+fi
 
 exec /usr/bin/supervisord -c /app/supervisord.conf

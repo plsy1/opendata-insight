@@ -28,11 +28,11 @@ COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-# Install Playwright dependencies and Chromium
+# Install Playwright dependencies (optional but recommended for stability)
+# If you want a strictly minimal image, you can remove this and run install-deps in start.sh
 RUN playwright install-deps chromium && \
-    playwright install chromium && \
-    # Clean up apt again after playwright install-deps
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 # Copy frontend build
 COPY --from=frontend /app/frontend/dist/frontend/browser /app/frontend
