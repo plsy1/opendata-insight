@@ -111,3 +111,24 @@ jobs:
             --tag ghcr.io/${{ github.repository_owner }}/kanojo:${{ needs.docker-amd64.outputs.version }} \
             plsy1/kanojo:latest-amd64
 
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: [docker-amd64, docker-manifest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ needs.docker-amd64.outputs.version }}
+          name: Release v${{ needs.docker-amd64.outputs.version }}
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
