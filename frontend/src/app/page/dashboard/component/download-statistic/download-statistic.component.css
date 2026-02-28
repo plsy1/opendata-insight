@@ -48,13 +48,16 @@
   border: 1px solid var(--border-soft) !important;
   border-radius: var(--radius-lg) !important;
   box-shadow: none !important;
-  padding: 20px !important;
+  padding: 24px 16px !important;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 12px;
   transition: all var(--t-spring) !important;
   overflow: hidden;
   position: relative;
+  text-align: center;
 }
 
 .stat-card:hover {
@@ -98,6 +101,7 @@
 .stat-content {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .stat-content .label {
