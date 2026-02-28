@@ -22,11 +22,7 @@ else
     echo "$CONFIG_FILE already exists. Skipping generation."
 fi
 
-if [ ! -d "/app/runtime" ] || [ -z "$(ls -A /app/runtime)" ]; then
-    echo "Installing Playwright browsers..."
-    playwright install-deps chromium
-    playwright install chromium
-    echo "Playwright browsers installed."
-fi
+# Playwright browsers are pre-installed in the Docker image.
+# If /app/runtime is mapped to a volume, you might need to handle persistence.
 
 exec /usr/bin/supervisord -c /app/supervisord.conf

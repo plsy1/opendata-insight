@@ -1,0 +1,30 @@
+# Development artifacts
+node_modules
+venv
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.coverage
+htmlcov
+
+# Local data and config
+backend/data
+frontend/dist
+docker/*.db
+*.log
+
+# Git
+.git
+.gitignore
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
