@@ -275,7 +275,8 @@
     border: 1px solid rgba(255, 255, 255, 0.3);
   }
   .lb-toolbar { top: 12px; right: 12px; }
-  .lb-footer { bottom: 20px; }
+  .lb-footer { bottom: 40px; }
+  .lb-hint { display: none; }
   .lb-img {
     max-width: 95vw;
     max-height: 75vh;
