@@ -49,11 +49,18 @@ async def _refresh_movie_feeds():
         yesterday = date.today() - timedelta(days=1)
 
         for feed in feeds:
-            min_date = datetime.strptime(feed.min_date, "%Y-%m-%d").date()
-            if yesterday < min_date:
-                LOG_INFO("[Scheduler] Skipping torrent fetch:", feed.work_id)
+            try:
+                min_date = datetime.strptime(feed.release_date, "%Y-%m-%d").date()
+            except (ValueError, TypeError):
+                LOG_INFO(
+                    "[Scheduler] Skipping torrent fetch due to invalid release_date:",
+                    feed.id,
+                )
                 continue
-            work_id = feed.work_id
+            if yesterday < min_date:
+                LOG_INFO("[Scheduler] Skipping torrent fetch:", feed.id)
+                continue
+            work_id = feed.id
             search_data = await _prowlarr_instance.search(
                 query=work_id, page=1, page_size=5
             )

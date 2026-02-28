@@ -81,7 +81,7 @@ async def actor_operation_service(
 
 def movie_subscribe_list_service(
     db: Session, status: MovieStatus
-) -> list[MovieDataOut]:
+) -> list[MoviePoster]:
 
     downloaded_flag = status == MovieStatus.DOWNLOADED
 
