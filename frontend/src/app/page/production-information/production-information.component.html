@@ -36,6 +36,11 @@
     </div>
   </div>
 
+  <!-- Mobile Only Cover -->
+  <div class="mobile-cover" *ngIf="coverUrl">
+    <img [src]="coverUrl" alt="Cover" class="mobile-cover-img" [class.blurred]="common.enableBlur$ | async">
+  </div>
+
   <!-- ③ 两栏正文 -->
   <div class="body-grid">
 
@@ -103,13 +108,14 @@
         alt="Sample Image"
         class="sample-image"
         [class.blurred]="common.enableBlur$ | async"
+        [class.hidden-on-mobile]="i === 0"
         (click)="openLightbox(i)"
       />
     </div>
   </div>
 
   <!-- ⑤ Lightbox -->
-  <div class="lightbox-overlay" *ngIf="lightboxOpen" (click)="closeLightbox()">
+  <div class="lightbox-overlay" *ngIf="lightboxOpen" (click)="closeLightbox()" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
     <div class="lightbox-inner" (click)="$event.stopPropagation()">
 
       <!-- Toolbar: close only -->

@@ -44,6 +44,7 @@ export class Fc2ProductionInformationComponent implements OnInit {
     if (!this.data) return [];
     return this.data.sample_images || [];
   }
+  get coverUrl(): string { return this.data?.cover || ''; }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -75,6 +76,8 @@ export class Fc2ProductionInformationComponent implements OnInit {
   lbTy      = 0;   // translateY in px
   lbDragging = false;
   private lbDragStart = { x: 0, y: 0, tx: 0, ty: 0 };
+  private touchStartX: number = 0;
+  private touchStartY: number = 0;
 
   get lightboxOpen(): boolean { return this.lightboxIndex >= 0; }
   get lightboxImages(): string[] { return this.allSampleImages; }
@@ -139,6 +142,31 @@ export class Fc2ProductionInformationComponent implements OnInit {
 
   @HostListener('document:mouseup')
   onLbMouseUp(): void { this.lbDragging = false; }
+
+  // ── Touch Events (Swipe) ────────────────
+  onTouchStart(event: TouchEvent): void {
+    if (this.lbScale > 1) return; 
+    this.touchStartX = event.touches[0].clientX;
+    this.touchStartY = event.touches[0].clientY;
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    if (this.lbScale > 1) return;
+
+    const touchEndX = event.changedTouches[0].clientX;
+    const touchEndY = event.changedTouches[0].clientY;
+    
+    const dx = touchEndX - this.touchStartX;
+    const dy = touchEndY - this.touchStartY;
+
+    if (Math.abs(dx) > 50 && Math.abs(dy) < 100) {
+      if (dx > 0) {
+        this.prevImage();
+      } else {
+        this.nextImage();
+      }
+    }
+  }
 
   onWheelScroll(event: WheelEvent) {
     const container = event.currentTarget as HTMLElement;

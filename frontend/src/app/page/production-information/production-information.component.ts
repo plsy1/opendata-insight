@@ -40,6 +40,8 @@ export class ProductionInformationComponent implements OnInit {
   lbTy      = 0;   // translateY in px
   lbDragging = false;
   private lbDragStart = { x: 0, y: 0, tx: 0, ty: 0 };
+  private touchStartX: number = 0;
+  private touchStartY: number = 0;
 
   get lightboxOpen(): boolean { return this.lightboxIndex >= 0; }
   /** Cover image prepended to sample images — used for both strip and lightbox */
@@ -50,6 +52,7 @@ export class ProductionInformationComponent implements OnInit {
   }
   get lightboxImages(): string[] { return this.allSampleImages; }
   get lightboxSrc(): string { return this.lightboxImages[this.lightboxIndex] || ''; }
+  get coverUrl(): string { return this.movieData?.products?.[0]?.image_url || ''; }
   get lbTransform(): string {
     return `translate(${this.lbTx}px, ${this.lbTy}px) scale(${this.lbScale})`;
   }
@@ -115,6 +118,37 @@ export class ProductionInformationComponent implements OnInit {
 
   @HostListener('document:mouseup')
   onLbMouseUp(): void { this.lbDragging = false; }
+
+  // ── Touch Events (Swipe) ────────────────
+  onTouchStart(event: TouchEvent): void {
+    if (this.lbScale > 1) return; // Ignore swipe if zoomed in
+    this.touchStartX = event.touches[0].clientX;
+    this.touchStartY = event.touches[0].clientY;
+  }
+
+  onTouchMove(event: TouchEvent): void {
+    if (this.lbScale > 1) return;
+    // can optionally add some feedback here
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    if (this.lbScale > 1) return;
+
+    const touchEndX = event.changedTouches[0].clientX;
+    const touchEndY = event.changedTouches[0].clientY;
+    
+    const dx = touchEndX - this.touchStartX;
+    const dy = touchEndY - this.touchStartY;
+
+    // Horizontal swipe detection
+    if (Math.abs(dx) > 50 && Math.abs(dy) < 100) {
+      if (dx > 0) {
+        this.prevImage();
+      } else {
+        this.nextImage();
+      }
+    }
+  }
 
   constructor(
     private getRoute: ActivatedRoute,

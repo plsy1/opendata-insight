@@ -35,10 +35,15 @@
     </div>
   </div>
 
+  <!-- Mobile Only Cover -->
+  <div class="mobile-cover" *ngIf="coverUrl">
+    <img [src]="coverUrl" alt="Cover" class="mobile-cover-img" [class.blurred]="common.enableBlur$ | async">
+  </div>
+
   <!-- ② Body: Cover and Details -->
   <div class="body-grid">
     <!-- Left: Cover Image -->
-    <div class="cover-column">
+    <div class="cover-column hidden-on-mobile">
       <div class="cover-wrapper glass-effect">
         <img [src]="data.cover" alt="cover" class="cover-img" [class.blurred]="common.enableBlur$ | async" />
       </div>
@@ -76,13 +81,14 @@
         [src]="image"
         class="sample-image"
         [class.blurred]="common.enableBlur$ | async"
+        [class.hidden-on-mobile]="i === 0"
         (click)="openLightbox(i)"
       />
     </div>
   </div>
 
   <!-- ④ Lightbox Overlay -->
-  <div class="lightbox-overlay" *ngIf="lightboxOpen" (click)="closeLightbox()">
+  <div class="lightbox-overlay" *ngIf="lightboxOpen" (click)="closeLightbox()" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
     <div class="lightbox-inner" (click)="$event.stopPropagation()">
       <div class="lb-toolbar">
         <button class="lb-btn" (click)="closeLightbox()" title="Close (Esc)">
