@@ -6,8 +6,11 @@
 <div class="page" *ngIf="!isLoading && data">
   <!-- ① Hero Row: Title, Meta and Actions -->
   <div class="head-row">
-    <h1 class="movie-title">{{ data.product_id }} - {{ data.title }}</h1>
+    <h1 class="movie-title">{{ data.title }}</h1>
     <div class="meta-pills">
+      <span class="meta-pill">
+        <i class="fas fa-hashtag"></i>{{ data.product_id }}
+      </span>
       <span class="meta-pill" *ngIf="data.author">
         <i class="fas fa-person"></i>{{ data.author }}
       </span>
