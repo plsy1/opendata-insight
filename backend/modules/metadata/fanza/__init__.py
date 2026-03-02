@@ -1,71 +1,96 @@
 import re, httpx
-from bs4 import BeautifulSoup
+from typing import Optional
 from .model import Actress, Work, RankingType
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0",
-    "Referer": "https://www.dmm.co.jp/digital/videoa/-/ranking/=/type=actress/",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Content-Type": "application/json",
+    "fanza-device": "BROWSER",
+    "Origin": "https://video.dmm.co.jp",
+    "Referer": "https://video.dmm.co.jp/",
     "Accept-Language": "ja,en;q=0.9",
 }
 
-COOKIES = {
-    "age_check_done": "1",
-    "ckcy": "1",
-    "cklg": "ja",
-}
-
+GRAPHQL_URL = "https://api.video.dmm.co.jp/graphql"
 
 async def fetch_actress_ranking(page: int) -> list[Actress]:
+    query = """
+    query ActressRankingPage($limit: Int!, $offset: Int, $filter: PPVActressRankingFilterInput!) {
+      ppvActressRanking(limit: $limit, offset: $offset, filter: $filter) {
+        items {
+          id
+          rank
+          actress {
+            id
+            name
+            imageUrl
+            contentsCountOnSale
+            latestContent {
+              id
+              title
+              ... on PPVContentSummary {
+                releaseStatus
+                __typename
+              }
+              __typename
+            }
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+    }
+    """
+    
+    # We fetch 100 at a time, but to support the existing page parameter we offset our request.
+    page_size = 20
+    offset = (page - 1) * page_size
+    
+    payload = {
+        "operationName": "ActressRankingPage",
+        "variables": {
+            "filter": RankingType.monthly.graphql_filter(),
+            "limit": page_size,
+            "offset": offset
+        },
+        "query": query
+    }
 
-    BASE_URL = "https://www.dmm.co.jp/digital/videoa/-/ranking/=/term=monthly/type=actress/page={page}/"
-
-    async with httpx.AsyncClient(
-        headers=HEADERS, cookies=COOKIES, follow_redirects=True
-    ) as client:
-        res = await client.get(BASE_URL.format(page=page))
-        soup = BeautifulSoup(res.text, "html.parser")
-
+    async with httpx.AsyncClient(headers=HEADERS) as client:
+        res = await client.post(GRAPHQL_URL, json=payload)
+        res_data = res.json()
+        
+        if "errors" in res_data:
+            print(f"FANZA GraphQL Error (Actress): {res_data['errors']}")
+            
         actresses: list[Actress] = []
-
-        for td in soup.select("td.bd-b"):
-            rank_tag = td.select_one("span.rank")
-            rank = rank_tag.text.strip() if rank_tag else None
-
-            img_tag = td.select_one("a > img")
-            img_url = img_tag["src"] if img_tag else None
-            actress_name = img_tag["alt"] if img_tag else None
-            match = re.match(r"^(.*?)（", actress_name)
-            actress_name = match.group(1) if match else actress_name
-
-            profile_link_tag = td.select_one("a[href*='actress=']")
-            profile_link = (
-                f"https://www.dmm.co.jp{profile_link_tag['href']}"
-                if profile_link_tag
-                else None
-            )
-
-            latest_work_tag = td.select_one(".data a[href*='/detail/']")
-            latest_work_title = (
-                latest_work_tag.text.strip() if latest_work_tag else None
-            )
-            latest_work_link = (
-                f"https://www.dmm.co.jp{latest_work_tag['href']}"
-                if latest_work_tag
-                else None
-            )
-
-            work_count_text = td.get_text()
-            work_count_match = re.search(r"出演作品数：(\d+)", work_count_text)
-            work_count = int(work_count_match.group(1)) if work_count_match else 0
-
+        
+        data = res_data.get("data")
+        if not data:
+            return actresses
+            
+        items = data.get("ppvActressRanking", {}).get("items", [])
+        for item in items:
+            rank = str(item.get("rank"))
+            actress_data = item.get("actress", {})
+            name = actress_data.get("name")
+            image = actress_data.get("imageUrl")
+            profile_url = f"https://video.dmm.co.jp/av/list/?actress={actress_data.get('id')}" if actress_data.get("id") else None
+            work_count = actress_data.get("contentsCountOnSale", 0)
+            
+            latest = actress_data.get("latestContent", {})
+            latest_work = latest.get("title") if latest else None
+            latest_work_url = f"https://video.dmm.co.jp/av/content/?id={latest.get('id')}" if latest and latest.get("id") else None
+            
             actresses.append(
                 Actress(
                     rank=rank,
-                    name=actress_name,
-                    image=img_url,
-                    profile_url=profile_link,
-                    latest_work=latest_work_title,
-                    latest_work_url=latest_work_link,
+                    name=name,
+                    image=image,
+                    profile_url=profile_url,
+                    latest_work=latest_work,
+                    latest_work_url=latest_work_url,
                     work_count=work_count,
                 )
             )
@@ -76,38 +101,95 @@ async def fetch_actress_ranking(page: int) -> list[Actress]:
 async def fetch_movie_ranking(
     page: int = 1, term: RankingType = RankingType.monthly
 ) -> list[Work]:
-    url = term.url(page)
+    query = """
+    query ContentRankingPage($limit: Int!, $offset: Int!, $filter: PPVContentRankingFilterInput) {
+      ppvContentRanking(limit: $limit, offset: $offset, filter: $filter) {
+        items {
+          id
+          rank
+          content {
+            title
+            packageImage {
+              largeUrl
+              __typename
+            }
+            actresses {
+              id
+              name
+              __typename
+            }
+            maker {
+              id
+              name
+              __typename
+            }
+            __typename
+          }
+          __typename
+        }
+        __typename
+      }
+    }
+    """
+    
+    page_size = 20
+    offset = (page - 1) * page_size
+    
+    payload = {
+        "operationName": "ContentRankingPage",
+        "variables": {
+            "filter": term.graphql_filter(),
+            "limit": page_size,
+            "offset": offset
+        },
+        "query": query
+    }
 
-    async with httpx.AsyncClient(
-        headers=HEADERS, cookies=COOKIES, follow_redirects=True
-    ) as client:
-        res = await client.get(url)
-        soup = BeautifulSoup(res.text, "html.parser")
-
+    async with httpx.AsyncClient(headers=HEADERS) as client:
+        res = await client.post(GRAPHQL_URL, json=payload)
+        res_data = res.json()
+        
+        if "errors" in res_data:
+            print(f"FANZA GraphQL Error (Movie): {res_data['errors']}")
+            
         results: list[Work] = []
-
-        for td in soup.select("td.bd-b"):
-            rank_tag = td.select_one("span.rank")
-            rank = rank_tag.text.strip() if rank_tag else None
-
-            img = td.select_one("a > img")
-            image = img["src"].replace("pt.jpg", "pl.jpg") if img else None
-
-            match = re.search(r"/([a-z]+\d+)/\1pl\.jpg$", image or "")
-            number = match.group(1) if match else None
-
-            detail_url = f"https://www.dmm.co.jp{img.parent['href']}" if img else None
-
-            title_tag = td.select_one(".data p a")
-            raw_title = title_tag.get_text(strip=True) if title_tag else None
-            title = re.sub(r"【.*?】", "", raw_title).strip() if raw_title else None
-
-            maker_tag = td.select_one("span.arrow a[href*='maker=']")
-            maker = maker_tag.text.strip() if maker_tag else None
-
-            actress_tags = td.select("a[href*='actress=']")
-            actresses = [a.text.strip() for a in actress_tags]
-
+        
+        data = res_data.get("data")
+        if not data:
+            return results
+            
+        items = data.get("ppvContentRanking", {}).get("items", [])
+        for item in items:
+            rank = str(item.get("rank"))
+            content = item.get("content", {})
+            
+            product_id = item.get("id")
+            title = content.get("title")
+            
+            # The title often includes 【something】, we strip it just like before
+            if title:
+                title = re.sub(r"【.*?】", "", title).strip()
+            
+            # The large image URL is provided directly
+            package_image = content.get("packageImage", {})
+            image = package_image.get("largeUrl") if package_image else None
+            
+            # Extract the raw number from the image URL or the ID
+            number = None
+            if image:
+                match = re.search(r"/([a-z]+\d+)/\1pl\.jpg$", image)
+                number = match.group(1) if match else product_id
+            else:
+                number = product_id
+                
+            detail_url = f"https://video.dmm.co.jp/av/content/?id={product_id}" if product_id else None
+            
+            maker_data = content.get("maker")
+            maker = maker_data.get("name") if maker_data else None
+            
+            actresses_data = content.get("actresses", [])
+            actresses_list = [a.get("name") for a in actresses_data if a.get("name")]
+            
             results.append(
                 Work(
                     rank=rank,
@@ -116,7 +198,7 @@ async def fetch_movie_ranking(
                     image=image,
                     detail_url=detail_url,
                     maker=maker,
-                    actresses=actresses,
+                    actresses=actresses_list,
                 )
             )
 

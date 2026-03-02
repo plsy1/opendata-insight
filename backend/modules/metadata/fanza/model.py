@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Optional
 from enum import Enum
 
-VIDEO_RANKING_BASE_URL = "https://www.dmm.co.jp/digital/videoa/-/ranking/=/"
+VIDEO_RANKING_BASE_URL = "https://video.dmm.co.jp/av/ranking/"
 
 
 class Actress(BaseModel):
@@ -30,7 +30,11 @@ class RankingType(Enum):
     weekly = "weekly"
     monthly = "monthly"
 
-    def url(self, page: int = 1) -> str:
+    def graphql_filter(self) -> dict:
+        """Returns the filter dictionary for the GraphQL query."""
         if self == RankingType.daily:
-            return f"{VIDEO_RANKING_BASE_URL}term=daily/"
-        return f"{VIDEO_RANKING_BASE_URL}term={self.value}/page={page}/"
+            return {"daily": {"floor": "AV"}}
+        elif self == RankingType.weekly:
+            return {"weekly": {"floor": "AV"}}
+        else:
+            return {"monthly": {"floor": "AV"}}
