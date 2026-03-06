@@ -46,7 +46,7 @@ async def _refresh_movie_feeds():
         if not feeds:
             return
 
-        yesterday = date.today() - timedelta(days=1)
+        today = date.today()
 
         for feed in feeds:
             try:
@@ -57,7 +57,7 @@ async def _refresh_movie_feeds():
                     feed.id,
                 )
                 continue
-            if yesterday < min_date:
+            if today < min_date:
                 LOG_INFO("[Scheduler] Skipping torrent fetch:", feed.id)
                 continue
             work_id = feed.id
