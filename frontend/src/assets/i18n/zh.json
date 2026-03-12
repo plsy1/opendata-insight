@@ -10,6 +10,7 @@
         "SUBSCRIPTIONS_HEADER": "我的订阅",
         "PERFORMERS": "演员",
         "PRODUCTIONS": "影片",
+        "SYSTEM_HEADER": "系统设置",
         "SETTINGS": "设置",
         "LOGOUT": "退出登录"
     },

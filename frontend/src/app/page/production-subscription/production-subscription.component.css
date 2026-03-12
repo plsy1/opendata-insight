@@ -1,2 +1,3 @@
-/* Styles console to production-subscription component */
-
+:host {
+  display: block;
+}

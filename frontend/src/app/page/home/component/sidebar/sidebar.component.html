@@ -45,15 +45,18 @@
       </a>
 
       <div style="flex: 1"></div>
-
-      <a mat-list-item routerLink="/settings" routerLinkActive="active">
-        <i class="fas fa-sliders-h"></i>
-        <span>{{ 'NAV.SETTINGS' | translate }}</span>
-      </a>
-      <a mat-list-item (click)="logout()" class="logout-item">
-        <i class="fas fa-power-off"></i>
-        <span>{{ 'NAV.LOGOUT' | translate }}</span>
-      </a>
+      
+      <div class="sidebar-footer-group">
+        <div class="section-label">{{ 'NAV.SYSTEM_HEADER' | translate }}</div>
+        <a mat-list-item routerLink="/settings" routerLinkActive="active">
+          <i class="fas fa-sliders-h"></i>
+          <span>{{ 'NAV.SETTINGS' | translate }}</span>
+        </a>
+        <a mat-list-item (click)="logout()" class="logout-item">
+          <i class="fas fa-power-off"></i>
+          <span>{{ 'NAV.LOGOUT' | translate }}</span>
+        </a>
+      </div>
 
       <div class="sidebar-version" *ngIf="version" style="padding: 16px; text-align: center; font-size: 12px; color: var(--text-muted);">
         v{{ version }}

@@ -10,6 +10,7 @@
         "SUBSCRIPTIONS_HEADER": "Subscriptions",
         "PERFORMERS": "Performers",
         "PRODUCTIONS": "Productions",
+        "SYSTEM_HEADER": "System",
         "SETTINGS": "Settings",
         "LOGOUT": "Logout"
     },

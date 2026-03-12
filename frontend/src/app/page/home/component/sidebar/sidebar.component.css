@@ -129,10 +129,15 @@ a.mat-mdc-list-item:hover i {
 }
 
 /* ── Spacer / Logout ──────────────────────── */
+.sidebar-footer-group {
+  margin-top: auto;
+  border-top: 1px solid var(--border-soft);
+  padding-top: 12px;
+  margin-bottom: 4px;
+}
+
 .logout-item {
   color: #f43f5e !important;
-  border-top: 1px solid var(--border-soft);
-  margin-top: 8px !important;
 }
 
 .logout-item:hover {
