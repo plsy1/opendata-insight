@@ -131,6 +131,8 @@ body {
   /* Static dot-grid — does NOT repaint on scroll */
   background-image: radial-gradient(circle, rgba(0,0,0,.035) 1px, transparent 1px);
   background-size: 28px 28px;
+  /* PWA safe area — prevent content from hiding behind iOS status bar */
+  padding-top: env(safe-area-inset-top);
 }
 
 /* Dark mode: simple static gradient tint, NO fixed positioning */

@@ -71,20 +71,20 @@ export class ThemeService implements OnDestroy {
     const body = document.body;
     body.classList.remove('light-theme', 'dark-theme');
 
-    let themeColor = '#faf9fd';
+    let themeColor = '#f1f5f9';
     if (mode === 'light') {
       body.classList.add('light-theme');
-      themeColor = '#faf9fd';
+      themeColor = '#f1f5f9';
     } else if (mode === 'dark') {
       body.classList.add('dark-theme');
-      themeColor = '#1e1e1e';
+      themeColor = '#09090b';
     } else {
       if (this.mediaQueryList.matches) {
         body.classList.add('dark-theme');
-        themeColor = '#1e1e1e';
+        themeColor = '#09090b';
       } else {
         body.classList.add('light-theme');
-        themeColor = '#faf9fd';
+        themeColor = '#f1f5f9';
       }
     }
 
