@@ -89,3 +89,32 @@
   background: var(--bg-hover);
   color: var(--primary);
 }
+
+/* ── Drag & Drop (Swap) ──────────────── */
+
+/* Card being dragged */
+.actress-card.dragging {
+  opacity: 0.35;
+  transform: scale(0.95);
+}
+
+/* Card being hovered over during drag (swap target) */
+.actress-card.drag-over {
+  border-color: var(--primary) !important;
+  background: var(--bg-hover) !important;
+  box-shadow: 0 0 0 2px var(--primary), var(--shadow-md) !important;
+  transform: scale(1.05);
+}
+
+/* Touch-drag floating clone */
+:host ::ng-deep .touch-drag-clone {
+  position: fixed;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.85;
+  transform: scale(1.08);
+  box-shadow: var(--shadow-xl);
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  transition: none;
+}

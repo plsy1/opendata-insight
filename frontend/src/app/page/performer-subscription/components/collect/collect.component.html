@@ -1,5 +1,19 @@
 <div class="card-grid">
-  <mat-card *ngFor="let actress of ActressList" class="actress-card">
+  <mat-card
+    *ngFor="let actress of ActressList; let i = index"
+    class="actress-card"
+    [class.drag-over]="dragOverIndex === i"
+    [class.dragging]="dragSourceIndex === i"
+    draggable="true"
+    (dragstart)="onDragStart($event, i)"
+    (dragover)="onDragOver($event, i)"
+    (dragleave)="onDragLeave(i)"
+    (drop)="onDragDrop($event, i)"
+    (dragend)="onDragEnd()"
+    (touchstart)="onTouchStart($event, i)"
+    (touchmove)="onTouchMove($event)"
+    (touchend)="onTouchEnd($event)"
+  >
     <div class="card-content" (click)="onClick(actress.name)">
       <div class="avatar-wrapper">
         <img
@@ -9,9 +23,8 @@
           [class.blurred]="PerformerSubscriptionService.isEnableBlur$() | async"
         />
       </div>
-            <mat-card-title class="title">{{ actress.name }}</mat-card-title>
+      <mat-card-title class="title">{{ actress.name }}</mat-card-title>
     </div>
-    
 
     <button
       mat-icon-button
