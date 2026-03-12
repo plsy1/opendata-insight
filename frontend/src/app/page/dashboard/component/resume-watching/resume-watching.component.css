@@ -1,8 +1,72 @@
 .items-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 28px;
-  padding: 8px 0;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 20px;
+  padding-bottom: 16px;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+.items-grid > * {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+}
+
+.items-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.items-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.items-grid::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+.scroll-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-soft) !important;
+  color: var(--text-main) !important;
+  box-shadow: var(--shadow-md) !important;
+  opacity: 0;
+  transition: all var(--t-spring) !important;
+  pointer-events: none;
+}
+
+.scroll-wrapper:hover .scroll-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scroll-btn:hover {
+  background: var(--primary) !important;
+  color: white !important;
+  border-color: var(--primary) !important;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.left-btn {
+  left: -16px;
+}
+
+.right-btn {
+  right: -16px;
 }
 
 mat-card-header {
@@ -14,18 +78,10 @@ mat-card-content {
 }
 
 @media (max-width: 480px) {
-  .items-grid {
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 16px;
-    padding-bottom: 16px;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
+  .scroll-btn {
+    display: none !important;
   }
-  
   .items-grid > * {
     flex: 0 0 80%;
-    scroll-snap-align: start;
   }
 }

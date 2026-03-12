@@ -4,15 +4,23 @@
   </mat-card-header>
 
   <mat-card-content>
-    <div class="items-grid" *ngIf="latestItems.length > 0">
-      <app-movie-poster
-        *ngFor="let item of latestItems"
-        [title]="item.name"
-        [imgUrl]="item.primary"
-        [link]="item.indexLink"
-        [hideImage]="item.hideImage"
-        [enableBlur]="dashboardService.isEnableBlur$() | async"
-      ></app-movie-poster>
+    <div class="scroll-wrapper" *ngIf="latestItems.length > 0">
+      <button mat-icon-button class="scroll-btn left-btn" (click)="scrollLeft()">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <div class="items-grid" #scrollContainer>
+        <app-movie-poster
+          *ngFor="let item of latestItems"
+          [title]="item.name"
+          [imgUrl]="item.primary"
+          [link]="item.indexLink"
+          [hideImage]="item.hideImage"
+          [enableBlur]="dashboardService.isEnableBlur$() | async"
+        ></app-movie-poster>
+      </div>
+      <button mat-icon-button class="scroll-btn right-btn" (click)="scrollRight()">
+        <i class="fas fa-chevron-right"></i>
+      </button>
     </div>
   </mat-card-content>
 </mat-card>

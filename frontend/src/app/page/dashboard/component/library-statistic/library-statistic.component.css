@@ -1,9 +1,17 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+}
+
 .stats-card {
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
   display: flex;
   flex-direction: column;
+  flex: 1;
   height: 100%;
 }
 

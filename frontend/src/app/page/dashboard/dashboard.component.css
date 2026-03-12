@@ -7,6 +7,11 @@
   align-items: stretch;
 }
 
+.left, .right {
+  display: flex;
+  flex-direction: column;
+}
+
 @media (max-width: 1200px) {
   .top-row {
     grid-template-columns: 1fr;
