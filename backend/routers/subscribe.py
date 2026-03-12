@@ -3,6 +3,7 @@ from services.subscribe import *
 from database import get_db
 from sqlalchemy.orm import Session
 from services.system import replace_domain_in_value
+from schemas.actor import ActorOrderUpdate
 
 router = APIRouter()
 
@@ -108,6 +109,25 @@ async def get_actor_collect_list(
 ):
     result = actor_list_service(db, ActorListType.COLLECT)
     return replace_domain_in_value(result)
+
+
+@router.put("/actorOrder")
+async def update_actor_order(
+    data: ActorOrderUpdate,
+    db: Session = Depends(get_db),
+):
+    try:
+        order_type = ActorListType(data.type)
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid order type")
+
+    if update_actor_order_service(db, order_type, data.names):
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail="Update order failed",
+    )
 
 
 @router.get("/movieDownloaded")

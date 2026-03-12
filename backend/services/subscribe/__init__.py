@@ -134,14 +134,47 @@ def actor_list_service(
 ) -> list[ActorData]:
     if list_type == ActorListType.SUBSCRIBE:
         condition = ActorSubscribe.is_subscribe.is_(True)
+        order_by = ActorSubscribe.subscribe_order.desc()
     elif list_type == ActorListType.COLLECT:
         condition = ActorSubscribe.is_collect.is_(True)
+        order_by = ActorSubscribe.collect_order.desc()
     else:
         raise ValueError("Invalid ActorListType")
 
-    actors = db.query(ActorData).join(ActorSubscribe).filter(condition).all()
+    actors = (
+        db.query(ActorData)
+        .join(ActorSubscribe)
+        .filter(condition)
+        .order_by(order_by, ActorSubscribe.created_at.desc())
+        .all()
+    )
 
     return actors
+
+
+def update_actor_order_service(
+    db: Session,
+    list_type: ActorListType,
+    names: list[str],
+) -> bool:
+    try:
+        # We assign descending order based on the list position:
+        # The first item gets the highest order value.
+        count = len(names)
+        for index, name in enumerate(names):
+            actor = db.query(ActorData).filter(ActorData.name == name).first()
+            if actor and actor.subscribers:
+                order_value = count - index
+                if list_type == ActorListType.SUBSCRIBE:
+                    actor.subscribers.subscribe_order = order_value
+                else:
+                    actor.subscribers.collect_order = order_value
+        db.commit()
+        return True
+    except Exception as e:
+        db.rollback()
+        LOG_ERROR(e)
+        return False
 
 
 def movie_subscribe_service(

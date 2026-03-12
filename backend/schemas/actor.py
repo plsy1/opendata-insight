@@ -31,3 +31,9 @@ class AvbaseIndexActorOut(BaseModel):
     name: str
     avatar_url: Optional[str] = None
     model_config = {"from_attributes": True}
+
+
+class ActorOrderUpdate(BaseModel):
+    type: str
+    names: List[str]
+

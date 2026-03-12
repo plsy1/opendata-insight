@@ -9,7 +9,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Actress } from '../../model/actor-information.interface';
-import { PerformerOrderService } from '../../../../shared/services/performer-order.service';
 
 @Component({
   selector: 'app-list-performer-collect',
@@ -26,7 +25,6 @@ import { PerformerOrderService } from '../../../../shared/services/performer-ord
   styleUrl: './collect.component.css',
 })
 export class PerformerCollectionListComponent {
-  private static readonly ORDER_KEY = 'performer-collection';
   ActressList: Actress[] = [];
 
   dragSourceIndex: number | null = null;
@@ -44,7 +42,6 @@ export class PerformerCollectionListComponent {
     public PerformerSubscriptionService: PerformerSubscriptionService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private orderService: PerformerOrderService,
   ) {}
 
   ngOnInit(): void {
@@ -54,10 +51,7 @@ export class PerformerCollectionListComponent {
   loadActressCollect(): void {
     this.PerformerSubscriptionService.getActressCollect().subscribe({
       next: (data: Actress[]) => {
-        this.ActressList = this.orderService.applySavedOrder(
-          PerformerCollectionListComponent.ORDER_KEY,
-          data
-        );
+        this.ActressList = data;
       },
       error: (error) => {
         console.error('Error fetching actress feeds:', error);
@@ -177,10 +171,17 @@ export class PerformerCollectionListComponent {
     const temp = this.ActressList[fromIndex];
     this.ActressList[fromIndex] = this.ActressList[toIndex];
     this.ActressList[toIndex] = temp;
-    this.orderService.saveOrder(
-      PerformerCollectionListComponent.ORDER_KEY,
+    
+    // Sync to backend
+    this.PerformerSubscriptionService.updateActorOrder(
+      'collect',
       this.ActressList.map(a => a.name)
-    );
+    ).subscribe({
+      error: (err) => {
+        console.error('Failed to sync order to backend:', err);
+        this.snackBar.open('Failed to save order', 'Close', { duration: 2000 });
+      }
+    });
   }
 
   /* ── Other ────────────────────────── */

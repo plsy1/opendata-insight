@@ -50,6 +50,9 @@ class ActorSubscribe(Base):
         index=True,
     )
 
+    subscribe_order = Column(Integer, default=0, nullable=False)
+    collect_order = Column(Integer, default=0, nullable=False)
+
     created_at = Column(DateTime, default=datetime.now)
 
     actor = relationship("ActorData", back_populates="subscribers")

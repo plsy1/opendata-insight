@@ -35,4 +35,13 @@ export class PerformerSubscriptionService {
   get enableBlur(): boolean {
     return this.common.enableBlur;
   }
+
+  updateActorOrder(type: 'subscribe' | 'collect', names: string[]): Observable<any> {
+    return this.common.request<any>('PUT', 'feed/actorOrder', {
+      body: {
+        type: type,
+        names: names,
+      },
+    });
+  }
 }
