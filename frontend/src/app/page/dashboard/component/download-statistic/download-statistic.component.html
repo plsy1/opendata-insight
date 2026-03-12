@@ -51,9 +51,10 @@
       </h2>
 
       <div
-        class="ranking-item"
+        class="ranking-item clickable"
         *ngFor="let s of data.studio; index as i"
         [ngClass]="'rank-' + (i + 1)"
+        (click)="goLabel(s.studio)"
       >
         <span class="rank">{{ i + 1 }}</span>
         <span class="name">{{ s.studio }}</span>

@@ -31,6 +31,11 @@ export class DownloadStatisticComponent implements OnInit {
     this.router.navigate(['/performer', name]);
   }
 
+  goLabel(name: string): void {
+    this.router.navigate(['/keywords', name]);
+  }
+
+
   ngOnInit(): void {
     this.dashboardService.getAllStatistic().subscribe({
       next: (data: StatAllResponse) => {
