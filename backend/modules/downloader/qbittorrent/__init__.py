@@ -96,11 +96,11 @@ class QB:
             tags = self.tags
         torrent_options = {"urls": download_link, "tags": tags, "save_path": save_path}
         try:
-            return (
-                await asyncio.to_thread(self.qb.torrents_add, **torrent_options)
-                == "Ok."
-            )
+            res = await asyncio.to_thread(self.qb.torrents_add, **torrent_options)
+            return res == "Ok." or res == "Fails."
         except Exception as e:
+            if "Conflict409Error" in str(type(e)):
+                return True
             print(f"Error adding torrent: {e}")
             return False
 
@@ -115,11 +115,11 @@ class QB:
             "rename": torrent_name,
         }
         try:
-            return (
-                await asyncio.to_thread(self.qb.torrents_add, **torrent_options)
-                == "Ok."
-            )
+            res = await asyncio.to_thread(self.qb.torrents_add, **torrent_options)
+            return res == "Ok." or res == "Fails."
         except Exception as e:
+            if "Conflict409Error" in str(type(e)):
+                return True
             print(f"Error adding torrent: {e}")
             return False
 
