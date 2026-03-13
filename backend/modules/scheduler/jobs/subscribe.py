@@ -76,11 +76,20 @@ async def _refresh_movie_feeds():
             if not download_link:
                 continue
 
-            names = _get_actor_name_from_db(work_id)
+            names = _get_actor_name_from_db(db, work_id)
 
             path = save_path / names
 
-            success = await _qb_instance.add_torrent_url(download_link, path)
+            torrent_name = best_seed.get("title", work_id)
+            torrent_data = await _qb_instance.download_torrent_file(download_link)
+            
+            if not torrent_data:
+                LOG_INFO("[Scheduler] Failed to download torrent file for", work_id)
+                continue
+
+            success = await _qb_instance.add_torrent_file(
+                torrent_name, torrent_data, str(path)
+            )
 
             if success:
                 movie_subscribe_service(db, MovieFeedOperation.MARK_DOWNLOADED, work_id)

@@ -83,7 +83,14 @@ async def add_torrent_url(
 
         from modules.downloader.qbittorrent import _qb_instance
 
-        success = await _qb_instance.add_torrent_url(download_link, save_path)
+        torrent_data = await _qb_instance.download_torrent_file(download_link)
+        if torrent_data:
+            torrent_name = work_id if work_id else "direct_add_torrent"
+            success = await _qb_instance.add_torrent_file(
+                torrent_name, torrent_data, str(save_path)
+            )
+        else:
+            success = False
 
         if success and work_id:
             movie_subscribe_service(db, MovieFeedOperation.MARK_DOWNLOADED, work_id)
