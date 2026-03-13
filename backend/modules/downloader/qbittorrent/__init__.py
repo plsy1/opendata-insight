@@ -127,9 +127,21 @@ class QB:
         if not self.http_client:
             raise RuntimeError("QB http client not started")
         try:
-            resp = await self.http_client.get(torrent_url)
-            resp.raise_for_status()
-            return BytesIO(resp.content)
+            url = torrent_url
+            for _ in range(5):
+                resp = await self.http_client.get(url, follow_redirects=False)
+                if resp.is_redirect:
+                    location = resp.headers.get("Location")
+                    if not location:
+                        break
+                    if location.startswith("magnet:"):
+                        return location
+                    url = location
+                    continue
+                resp.raise_for_status()
+                return BytesIO(resp.content)
+            print("Error downloading torrent: Too many redirects")
+            return None
         except Exception as e:
             print(f"Error downloading torrent: {e}")
             return None

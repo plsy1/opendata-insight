@@ -87,9 +87,14 @@ async def _refresh_movie_feeds():
                 LOG_INFO("[Scheduler] Failed to download torrent file for", work_id)
                 continue
 
-            success = await _qb_instance.add_torrent_file(
-                torrent_name, torrent_data, str(path)
-            )
+            if isinstance(torrent_data, str) and torrent_data.startswith("magnet:"):
+                success = await _qb_instance.add_torrent_url(
+                    torrent_data, str(path)
+                )
+            else:
+                success = await _qb_instance.add_torrent_file(
+                    torrent_name, torrent_data, str(path)
+                )
 
             if success:
                 movie_subscribe_service(db, MovieFeedOperation.MARK_DOWNLOADED, work_id)
