@@ -162,7 +162,7 @@ async def _get_next_data(url: str):
     page = await context.new_page()
 
     try:
-        response = await page.goto(url, timeout=5000)
+        response = await page.goto(url, timeout=5000, wait_until="domcontentloaded")
         status = response.status
         if status == 403:
             raise HTTPException(status_code=status, detail="403 Forbidden")
@@ -193,7 +193,7 @@ async def _get_raw_html(url: str):
     context = await _playwright_service.get_context()
     page = await context.new_page()
     try:
-        response = await page.goto(url, timeout=5000)
+        response = await page.goto(url, timeout=5000,wait_until="domcontentloaded")
         status = response.status
         if status == 403:
             raise HTTPException(status_code=status, detail="403")
