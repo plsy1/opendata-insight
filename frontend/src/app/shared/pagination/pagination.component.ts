@@ -14,6 +14,12 @@ import { MatIcon } from '@angular/material/icon';
 export class PaginationComponent {
   @Input() page = 1;
   @Input() hasNext = true;
+  @Input() hasPrevious?: boolean;
+  @Input() showPageInfo = true;
+
+  get canGoPrevious(): boolean {
+    return this.hasPrevious !== undefined ? this.hasPrevious : this.page > 1;
+  }
 
   @Output() previousClick = new EventEmitter<void>();
   @Output() nextClick = new EventEmitter<void>();

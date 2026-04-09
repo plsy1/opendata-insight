@@ -2,19 +2,19 @@
   <button 
     class="nav-btn prev" 
     (click)="onPrevious()" 
-    [disabled]="page <= 1"
+    [disabled]="!canGoPrevious"
     title="Previous Page"
   >
     <i class="fas fa-chevron-left"></i>
   </button>
-
-  <div class="page-pill">
+ 
+  <div class="page-pill" *ngIf="showPageInfo">
     <div class="page-info">
       <span class="label">PAGE</span>
       <span class="number">{{ page }}</span>
     </div>
   </div>
-
+ 
   <button 
     class="nav-btn next" 
     (click)="onNext()" 
