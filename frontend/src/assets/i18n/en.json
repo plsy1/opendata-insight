@@ -67,7 +67,15 @@
         "TOOLTIP_SEEDING": "Seeding",
         "TOOLTIP_DATE": "Date",
         "NO_RESULTS": "No search results",
-        "NO_RESULTS_DESC": "Search for torrents using the search bar above, or browse from the Explore page."
+        "NO_RESULTS_DESC": "Search for torrents using the search bar above, or browse from the Explore page.",
+        "SEARCH_COMPLETED": "Torrents search completed",
+        "DOWNLOAD_OPTIONS": "Download Options",
+        "SAVE_PATH": "Target Save Path",
+        "SAVE_PATH_PLACEHOLDER": "Path to save your torrent...",
+        "INITIALIZE_DOWNLOAD": "Initialize Download",
+        "SENDING": "Sending...",
+        "DOWNLOAD_STARTED": "Download started successfully!",
+        "DOWNLOAD_FAILED": "Failed. Please try again."
     },
     "SETTINGS": {
         "LANGUAGE": "Language",
@@ -95,7 +103,8 @@
         "SAVE": "Save",
         "DELETE": "Delete",
         "DETAILS": "Details",
-        "LOADING": "Loading..."
+        "LOADING": "Loading...",
+        "CLOSE": "Close"
     },
     "DOWNLOAD_PAGE": {
         "DOWNLOADING": "Downloading...",

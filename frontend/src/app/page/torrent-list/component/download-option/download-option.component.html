@@ -2,7 +2,7 @@
   <div class="dialog-header">
     <div class="header-title">
       <mat-icon>download_manager</mat-icon>
-      <span>Download Options</span>
+      <span>{{ 'TORRENTS.DOWNLOAD_OPTIONS' | translate }}</span>
     </div>
     <button mat-icon-button (click)="close()" class="close-btn">
       <mat-icon>close</mat-icon>
@@ -12,13 +12,13 @@
   <div class="dialog-body">
     <div class="input-section">
       <mat-form-field appearance="outline" class="save-path-field">
-        <mat-label>Target Save Path</mat-label>
+        <mat-label>{{ 'TORRENTS.SAVE_PATH' | translate }}</mat-label>
         <input
           matInput
           [(ngModel)]="savePath"
           [matAutocomplete]="auto"
           (keydown.enter)="download()"
-          placeholder="Path to save your torrent..."
+          [placeholder]="'TORRENTS.SAVE_PATH_PLACEHOLDER' | translate"
           autocomplete="off"
         />
         <mat-icon matSuffix class="input-suffix-icon">folder_open</mat-icon>
@@ -35,7 +35,7 @@
     <div class="action-section">
       <button mat-button (click)="download()" class="premium-download-btn">
         <mat-icon>rocket_launch</mat-icon>
-        <span>Initialize Download</span>
+        <span>{{ 'TORRENTS.INITIALIZE_DOWNLOAD' | translate }}</span>
       </button>
     </div>
   </div>

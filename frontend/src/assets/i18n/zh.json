@@ -67,7 +67,15 @@
         "TOOLTIP_SEEDING": "做种数",
         "TOOLTIP_DATE": "日期",
         "NO_RESULTS": "暂无搜索结果",
-        "NO_RESULTS_DESC": "请通过上方搜索栏搜索种子，或前往探索页面浏览。"
+        "NO_RESULTS_DESC": "请通过上方搜索栏搜索种子，或前往探索页面浏览。",
+        "SEARCH_COMPLETED": "种子搜索已完成",
+        "DOWNLOAD_OPTIONS": "下载选项",
+        "SAVE_PATH": "保存路径",
+        "SAVE_PATH_PLACEHOLDER": "请输入种子保存路径...",
+        "INITIALIZE_DOWNLOAD": "开启下载",
+        "SENDING": "发送中...",
+        "DOWNLOAD_STARTED": "下载任务推送成功！",
+        "DOWNLOAD_FAILED": "推送失败，请重试。"
     },
     "SETTINGS": {
         "LANGUAGE": "语言 / Language",
@@ -95,7 +103,8 @@
         "SAVE": "保存",
         "DELETE": "删除",
         "DETAILS": "详情",
-        "LOADING": "加载中..."
+        "LOADING": "加载中...",
+        "CLOSE": "关闭"
     },
     "DOWNLOAD_PAGE": {
         "DOWNLOADING": "正在下载...",

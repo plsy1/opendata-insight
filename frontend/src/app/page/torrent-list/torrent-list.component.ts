@@ -1,6 +1,6 @@
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonService } from './../../common.service';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
@@ -65,7 +65,8 @@ export class TorrentListComponent implements OnInit, AfterViewInit {
     private common: CommonService,
     private getRoute: ActivatedRoute,
     private TorrentService: TorrentService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -107,10 +108,14 @@ export class TorrentListComponent implements OnInit, AfterViewInit {
           this.sort.sortChange.emit({ active: 'seeders', direction: 'desc' });
         }
         this.TorrentService.saveState(this.searchResults, keywords);
-        this.snackBar.open('Torrents search completed', 'Close', {
-          duration: 3000,
-          panelClass: ['success-snackbar'],
-        });
+        this.snackBar.open(
+          this.translate.instant('TORRENTS.SEARCH_COMPLETED'),
+          this.translate.instant('COMMON.CLOSE'),
+          {
+            duration: 3000,
+            panelClass: ['success-snackbar'],
+          }
+        );
       },
       error: (error) => {
         console.error('Failed to load discover data:', error);

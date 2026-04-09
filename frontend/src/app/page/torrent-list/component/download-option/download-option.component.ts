@@ -8,6 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { TorrentService } from '../../service/torrent.service';
 import { CommonService } from '../../../../common.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatOptionModule } from '@angular/material/core';
 import { lastValueFrom } from 'rxjs';
@@ -25,7 +26,9 @@ import { MatIcon } from '@angular/material/icon';
     MatSelectModule,
     CommonModule,
     MatAutocompleteModule,
-    MatOptionModule,MatIcon
+    MatOptionModule,
+    MatIcon,
+    TranslateModule
   ],
 })
 export class DownloadOptionComponent {
@@ -41,6 +44,7 @@ export class DownloadOptionComponent {
     private snackBar: MatSnackBar,
     private torrentService: TorrentService,
     private common: CommonService,
+    private translate: TranslateService,
     @Inject(MAT_DIALOG_DATA)
     public data: { downloadUrl: string; id: string; keywords: string }
   ) {
@@ -60,7 +64,7 @@ export class DownloadOptionComponent {
 
   async download(): Promise<void> {
     try {
-      this.snackBar.open('Sending......', 'Close', { 
+      this.snackBar.open(this.translate.instant('TORRENTS.SENDING'), this.translate.instant('COMMON.CLOSE'), { 
         duration: 2000,
         panelClass: ['info-snackbar']
       });
@@ -91,16 +95,16 @@ export class DownloadOptionComponent {
 
       this.dialogRef.close({
         success: true,
-        message: 'Download started successfully!',
+        message: this.translate.instant('TORRENTS.DOWNLOAD_STARTED'),
       });
     } catch (error) {
       console.error('Send failed:', error);
 
       this.dialogRef.close({
         success: false,
-        message: 'Failed. Please try again.',
+        message: this.translate.instant('TORRENTS.DOWNLOAD_FAILED'),
       });
-      this.snackBar.open('Failed. Please try again.', 'Close', {
+      this.snackBar.open(this.translate.instant('TORRENTS.DOWNLOAD_FAILED'), this.translate.instant('COMMON.CLOSE'), {
         duration: 3000,
         panelClass: ['error-snackbar']
       });
@@ -112,7 +116,7 @@ export class DownloadOptionComponent {
   }
 
   showErrorNotification(message: string) {
-    this.snackBar.open(message, 'Close', {
+    this.snackBar.open(message, this.translate.instant('COMMON.CLOSE'), {
       duration: 3000,
       panelClass: ['error-snackbar'],
     });
