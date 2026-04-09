@@ -16,7 +16,7 @@ export class SettingsService {
       .request<{ success?: boolean }>('POST', 'system/update_environment', {
         body: env,
       })
-      .pipe(map((data) => data.success ?? true));
+      .pipe(map(() => true));
   }
 
   getEnvironment(): Observable<EnvironmentConfig> {
@@ -40,7 +40,7 @@ export class SettingsService {
       .request<{ message: string }>('POST', 'auth/changepassword', {
         body: formData,
       })
-      .pipe(map((data) => data.message === 'Password updated successfully'));
+      .pipe(map(() => true));
   }
 
   runBackgroundTask(job_id: string): Observable<{ message: string }> {
