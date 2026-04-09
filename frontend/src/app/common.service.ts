@@ -12,6 +12,13 @@ export class CommonService {
   public isJumpFromProductionPage: boolean = false;
   public currentPerformer: string = '';
 
+  private hasUpdateSubject = new BehaviorSubject<boolean>(false);
+  hasUpdate$ = this.hasUpdateSubject.asObservable();
+
+  setHasUpdate(value: boolean) {
+    this.hasUpdateSubject.next(value);
+  }
+
   private readonly BLUR_KEY = 'enableBlur';
 
   private enableBlurSubject = new BehaviorSubject<boolean>(this.loadBlur());
@@ -155,5 +162,9 @@ export class CommonService {
 
   getSystemVersion(): Observable<{ version: string }> {
     return this.request<{ version: string }>('GET', 'system/version');
+  }
+
+  checkUpdate(): Observable<{ latest_version: string | null }> {
+    return this.request<{ latest_version: string | null }>('GET', 'system/check_update');
   }
 }

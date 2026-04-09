@@ -1,4 +1,5 @@
 import os
+import httpx
 from fastapi import APIRouter, HTTPException, Body, Query, Response, status, Depends
 from fastapi.responses import StreamingResponse
 from services.system import *
@@ -7,6 +8,7 @@ from .dependencies.auth_dependencies import token_interceptor
 
 router = APIRouter()
 
+VERSION_URL = "https://raw.githubusercontent.com/plsy1/opendata-insight/main/VERSION"
 
 @router.get("/get_image")
 async def get_image(token: str = Query(...)):
@@ -45,3 +47,14 @@ async def get_version():
         with open(version_path, "r") as f:
             return {"version": f.read().strip()}
     return {"version": "1.0.0-dev"}
+
+@router.get("/check_update")
+async def check_update():
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            response = await client.get(VERSION_URL)
+            if response.status_code == 200:
+                return {"latest_version": response.text.strip()}
+    except Exception as e:
+        print(f"Failed to check version: {e}")
+    return {"latest_version": None}

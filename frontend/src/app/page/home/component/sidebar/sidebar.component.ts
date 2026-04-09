@@ -16,6 +16,7 @@ import { CommonModule } from '@angular/common';
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   public version: string = '';
+  public hasUpdate: boolean = false;
 
   constructor(
     public homeService: HomeService,
@@ -31,6 +32,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
         this.version = res.version;
       }
     });
+
+    this.common.hasUpdate$.subscribe(val => {
+      this.hasUpdate = val;
+    });
   }
 
   ngOnDestroy(): void {
@@ -44,5 +49,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.common.logout()
+  }
+
+  openGithub(): void {
+    window.open('https://github.com/plsy1/opendata-insight', '_blank');
   }
 }
