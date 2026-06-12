@@ -164,7 +164,7 @@ async def get_all_movies_service() -> list[dict]:
                 "name": item.get("Name"),
                 "primary": f"{_emby_instance.emby_url}/Items/{item_id}/Images/Primary",
                 "serverId": server_id,
-                "indexLink": f"{_emby_instance.emby_url}/web/index.html#!/videos?serverId={server_id}&parentId={item_id}",
+                "indexLink": f"{_emby_instance.emby_url}/web/index.html#!/item?id={item_id}&serverId={server_id}",
                 "ProductionYear": item.get("ProductionYear"),
             }
         )
