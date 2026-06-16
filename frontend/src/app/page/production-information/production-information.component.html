@@ -27,12 +27,17 @@
       <button class="action-btn secondary" (click)="subscribeToMovie()">
         <mat-icon>rss_feed</mat-icon> {{ 'DETAILS.SUBSCRIBE' | translate }}
       </button>
-      <button class="action-btn ghost" (click)="toJable(movieData.work_id)">
-        <mat-icon>play_circle</mat-icon> Jable
-      </button>
-      <button class="action-btn ghost" (click)="toMissAV(movieData.work_id)">
-        <mat-icon>videocam</mat-icon> MissAV
-      </button>
+      <div class="ghost-group">
+        <button class="action-btn ghost" (click)="toJable(movieData.work_id)">
+          <mat-icon>play_circle</mat-icon> Jable
+        </button>
+        <button class="action-btn ghost" (click)="toMissAV(movieData.work_id)">
+          <mat-icon>videocam</mat-icon> MissAV
+        </button>
+        <button class="action-btn ghost" (click)="toSupJav(movieData.work_id)">
+          <mat-icon>movie</mat-icon> SupJav
+        </button>
+      </div>
     </div>
   </div>
 

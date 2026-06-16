@@ -252,6 +252,14 @@ export class ProductionInformationComponent implements OnInit {
       console.error('Failed:', error);
     }
   }
+  async toSupJav(name: string) {
+    try {
+      const lowerName = name.toLowerCase();
+      window.open(`https://supjav.com/?s=${lowerName}`, '_blank');
+    } catch (error) {
+      console.error('Failed:', error);
+    }
+  }
 
   get actors() {
     const casts = this.movieData?.casts;

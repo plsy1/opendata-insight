@@ -66,6 +66,11 @@
   gap: 10px;
 }
 
+.ghost-group {
+  display: flex;
+  gap: 10px;
+}
+
 .action-btn {
   display: inline-flex;
   align-items: center;
@@ -257,6 +262,18 @@
   .body-grid { grid-template-columns: 1fr; }
   .cover-img { max-height: 220px; }
   .sample-image-list { height: 160px; }
+
+  .ghost-group {
+    width: 100%;
+    display: flex;
+    gap: 8px;
+  }
+  .ghost-group .action-btn.ghost {
+    flex: 1;
+    justify-content: center;
+    padding: 9px 4px;
+    font-size: 12px;
+  }
 
   /* Mobile Cover Layout */
   .mobile-cover {
