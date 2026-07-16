@@ -1,8 +1,12 @@
-from fastapi import APIRouter, Form, Depends, HTTPException
+from fastapi import APIRouter, Form, Depends, HTTPException, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from database import get_db
 from services.auth import ChangePasswordResult, TokenResult, LoginResult, AuthService
+from .dependencies.auth_dependencies import (
+    clear_image_auth_cookie,
+    set_image_auth_cookie,
+)
 
 
 router = APIRouter()
@@ -16,7 +20,9 @@ def map_enum_to_http(result_enum, mappings: dict):
 
 @router.post("/login")
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+    response: Response,
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db),
 ):
     result, token = AuthService.login(db, form_data.username, form_data.password)
     map_enum_to_http(
@@ -26,7 +32,13 @@ def login(
             LoginResult.INVALID_CREDENTIALS: (401, "Incorrect username or password"),
         },
     )
+    set_image_auth_cookie(response, token)
     return {"access_token": token, "token_type": "bearer"}
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+def logout(response: Response):
+    clear_image_auth_cookie(response)
 
 
 @router.post("/verify")

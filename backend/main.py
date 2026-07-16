@@ -14,6 +14,7 @@ from modules.downloader.qbittorrent import init_qb, shutdown_qb
 from modules.indexer.prowlarr import init_prowlarr, shutdown_prowlarr
 from modules.media_server.emby import init_emby_service, shutdown_emby_service
 from modules.metadata.avbase import shutdown_avbase_client
+from services.system import init_image_proxy, shutdown_image_proxy
 
 
 def init_environments():
@@ -24,6 +25,8 @@ def init_environments():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_environments()
+
+    await init_image_proxy()
 
     await init_scheduler_service()
     await init_telegram_bot(
@@ -54,6 +57,7 @@ async def lifespan(app: FastAPI):
         await shutdown_qb()
         await shutdown_telegram_bot()
         await shutdown_avbase_client()
+        await shutdown_image_proxy()
         await shutdown_playwright_service()
 
 

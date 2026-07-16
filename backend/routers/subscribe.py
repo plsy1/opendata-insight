@@ -36,7 +36,8 @@ async def remove_movie_feed(
 async def get_movies_subscribe_list(
     db: Session = Depends(get_db),
 ):
-    return movie_subscribe_list_service(db, MovieStatus.SUBSCRIBE)
+    result = movie_subscribe_list_service(db, MovieStatus.SUBSCRIBE)
+    return replace_domain_in_value(result)
 
 
 @router.post("/actorSubscribe")

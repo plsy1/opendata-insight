@@ -36,6 +36,12 @@ class ConfigManager:
         self.config.setdefault("SECRET_KEY", "change-me")
         self.config.setdefault("ALGORITHM", "HS256")
         self.config.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", 1440)
+        self.config.setdefault("IMAGE_AUTH_COOKIE", "image_access")
+        self.config.setdefault("IMAGE_COOKIE_SECURE", False)
+        self.config.setdefault("IMAGE_CACHE_HOURS", 168)
+        self.config.setdefault("IMAGE_MAX_CONCURRENCY", 8)
+        self.config.setdefault("IMAGE_HTTP_TIMEOUT_SECONDS", 20)
+        self.config.setdefault("IMAGE_MAX_BYTES", 25 * 1024 * 1024)
         self.config.setdefault(
             "IMAGE_TOKEN_SECRET", base64.urlsafe_b64encode(os.urandom(32)).decode()
         )
@@ -43,10 +49,16 @@ class ConfigManager:
         main_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
 
         self.config["CACHE_DIR"] = os.path.join(main_dir, "data/cache_images")
-        self.config["SYSTEM_IMAGE_PREFIX"] = "/api/v1/system/get_image?token="
+        self.config["SYSTEM_IMAGE_PREFIX"] = "/api/v1/system/images/"
 
     def get(self, key: str, default=""):
         return self.config.get(key, os.environ.get(key, default))
+
+    def get_bool(self, key: str, default=False) -> bool:
+        value = self.get(key, default)
+        if isinstance(value, bool):
+            return value
+        return str(value).strip().lower() in {"1", "true", "yes", "on"}
 
     def set(self, new_config: dict):
         self.config.update(new_config)

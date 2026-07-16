@@ -46,6 +46,9 @@ export class CommonService {
   constructor(private router: Router, private http: HttpClient) {}
 
   logout(): void {
+    this.http.post(`${this.apiUrl}/auth/logout`, {}).subscribe({
+      error: (error) => console.error('Failed to clear image session', error),
+    });
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('access_token');
     this.router.navigate(['/login']);
