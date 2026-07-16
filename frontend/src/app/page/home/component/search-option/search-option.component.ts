@@ -34,6 +34,8 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './search-option.component.css',
 })
 export class SearchOptionComponent {
+  private readonly maxRecentSearches = 30;
+
   searchType: string = '';
   searchVaule: string = '';
   searchKeywordsOptions: string[] = [];
@@ -51,8 +53,18 @@ export class SearchOptionComponent {
   ngOnInit(): void {
     const savedPaths = localStorage.getItem('searchKeywordsOptions');
     if (savedPaths) {
-      this.searchKeywordsOptions = JSON.parse(savedPaths);
-      this.filteredOptions = [...this.searchKeywordsOptions];
+      try {
+        const parsed = JSON.parse(savedPaths);
+        this.searchKeywordsOptions = Array.isArray(parsed)
+          ? parsed
+              .filter((option): option is string => typeof option === 'string')
+              .slice(0, this.maxRecentSearches)
+          : [];
+        this.filteredOptions = [...this.searchKeywordsOptions];
+        this.saveRecentSearches();
+      } catch {
+        localStorage.removeItem('searchKeywordsOptions');
+      }
     }
   }
 
@@ -112,19 +124,15 @@ export class SearchOptionComponent {
   }
 
   setRecentlySearch() {
-    if (
-      this.searchVaule &&
-      !this.searchKeywordsOptions.includes(this.searchVaule)
-    ) {
-      this.searchKeywordsOptions.unshift(this.searchVaule); // Use unshift to add to front
+    const value = this.searchVaule.trim();
+    if (!value) return;
 
-      localStorage.setItem(
-        'searchKeywordsOptions',
-        JSON.stringify(this.searchKeywordsOptions)
-      );
-
-      this.filteredOptions = [...this.searchKeywordsOptions];
-    }
+    this.searchKeywordsOptions = [
+      value,
+      ...this.searchKeywordsOptions.filter((option) => option !== value),
+    ].slice(0, this.maxRecentSearches);
+    this.filteredOptions = [...this.searchKeywordsOptions];
+    this.saveRecentSearches();
   }
 
   removeRecentSearch(option: string, event: Event) {
@@ -133,6 +141,10 @@ export class SearchOptionComponent {
       (o) => o !== option
     );
     this.filteredOptions = [...this.searchKeywordsOptions];
+    this.saveRecentSearches();
+  }
+
+  private saveRecentSearches(): void {
     localStorage.setItem(
       'searchKeywordsOptions',
       JSON.stringify(this.searchKeywordsOptions)

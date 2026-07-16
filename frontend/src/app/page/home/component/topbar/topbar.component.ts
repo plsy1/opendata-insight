@@ -59,7 +59,13 @@ export class TopbarComponent {
     this.homeService.setSidebarOpen(!this.homeService.isSidebarOpen);
   }
   OpenSearch() {
-    const dialogRef = this.dialog.open(SearchOptionComponent, {});
+    this.dialog.open(SearchOptionComponent, {
+      width: '500px',
+      maxWidth: 'calc(100vw - 24px)',
+      maxHeight: 'calc(100dvh - 24px)',
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
+    });
   }
   goBack() {
     this.location.back();
