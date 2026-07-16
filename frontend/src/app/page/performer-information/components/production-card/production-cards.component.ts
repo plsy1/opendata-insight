@@ -53,7 +53,10 @@ export class MovieCards implements OnInit {
   ngOnInit(): void {
     this.getRoute.paramMap.subscribe((params) => {
       this.searchKeyWords = params.get('name') || '';
-      if (this.searchKeyWords === this.service.searchKeyWords) {
+      if (
+        this.searchKeyWords === this.service.searchKeyWords &&
+        Array.isArray(this.service.productionInformation)
+      ) {
         this.discoverResults = this.service.productionInformation;
         this.page = this.service.page;
         this.actressNumberFilter = this.service.actressNumberFilter;

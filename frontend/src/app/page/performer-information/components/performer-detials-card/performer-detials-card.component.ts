@@ -32,7 +32,10 @@ export class ActressInformationComponent {
     this.getRoute.paramMap.subscribe((params) => {
       this.name = params.get('name') || '';
       this.common.currentPerformer = this.name;
-      if (this.name === this.service.name) {
+      if (
+        this.name === this.service.name &&
+        this.service.performerInformation
+      ) {
         this.performerInformation = this.service.performerInformation;
       } else {
         this.service.saveName(this.name);

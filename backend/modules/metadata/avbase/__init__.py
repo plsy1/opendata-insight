@@ -10,6 +10,19 @@ from schemas.actor import SocialMedia, ActorDataOut, AvbaseIndexActorOut
 from typing import Optional
 
 
+ACTOR_METADATA_FIELDS = {
+    "birthday",
+    "height",
+    "bust",
+    "waist",
+    "hip",
+    "cup",
+    "hobby",
+    "prefectures",
+    "blood_type",
+}
+
+
 class MoviePoster(BaseModel):
     id: str
     title: str
@@ -31,118 +44,290 @@ def parse_min_date(date_str: Optional[str]) -> Optional[str]:
         return None
 
 
-async def parse_actor_information(url: str) -> ActorDataOut:
+def _get_page_props(soup: BeautifulSoup) -> dict:
+    script_tag = soup.find("script", id="__NEXT_DATA__")
+    if not script_tag or not script_tag.string:
+        raise HTTPException(status_code=502, detail="AvBase 页面缺少 __NEXT_DATA__")
+
     try:
-        data = ActorDataOut()
-        content = await _get_raw_html(url)
-        soup = BeautifulSoup(content, "html.parser")
-        script_tag = soup.find("script", id="__NEXT_DATA__")
-        if script_tag:
-            tmp = json.loads(script_tag.string)
-            page_props = tmp["props"]["pageProps"]
-            data.name = page_props.get("name", {})
+        payload = json.loads(script_tag.string)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=502, detail="AvBase 页面数据解析失败") from exc
 
-            talent = page_props.get("talent", {})
-            primary = talent.get("primary", {})
-            data.avatar_url = f'{primary.get("image_url")}'
-            data.ruby = primary.get("ruby") or page_props.get("ruby")
+    page_props = payload.get("props", {}).get("pageProps")
+    if not isinstance(page_props, dict):
+        raise HTTPException(status_code=502, detail="AvBase 页面数据结构无效")
 
-            fanza = (primary.get("meta") or {}).get("fanza") or {}
-            for k, v in fanza.items():
-                if hasattr(data, k):
-                    setattr(data, k, v)
+    return page_props
 
-            actors = talent.get("actors", [])
-            data.aliases = [actor.get("name") for actor in actors if actor.get("name")]
 
-        data.social_media = _get_social_media_links(soup)
+def _apply_actor_metadata(data: ActorDataOut, metadata: object) -> None:
+    if not isinstance(metadata, dict):
+        return
 
-        return data
+    for key, value in metadata.items():
+        if key in ACTOR_METADATA_FIELDS and value not in (None, ""):
+            setattr(data, key, value)
 
-    except Exception as e:
-        print(e)
+
+def _social_media_from_metadata(metadata: object) -> list[SocialMedia]:
+    if not isinstance(metadata, dict):
+        return []
+
+    social_media = []
+    for item in metadata.get("sns", []):
+        if not isinstance(item, dict):
+            continue
+
+        platform_name = str(item.get("sns") or item.get("platform") or "")
+        username = str(item.get("id") or item.get("username") or "")
+        link = item.get("url") or item.get("link") or _social_media_url(
+            platform_name, username
+        )
+        if not platform_name or not link:
+            continue
+
+        social_media.append(
+            SocialMedia(
+                platform=_normalize_platform_name(platform_name),
+                username=username,
+                link=str(link),
+            )
+        )
+
+    return social_media
+
+
+def _normalize_platform_name(platform: str) -> str:
+    normalized = platform.lower()
+    return {
+        "x": "Twitter",
+        "twitter": "Twitter",
+        "instagram": "Instagram",
+        "tiktok": "TikTok",
+        "youtube": "YouTube",
+        "rss": "RSS",
+    }.get(normalized, platform.capitalize())
+
+
+def _social_media_url(platform: str, username: str) -> Optional[str]:
+    if not username:
+        return None
+
+    normalized = platform.lower()
+    if normalized in ("x", "twitter"):
+        return f"https://x.com/{username.lstrip('@')}"
+    if normalized == "instagram":
+        return f"https://www.instagram.com/{username.lstrip('@')}"
+    if normalized == "tiktok":
+        return f"https://www.tiktok.com/@{username.lstrip('@')}"
+    if normalized == "youtube":
+        return f"https://www.youtube.com/@{username.lstrip('@')}"
+    return None
+
+
+async def parse_actor_information(url: str) -> ActorDataOut:
+    content = await _get_raw_html(url)
+    soup = BeautifulSoup(content, "html.parser")
+    page_props = _get_page_props(soup)
+
+    talent = page_props.get("talent") or {}
+    primary = talent.get("primary") or {}
+    name = page_props.get("name") or primary.get("name")
+    if not name:
+        raise HTTPException(status_code=404, detail="未找到演员信息")
+
+    data = ActorDataOut(
+        name=name,
+        avatar_url=primary.get("image_url"),
+        ruby=primary.get("ruby") or page_props.get("ruby"),
+    )
+
+    primary_meta = primary.get("meta") or {}
+    talent_meta = talent.get("meta") or {}
+    if not isinstance(primary_meta, dict):
+        primary_meta = {}
+    if not isinstance(talent_meta, dict):
+        talent_meta = {}
+    _apply_actor_metadata(data, primary_meta.get("fanza"))
+    _apply_actor_metadata(data, talent_meta.get("fanza"))
+
+    basic_info = talent_meta.get("basic_info") or {}
+    if not isinstance(basic_info, dict):
+        basic_info = {}
+    _apply_actor_metadata(data, basic_info.get("fanza"))
+    _apply_actor_metadata(data, basic_info)
+
+    actors = talent.get("actors") or []
+    data.aliases = [
+        actor.get("name")
+        for actor in actors
+        if isinstance(actor, dict) and actor.get("name")
+    ]
+
+    data.social_media = _merge_social_media(
+        _get_social_media_links(soup),
+        _social_media_from_metadata(talent_meta),
+    )
+    return data
+
+
+def _merge_social_media(*groups: list[SocialMedia]) -> list[SocialMedia]:
+    merged = []
+    seen = set()
+    for group in groups:
+        for item in group:
+            key = item.link or f"{item.platform}:{item.username}"
+            if key in seen:
+                continue
+            seen.add(key)
+            merged.append(item)
+    return merged
+
+
+def _actor_name(actor: object) -> Optional[str]:
+    if isinstance(actor, str):
+        return actor
+    if not isinstance(actor, dict):
+        return None
+    if actor.get("name"):
+        return str(actor["name"])
+    return _actor_name(actor.get("actor"))
+
+
+def _movie_poster_from_work(work: dict) -> MoviePoster:
+    work_id = str(work.get("work_id") or "")
+    prefix = str(work.get("prefix") or "")
+    full_id = f"{prefix}:{work_id}" if prefix else work_id
+
+    products = [p for p in (work.get("products") or []) if isinstance(p, dict)]
+    primary_product = products[0] if products else {}
+
+    title = primary_product.get("title") or work.get("title") or ""
+    release_date = parse_min_date(
+        primary_product.get("date") or work.get("min_date")
+    ) or ""
+
+    img_url = next(
+        (product.get("image_url") for product in products if product.get("image_url")),
+        None,
+    )
+    if not img_url:
+        img_url = next(
+            (
+                product.get("thumbnail_url")
+                for product in products
+                if product.get("thumbnail_url")
+            ),
+            "",
+        )
+        img_url = img_url.replace("ps.jpg", "pl.jpg")
+
+    actor_names = []
+    for actor in (work.get("actors") or []) + (work.get("casts") or []):
+        name = _actor_name(actor)
+        if name and name not in actor_names:
+            actor_names.append(name)
+
+    return MoviePoster(
+        id=work_id,
+        title=str(title),
+        full_id=full_id,
+        release_date=release_date,
+        img_url=str(img_url or ""),
+        actors=actor_names,
+    )
 
 
 async def parse_movie_lists(url: str) -> list[MoviePoster]:
-    try:
-        content = await _get_raw_html(url)
+    content = await _get_raw_html(url)
+    soup = BeautifulSoup(content, "html.parser")
+    page_props = _get_page_props(soup)
 
-        soup = BeautifulSoup(content, "html.parser")
-        movie_elements = soup.find_all(
-            "div",
-            class_="bg-base border border-light rounded-lg overflow-hidden h-full",
+    if "works" in page_props:
+        works = page_props.get("works") or []
+        if not isinstance(works, list):
+            raise HTTPException(status_code=502, detail="AvBase 作品数据结构无效")
+        return [
+            _movie_poster_from_work(work) for work in works if isinstance(work, dict)
+        ]
+
+    return _parse_movie_cards_from_dom(soup)
+
+
+def _parse_movie_cards_from_dom(soup: BeautifulSoup) -> list[MoviePoster]:
+    movie_elements = soup.select(
+        "div.bg-base.border.border-light.rounded-lg.overflow-hidden.h-full, "
+        "div.bg-background.border.border-light.rounded-lg.overflow-hidden.h-full"
+    )
+
+    movies = []
+    for movie in movie_elements:
+        title_tag = movie.find(
+            "a",
+            href=lambda href: href
+            and href.startswith("/works/")
+            and not href.startswith("/works/date/"),
+        )
+        if not title_tag:
+            continue
+
+        full_id = title_tag.get("href", "").split("/")[-1]
+        movie_id = full_id.split(":", 1)[-1]
+        date_tag = movie.find(
+            "a", href=lambda href: href and href.startswith("/works/date/")
+        )
+        img_tag = movie.find("img", loading="lazy")
+        img_url = img_tag.get("src", "") if img_tag else ""
+        if img_url:
+            img_url = img_url.replace("ps.jpg", "pl.jpg")
+
+        actors = []
+        for actor_tag in movie.find_all(
+            "a", href=lambda href: href and href.startswith("/talents/")
+        ):
+            actor_name = actor_tag.get_text(strip=True)
+            if actor_name and actor_name not in actors:
+                actors.append(actor_name)
+
+        movies.append(
+            MoviePoster(
+                id=movie_id,
+                title=title_tag.get_text(strip=True),
+                full_id=full_id,
+                release_date=date_tag.get_text(strip=True) if date_tag else "",
+                img_url=img_url,
+                actors=actors,
+            )
         )
 
-        movies = []
-        for movie in movie_elements:
-            id_tag = movie.find("span", class_="font-bold text-gray-500")
-            movie_id = id_tag.get_text(strip=True) if id_tag else ""
-
-            title_tag = movie.find(
-                "a", class_="text-md font-bold btn-ghost rounded-lg m-1 line-clamp-5"
-            )
-            if not title_tag:
-                title_tag = movie.find(
-                    "a",
-                    class_="text-md font-bold btn-ghost rounded-lg m-1 line-clamp-3",
-                )
-
-            title = title_tag.get_text(strip=True) if title_tag else ""
-            link = title_tag.get("href", "") if title_tag else ""
-            link = link.split("/")[-1]
-
-            date_tag = movie.find("a", class_="block font-bold")
-            date = date_tag.get_text(strip=True) if date_tag else ""
-
-            img_tag = movie.find("img", loading="lazy")
-            img_url = img_tag.get("src", "") if img_tag else ""
-            if img_url:
-                img_url = img_url.replace("ps.", "pl.")
-            actors = [
-                a.get_text(strip=True)
-                for a in movie.find_all("a", class_="chip chip-sm")
-            ]
-
-            movies.append(
-                MoviePoster(
-                    id=movie_id,
-                    title=title,
-                    full_id=link,
-                    release_date=date,
-                    img_url=img_url,
-                    actors=actors,
-                )
-            )
-
-        return movies
-    except Exception as e:
-        print(e)
+    return movies
 
 
 def _get_social_media_links(soup) -> list[SocialMedia]:
     social_media_links = []
 
-    social_media_div = soup.find("div", class_="group/social col-span-2 mt-4")
+    social_media_div = soup.find("div", class_="group/social")
     if not social_media_div:
         return social_media_links
 
-    for tooltip in social_media_div.find_all("div", class_="tooltip"):
-        link_tag = tooltip.find("a")
-        if link_tag:
-            href = link_tag.get("href")
-            username = tooltip.get("data-tip")
-            social_media_links.append(
-                SocialMedia(
-                    platform=_get_platform_from_link(href),
-                    username=username or "",
-                    link=href or None,
-                )
+    for link_tag in social_media_div.find_all("a", href=True):
+        href = link_tag.get("href")
+        tooltip = link_tag.find_parent(attrs={"data-tip": True})
+        username = tooltip.get("data-tip") if tooltip else ""
+        social_media_links.append(
+            SocialMedia(
+                platform=_get_platform_from_link(href),
+                username=username or "",
+                link=href,
             )
+        )
 
     return social_media_links
 
 
 def _get_platform_from_link(link: str):
+    link = link or ""
     if "twitter.com" in link or "x.com" in link:
         return "Twitter"
     elif "instagram.com" in link:
@@ -193,7 +378,7 @@ async def _get_raw_html(url: str):
     context = await _playwright_service.get_context()
     page = await context.new_page()
     try:
-        response = await page.goto(url, timeout=5000,wait_until="domcontentloaded")
+        response = await page.goto(url, timeout=15000, wait_until="domcontentloaded")
         status = response.status
         if status == 403:
             raise HTTPException(status_code=status, detail="403")
@@ -202,6 +387,7 @@ async def _get_raw_html(url: str):
         raise HTTPException(status_code=500, detail=f"页面请求失败: {str(e)}")
     finally:
         await page.close()
+        await context.close()
 
     return content
 
@@ -355,4 +541,3 @@ async def fetch_avbase_release_by_date_and_write_db(db: Session, date_str: str):
         db.execute(stmt)
 
     db.commit()
-

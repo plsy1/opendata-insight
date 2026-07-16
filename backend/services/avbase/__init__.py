@@ -25,15 +25,19 @@ async def get_actor_information_by_name_service(db: Session, name: str) -> Actor
 
     records = db.query(ActorData).where(ActorData.name == name).first()
 
-    if not records:
+    if not records or records.avatar_url == "None":
         url = f"https://www.avbase.net/talents/{name}"
         data = await parse_actor_information(url)
-        new_actor = ActorData(**data.model_dump())
-        db.add(new_actor)
-        db.commit()
-        db.refresh(new_actor)
 
-        records = new_actor
+        if records:
+            for key, value in data.model_dump().items():
+                setattr(records, key, value)
+        else:
+            records = ActorData(**data.model_dump())
+            db.add(records)
+
+        db.commit()
+        db.refresh(records)
 
     return ActorDataOut.model_validate(records)
 
