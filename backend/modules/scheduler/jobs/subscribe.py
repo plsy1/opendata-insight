@@ -5,7 +5,11 @@ from utils.logs import LOG_ERROR, LOG_INFO
 from datetime import datetime
 from services.subscribe import *
 from services.telegram import *
-from services.avbase import *
+from services.avbase import (
+    get_information_by_work_id_service,
+    get_movie_list_by_actor_name_service,
+)
+from schemas.avbase import MoviePoster
 from pathlib import Path
 from datetime import date, timedelta, datetime
 
@@ -127,7 +131,9 @@ async def _refresh_actor_feeds():
             valid_items: list[MoviePoster] = []
             for item in items:
                 try:
-                    release_date = datetime.strptime(item.release_date, "%Y/%m/%d")
+                    release_date = datetime.strptime(
+                        item.release_date.replace("/", "-"), "%Y-%m-%d"
+                    )
                 except ValueError:
                     continue
 

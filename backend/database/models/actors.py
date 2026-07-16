@@ -22,6 +22,7 @@ class ActorData(Base):
     avatar_url = Column(String, nullable=True)
     social_media = Column(JSON, nullable=True)
     ruby = Column(String(100), nullable=True)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
     subscribers = relationship(
         "ActorSubscribe",

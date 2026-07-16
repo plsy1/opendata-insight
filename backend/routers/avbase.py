@@ -1,14 +1,28 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-
-from modules.metadata.avbase import *
-from services.system import replace_domain_in_value
 from urllib.parse import unquote
-from database import get_db
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from services.avbase import *
+
+from database import get_db
+from services.avbase import (
+    get_actor_information_by_name_service,
+    get_avbase_index_actor_service,
+    get_information_by_work_id_service,
+    get_movie_list_by_actor_name_service,
+    get_movie_list_by_keywords_service,
+    get_release_service,
+)
+from services.system import replace_domain_in_value
 
 
 router = APIRouter()
+
+
+def _raise_internal_error(exc: Exception) -> None:
+    raise HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=str(exc),
+    ) from exc
 
 
 @router.get("/get_index")
@@ -17,11 +31,12 @@ async def get_avbase_index_actor(db: Session = Depends(get_db)):
         result = await get_avbase_index_actor_service(db)
         return replace_domain_in_value(result)
 
-    except Exception as e:
+    except HTTPException:
         db.rollback()
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-        )
+        raise
+    except Exception as exc:
+        db.rollback()
+        _raise_internal_error(exc)
 
 
 @router.get("/search")
@@ -29,10 +44,10 @@ async def get_movie_list_by_keywords(keywords: str, page: int):
     try:
         result = await get_movie_list_by_keywords_service(keywords, page)
         return replace_domain_in_value(result)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-        )
+    except HTTPException:
+        raise
+    except Exception as exc:
+        _raise_internal_error(exc)
 
 
 @router.get("/moviesOfActor")
@@ -40,10 +55,10 @@ async def get_movie_list_by_actor_name(name: str, page: int):
     try:
         result = await get_movie_list_by_actor_name_service(name, page)
         return replace_domain_in_value(result)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-        )
+    except HTTPException:
+        raise
+    except Exception as exc:
+        _raise_internal_error(exc)
 
 
 @router.get("/actorInformation")
@@ -51,10 +66,12 @@ async def get_actor_information_by_name(name: str, db: Session = Depends(get_db)
     try:
         result = await get_actor_information_by_name_service(db, name)
         return replace_domain_in_value(result)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-        )
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as exc:
+        db.rollback()
+        _raise_internal_error(exc)
 
 
 @router.get("/movieInformation")
@@ -63,10 +80,12 @@ async def get_information_by_work_id(work_id: str, db: Session = Depends(get_db)
         work_id = unquote(work_id)
         result = await get_information_by_work_id_service(db, work_id)
         return replace_domain_in_value(result)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-        )
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as exc:
+        db.rollback()
+        _raise_internal_error(exc)
 
 
 @router.get("/get_release_by_date")
@@ -82,7 +101,9 @@ async def get_release(yyyymmdd: str, db: Session = Depends(get_db)):
     try:
         result = await get_release_service(db, date_str)
         return replace_domain_in_value(result)
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
-        )
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as exc:
+        db.rollback()
+        _raise_internal_error(exc)

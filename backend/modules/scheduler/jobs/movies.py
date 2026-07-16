@@ -1,10 +1,13 @@
 import asyncio
-from modules.metadata.avbase import *
 from modules.metadata.fc2 import *
 from utils.logs import LOG_ERROR, LOG_INFO
 from datetime import datetime
 from database import get_db, FC2Ranking
 from database import avbaseNewbie, avbasePopular
+from services.avbase import (
+    fetch_actor_lists_from_source,
+    fetch_avbase_release_by_date_and_write_db,
+)
 
 
 async def update_avbase_release_everyday():
@@ -100,7 +103,7 @@ async def update_fc2_ranking():
 async def update_avbase_index_actor_service():
     try:
         db = next(get_db())
-        newbie_data_list, popular_data_list = await parse_actor_lists()
+        newbie_data_list, popular_data_list = await fetch_actor_lists_from_source()
 
         db.query(avbaseNewbie).delete()
         db.query(avbasePopular).delete()

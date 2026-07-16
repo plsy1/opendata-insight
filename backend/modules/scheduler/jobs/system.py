@@ -1,7 +1,5 @@
 from config import _config
-from modules.metadata.avbase import *
 from datetime import datetime, timedelta
-from services.subscribe import *
 
 
 def clean_cache_dir(max_image_cache_hours=1):

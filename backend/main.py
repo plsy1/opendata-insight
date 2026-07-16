@@ -8,11 +8,12 @@ from database import init_database
 from modules.auth import init_user
 
 from modules.scheduler import init_scheduler_service, shutdown_scheduler_service
-from modules.playwright import init_playwright_service, shutdown_playwright_service
+from modules.playwright import shutdown_playwright_service
 from modules.notification.telegram import init_telegram_bot, shutdown_telegram_bot
 from modules.downloader.qbittorrent import init_qb, shutdown_qb
 from modules.indexer.prowlarr import init_prowlarr, shutdown_prowlarr
 from modules.media_server.emby import init_emby_service, shutdown_emby_service
+from modules.metadata.avbase import shutdown_avbase_client
 
 
 def init_environments():
@@ -25,8 +26,6 @@ async def lifespan(app: FastAPI):
     init_environments()
 
     await init_scheduler_service()
-    await init_playwright_service()
-
     await init_telegram_bot(
         _config.get("TELEGRAM_TOKEN", ""), _config.get("TELEGRAM_CHAT_ID", "")
     )
@@ -49,12 +48,13 @@ async def lifespan(app: FastAPI):
     try:
         yield
     finally:
+        await shutdown_scheduler_service()
         await shutdown_emby_service()
         await shutdown_prowlarr()
         await shutdown_qb()
         await shutdown_telegram_bot()
+        await shutdown_avbase_client()
         await shutdown_playwright_service()
-        await shutdown_scheduler_service()
 
 
 App = FastAPI(lifespan=lifespan)

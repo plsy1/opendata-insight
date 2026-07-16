@@ -2,7 +2,8 @@ from database import ActorData, MovieData, MovieSubscribe, ActorSubscribe
 from schemas.movies import MovieDataOut, MovieProductOut
 from copy import deepcopy
 from utils.logs import LOG_ERROR
-from services.avbase import get_actor_information_by_name_service, MoviePoster
+from services.avbase import get_actor_information_by_name_service
+from schemas.avbase import MoviePoster
 from sqlalchemy.orm import selectinload, Session
 from enum import Enum
 

@@ -29,6 +29,10 @@ class ConfigManager:
             self.config = {}
 
         self.config.setdefault("CACHE_EXPIRE_HOURS", 24)
+        self.config.setdefault("AVBASE_ACTOR_CACHE_HOURS", 24)
+        self.config.setdefault("AVBASE_MAX_CONCURRENCY", 4)
+        self.config.setdefault("AVBASE_HTTP_TIMEOUT_SECONDS", 10)
+        self.config.setdefault("AVBASE_HTTP_RETRIES", 1)
         self.config.setdefault("SECRET_KEY", "change-me")
         self.config.setdefault("ALGORITHM", "HS256")
         self.config.setdefault("ACCESS_TOKEN_EXPIRE_MINUTES", 1440)

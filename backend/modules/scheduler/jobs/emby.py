@@ -1,4 +1,5 @@
-from modules.metadata.avbase import *
+from typing import List
+
 from database import get_db, EmbyMovie
 from utils.logs import LOG_ERROR
 from services.emby import get_all_movies_service

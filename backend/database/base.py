@@ -1,6 +1,6 @@
 import os
 import sys
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from typing import Generator
 
@@ -34,3 +34,19 @@ def init_database():
     import database.models
 
     Base.metadata.create_all(bind=engine)
+    _migrate_actor_updated_at()
+
+
+def _migrate_actor_updated_at(target_engine=engine):
+    inspector = inspect(target_engine)
+    if "actor_data" not in inspector.get_table_names():
+        return
+
+    columns = {column["name"] for column in inspector.get_columns("actor_data")}
+    if "updated_at" in columns:
+        return
+
+    with target_engine.begin() as connection:
+        connection.execute(
+            text("ALTER TABLE actor_data ADD COLUMN updated_at DATETIME")
+        )
