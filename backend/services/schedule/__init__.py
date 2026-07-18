@@ -1,9 +1,9 @@
 from modules.scheduler import JobInfo
 from apscheduler.triggers.interval import IntervalTrigger
-import inspect
-from fastapi.concurrency import run_in_threadpool
-from utils.logs import LOG_ERROR
-import asyncio
+
+
+class JobAlreadyRunningError(RuntimeError):
+    pass
 
 
 def list_jobs_service():
@@ -27,6 +27,7 @@ def list_jobs_service():
                     if is_interval
                     else None
                 ),
+                is_running=_scheduler_service.is_job_running(job.id),
             )
         )
     return results
@@ -38,17 +39,7 @@ async def run_job_service(job_id: str):
     if not _scheduler_service.scheduler:
         raise RuntimeError("Scheduler not initialized")
 
-    job = _scheduler_service.scheduler.get_job(job_id)
-    if not job:
+    if not _scheduler_service.scheduler.get_job(job_id):
         raise KeyError(f"Job {job_id} not found")
-
-    async def _runner():
-        try:
-            if inspect.iscoroutinefunction(job.func):
-                await job.func()
-            else:
-                await run_in_threadpool(job.func)
-        except Exception as e:
-            LOG_ERROR(f"Job {job_id} failed: {e}")
-
-    asyncio.create_task(_runner())
+    if not _scheduler_service.queue_job(job_id):
+        raise JobAlreadyRunningError(f"Job {job_id} is already running")

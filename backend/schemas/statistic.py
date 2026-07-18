@@ -22,8 +22,18 @@ class StatActorOut(BaseModel):
     count: int
 
 
+class StatNamedCountOut(BaseModel):
+    name: str
+    count: int
+
+
 class StatAllOut(BaseModel):
     overview: StatOverviewOut
     daily: list[StatDailyOut] = Field(default_factory=list)
     studio: list[StatStudioOut] = Field(default_factory=list)
     actors: list[StatActorOut] = Field(default_factory=list)
+    makers: list[StatNamedCountOut] = Field(default_factory=list)
+    labels: list[StatNamedCountOut] = Field(default_factory=list)
+    series: list[StatNamedCountOut] = Field(default_factory=list)
+    genres: list[StatNamedCountOut] = Field(default_factory=list)
+    tags: list[StatNamedCountOut] = Field(default_factory=list)

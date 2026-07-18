@@ -1,7 +1,31 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from collections import Counter
-from database import MovieSubscribe, MovieData
+from database import MovieSubscribe, MovieData, MovieProduct
+
+
+def _rank_unique_names_by_movie(
+    movie_values: list[tuple[int, list[str]]],
+    limit: int,
+) -> list[dict]:
+    counts: Counter[str] = Counter()
+    display_names: dict[str, str] = {}
+
+    for _movie_id, values in movie_values:
+        movie_names: set[str] = set()
+        for value in values:
+            name = str(value or "").strip()
+            if not name:
+                continue
+            key = name.casefold()
+            display_names.setdefault(key, name)
+            movie_names.add(key)
+        counts.update(movie_names)
+
+    return [
+        {"name": display_names[key], "count": count}
+        for key, count in counts.most_common(limit)
+    ]
 
 
 def stat_overview(db: Session) -> dict:
@@ -82,3 +106,80 @@ def stat_actors_subscribed(db: Session, limit: int = 10) -> list[dict]:
     return [
         {"actor": actor, "count": count} for actor, count in counter.most_common(limit)
     ]
+
+
+def stat_product_metadata(db: Session, limit: int = 10) -> dict[str, list[dict]]:
+    rows = (
+        db.query(
+            MovieData.id,
+            MovieProduct.maker,
+            MovieProduct.label,
+            MovieProduct.series,
+        )
+        .join(MovieSubscribe, MovieData.id == MovieSubscribe.movie_id)
+        .join(MovieProduct, MovieProduct.work_id == MovieData.id)
+        .all()
+    )
+
+    grouped: dict[str, dict[int, list[str]]] = {
+        "makers": {},
+        "labels": {},
+        "series": {},
+    }
+    for movie_id, maker, label, series in rows:
+        for key, value in (
+            ("makers", maker),
+            ("labels", label),
+            ("series", series),
+        ):
+            grouped[key].setdefault(movie_id, []).append(value)
+
+    return {
+        key: _rank_unique_names_by_movie(list(values.items()), limit)
+        for key, values in grouped.items()
+    }
+
+
+def stat_makers(db: Session, limit: int = 10) -> list[dict]:
+    return stat_product_metadata(db, limit)["makers"]
+
+
+def stat_labels(db: Session, limit: int = 10) -> list[dict]:
+    return stat_product_metadata(db, limit)["labels"]
+
+
+def stat_series(db: Session, limit: int = 10) -> list[dict]:
+    return stat_product_metadata(db, limit)["series"]
+
+
+def stat_taxonomy_metadata(db: Session, limit: int = 10) -> dict[str, list[dict]]:
+    rows = (
+        db.query(MovieData.id, MovieData.genres, MovieData.tags)
+        .join(MovieSubscribe, MovieData.id == MovieSubscribe.movie_id)
+        .all()
+    )
+    genre_values = [
+        (movie_id, [str(genre) for genre in (genres or [])])
+        for movie_id, genres, _tags in rows
+    ]
+    tag_values = []
+    for movie_id, _genres, tags in rows:
+        names = []
+        for tag in tags or []:
+            if isinstance(tag, dict):
+                names.append(tag.get("name") or "")
+            else:
+                names.append(str(tag))
+        tag_values.append((movie_id, names))
+    return {
+        "genres": _rank_unique_names_by_movie(genre_values, limit),
+        "tags": _rank_unique_names_by_movie(tag_values, limit),
+    }
+
+
+def stat_genres(db: Session, limit: int = 10) -> list[dict]:
+    return stat_taxonomy_metadata(db, limit)["genres"]
+
+
+def stat_tags(db: Session, limit: int = 10) -> list[dict]:
+    return stat_taxonomy_metadata(db, limit)["tags"]

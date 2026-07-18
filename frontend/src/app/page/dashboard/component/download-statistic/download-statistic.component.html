@@ -43,26 +43,27 @@
 
   <!-- ================= Ranking ================= -->
   <div class="ranking-section">
-    <!-- Studio Ranking -->
-    <mat-card class="ranking-card">
+    <mat-card
+      class="ranking-card"
+      *ngFor="let ranking of metadataRankings"
+    >
       <h2 class="card-title">
-        <mat-icon>business</mat-icon>
-        {{ 'DASHBOARD.LABEL_RANKING' | translate }}
+        <mat-icon>{{ ranking.icon }}</mat-icon>
+        {{ ranking.titleKey | translate }}
       </h2>
 
       <div
         class="ranking-item clickable"
-        *ngFor="let s of data.studio; index as i"
+        *ngFor="let item of ranking.items; index as i"
         [ngClass]="'rank-' + (i + 1)"
-        (click)="goLabel(s.studio)"
+        (click)="goMetadata(item.name)"
       >
         <span class="rank">{{ i + 1 }}</span>
-        <span class="name">{{ s.studio }}</span>
-        <span class="count">{{ s.count }}</span>
+        <span class="name">{{ item.name }}</span>
+        <span class="count">{{ item.count }}</span>
       </div>
     </mat-card>
 
-    <!-- Actor Ranking -->
     <mat-card class="ranking-card">
       <h2 class="card-title">
         <mat-icon>person</mat-icon>

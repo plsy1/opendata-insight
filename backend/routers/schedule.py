@@ -23,6 +23,12 @@ async def run_task(job_id: str):
             detail=f"Job '{job_id}' not found",
         )
 
+    except JobAlreadyRunningError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Job '{job_id}' is already running",
+        )
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

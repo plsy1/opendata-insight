@@ -28,7 +28,7 @@ mat-card-title {
 .env-form {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 12px;
   padding: 0 8px;
 }
 
@@ -43,7 +43,7 @@ mat-card-title {
 }
 
 .env-section {
-  margin: 8px 0 16px;
+  margin: 0;
   padding: 18px;
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-lg);
@@ -69,6 +69,30 @@ mat-card-title {
   box-shadow: var(--glow-primary);
 }
 
+.tone-prowlarr {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  box-shadow: 0 8px 18px rgb(245 158 11 / 22%);
+}
+
+.tone-download {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+
+.tone-qbittorrent {
+  background: linear-gradient(135deg, #15803d, #22c55e);
+  box-shadow: 0 8px 18px rgb(34 197 94 / 22%);
+}
+
+.tone-telegram {
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  box-shadow: 0 8px 18px rgb(14 165 233 / 24%);
+}
+
+.tone-emby {
+  background: linear-gradient(135deg, #7e22ce, #c026d3);
+  box-shadow: 0 8px 18px rgb(192 38 211 / 22%);
+}
+
 .section-heading h3 {
   margin: 1px 0 4px;
   color: var(--text-main);
@@ -84,6 +108,22 @@ mat-card-title {
 
 .media-path-field {
   margin-top: 4px;
+}
+
+.integration-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.integration-section {
+  min-width: 0;
+}
+
+.service-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 button[mat-raised-button][type='submit'] {
@@ -104,7 +144,18 @@ button[mat-raised-button][type='submit']:hover {
 }
 
 @media (max-width: 640px) {
-  .env-row {
+  .env-row,
+  .integration-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .env-section {
+    padding: 15px;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 960px) {
+  .integration-grid {
     grid-template-columns: 1fr;
   }
 }

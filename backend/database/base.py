@@ -17,6 +17,9 @@ engine = create_engine(
 def configure_sqlite_connection(dbapi_connection, _connection_record=None) -> None:
     cursor = dbapi_connection.cursor()
     try:
+        # This takes effect immediately for a new empty database. Existing
+        # databases are converted once by the migration runner with VACUUM.
+        cursor.execute("PRAGMA auto_vacuum=INCREMENTAL")
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.execute("PRAGMA journal_mode=WAL")
         cursor.execute("PRAGMA synchronous=NORMAL")

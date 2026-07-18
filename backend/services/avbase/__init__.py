@@ -1,3 +1,4 @@
+import asyncio
 from collections import defaultdict
 from copy import deepcopy
 from datetime import datetime, timedelta
@@ -5,14 +6,17 @@ from typing import Optional
 from urllib.parse import quote, urlencode
 
 from fastapi import HTTPException
+from sqlalchemy import text
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session, selectinload
 
 from config import _config
 from database import (
     ActorData,
+    AvbaseReleaseCache,
     MovieData,
     MovieProduct,
+    MovieSubscribe,
     avbaseNewbie,
     avbasePopular,
 )
@@ -32,6 +36,12 @@ from utils.logs import LOG_ERROR
 
 
 AVBASE_BASE_URL = "https://www.avbase.net"
+AVBASE_RELEASE_SOURCE = "avbase_release"
+AVBASE_DETAIL_SOURCE = "avbase_detail"
+DEFAULT_RELEASE_RETENTION_DAYS = 30
+DOWNLOADED_METADATA_MAX_AGE = timedelta(days=3)
+ACTIVE_SUBSCRIPTION_METADATA_MAX_AGE = timedelta(days=1)
+_MOVIE_REFRESH_LOCKS: defaultdict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
 
 
 def _cache_hours() -> float:
@@ -39,6 +49,18 @@ def _cache_hours() -> float:
         return float(_config.get("AVBASE_ACTOR_CACHE_HOURS", 24))
     except (TypeError, ValueError):
         return 24.0
+
+
+def _release_retention_days() -> int:
+    try:
+        return int(
+            _config.get(
+                "AVBASE_RELEASE_RETENTION_DAYS",
+                DEFAULT_RELEASE_RETENTION_DAYS,
+            )
+        )
+    except (TypeError, ValueError):
+        return DEFAULT_RELEASE_RETENTION_DAYS
 
 
 def _actor_cache_expired(
@@ -162,31 +184,19 @@ async def get_information_by_work_id_service(
     work_id = full_id.split(":", 1)[1] if ":" in full_id else full_id
     movie = db.query(MovieData).filter(MovieData.work_id == work_id).first()
 
-    if not movie:
-        encoded_id = quote(full_id, safe=":")
-        content = await avbase_client.fetch_html(
-            f"{AVBASE_BASE_URL}/works/{encoded_id}"
-        )
-        work = parse_movie_information(content)
-        movie_out = _gen_movie_data(work)
-        movie = MovieData(
-            **movie_out.model_dump(
-                exclude={"products", "primary_product", "subscribers"}
-            )
-        )
-        db.add(movie)
-        db.flush()
+    if movie is None:
+        return await refresh_information_by_work_id_service(db, full_id)
 
-        db_products = []
-        for product_out in _gen_movie_product(work.get("products", [])):
-            product_data = product_out.model_dump()
-            product_data["work_id"] = movie.id
-            db_products.append(MovieProduct(**product_data))
-
-        db.add_all(db_products)
+    if movie.source_type != AVBASE_DETAIL_SOURCE:
+        movie.source_type = AVBASE_DETAIL_SOURCE
+        movie.last_seen_at = datetime.now()
         db.commit()
         db.refresh(movie)
 
+    return _movie_data_out(movie)
+
+
+def _movie_data_out(movie: MovieData) -> MovieDataOut:
     movie_out = MovieDataOut.model_validate(movie)
     merged_product = _merge_products(movie_out.products)
     if merged_product is None:
@@ -199,6 +209,100 @@ async def get_information_by_work_id_service(
 
     movie_out.primary_product = merged_product
     return movie_out
+
+
+def _metadata_is_fresh(
+    movie: MovieData,
+    max_age: timedelta,
+    *,
+    now: Optional[datetime] = None,
+) -> bool:
+    if movie.metadata_updated_at is None:
+        return False
+    return (now or datetime.now()) - movie.metadata_updated_at < max_age
+
+
+async def _fetch_and_store_movie_information(
+    db: Session,
+    full_id: str,
+    movie: Optional[MovieData],
+) -> MovieDataOut:
+    encoded_id = quote(full_id, safe=":")
+    content = await avbase_client.fetch_html(
+        f"{AVBASE_BASE_URL}/works/{encoded_id}"
+    )
+    work = parse_movie_information(content)
+    movie_out = _gen_movie_data(work)
+    product_outs = _gen_movie_product(work.get("products", []))
+    if not product_outs:
+        raise HTTPException(status_code=502, detail="作品缺少产品信息")
+
+    if movie is None:
+        movie = MovieData(work_id=movie_out.work_id)
+        db.add(movie)
+
+    for field in (
+        "work_id",
+        "prefix",
+        "title",
+        "min_date",
+        "casts",
+        "actors",
+        "tags",
+        "genres",
+    ):
+        setattr(movie, field, getattr(movie_out, field))
+
+    existing_products = {
+        product.product_id: product for product in list(movie.products)
+    }
+    incoming_product_ids = set()
+    for product_out in product_outs:
+        incoming_product_ids.add(product_out.product_id)
+        product = existing_products.get(product_out.product_id)
+        product_data = product_out.model_dump(exclude={"id", "work_id"})
+        if product is None:
+            movie.products.append(MovieProduct(**product_data))
+            continue
+        for field, value in product_data.items():
+            setattr(product, field, value)
+
+    for product in list(movie.products):
+        if product.product_id not in incoming_product_ids:
+            db.delete(product)
+
+    refreshed_at = datetime.now()
+    movie.source_type = AVBASE_DETAIL_SOURCE
+    movie.last_seen_at = refreshed_at
+    movie.metadata_updated_at = refreshed_at
+    db.commit()
+    db.refresh(movie)
+    return _movie_data_out(movie)
+
+
+async def refresh_information_by_work_id_service(
+    db: Session,
+    full_id: str,
+    *,
+    max_age: Optional[timedelta] = None,
+) -> MovieDataOut:
+    work_id = full_id.split(":", 1)[1] if ":" in full_id else full_id
+    lock = _MOVIE_REFRESH_LOCKS[work_id.casefold()]
+
+    async with lock:
+        db.expire_all()
+        movie = db.query(MovieData).filter(MovieData.work_id == work_id).first()
+        if movie is not None and max_age is not None and _metadata_is_fresh(
+            movie,
+            max_age,
+        ):
+            return _movie_data_out(movie)
+
+        try:
+            return await _fetch_and_store_movie_information(db, full_id, movie)
+        except Exception:
+            db.rollback()
+            raise
 
 
 def _gen_movie_product(work_products: list[dict]) -> list[MovieProductOut]:
@@ -281,6 +385,7 @@ async def fetch_avbase_release_by_date_and_write_db(
     db: Session, date_str: str
 ) -> None:
     all_works = await _get_every_day_release(date_str)
+    fetched_at = datetime.now()
 
     movie_records = [
         {
@@ -292,6 +397,8 @@ async def fetch_avbase_release_by_date_and_write_db(
             "actors": work.get("actors", []),
             "tags": work.get("tags", []),
             "genres": [genre["name"] for genre in work.get("genres", [])],
+            "source_type": AVBASE_RELEASE_SOURCE,
+            "last_seen_at": fetched_at,
         }
         for work in all_works
     ]
@@ -308,6 +415,7 @@ async def fetch_avbase_release_by_date_and_write_db(
                 "actors": stmt.excluded.actors,
                 "tags": stmt.excluded.tags,
                 "genres": stmt.excluded.genres,
+                "last_seen_at": stmt.excluded.last_seen_at,
             },
         )
         db.execute(stmt)
@@ -378,24 +486,111 @@ async def fetch_avbase_release_by_date_and_write_db(
             },
         )
         db.execute(stmt)
+
+    cache_stmt = sqlite_insert(AvbaseReleaseCache).values(
+        release_date=date_str,
+        fetched_at=fetched_at,
+    )
+    cache_stmt = cache_stmt.on_conflict_do_update(
+        index_elements=["release_date"],
+        set_={"fetched_at": cache_stmt.excluded.fetched_at},
+    )
+    db.execute(cache_stmt)
     db.commit()
 
 
+def cleanup_avbase_release_cache(
+    db: Session,
+    *,
+    retention_days: Optional[int] = None,
+    batch_size: int = 500,
+    now: Optional[datetime] = None,
+) -> int:
+    days = _release_retention_days() if retention_days is None else retention_days
+    if days <= 0 or batch_size <= 0:
+        return 0
+
+    cutoff = (now or datetime.now()) - timedelta(days=days)
+    deleted = 0
+
+    while True:
+        movie_ids = [
+            movie_id
+            for (movie_id,) in (
+                db.query(MovieData.id)
+                .outerjoin(
+                    MovieSubscribe,
+                    MovieSubscribe.movie_id == MovieData.id,
+                )
+                .filter(
+                    MovieData.source_type == AVBASE_RELEASE_SOURCE,
+                    MovieData.last_seen_at < cutoff,
+                    MovieSubscribe.movie_id.is_(None),
+                )
+                .order_by(MovieData.id)
+                .limit(batch_size)
+                .all()
+            )
+        ]
+        if not movie_ids:
+            break
+
+        db.query(MovieProduct).filter(
+            MovieProduct.work_id.in_(movie_ids)
+        ).delete(synchronize_session=False)
+        db.query(MovieData).filter(MovieData.id.in_(movie_ids)).delete(
+            synchronize_session=False
+        )
+        db.commit()
+        deleted += len(movie_ids)
+
+    expired_cache_dates = (
+        db.query(AvbaseReleaseCache)
+        .filter(AvbaseReleaseCache.fetched_at < cutoff)
+        .delete(synchronize_session=False)
+    )
+    if expired_cache_dates:
+        db.commit()
+
+    db.commit()
+    auto_vacuum_mode = int(
+        db.execute(text("PRAGMA auto_vacuum")).scalar() or 0
+    )
+    if auto_vacuum_mode == 2:
+        db.execute(text("PRAGMA incremental_vacuum"))
+        db.commit()
+
+    return deleted
+
+
+def _release_cache_is_fresh(
+    db: Session,
+    date_str: str,
+    *,
+    retention_days: Optional[int] = None,
+    now: Optional[datetime] = None,
+) -> bool:
+    days = _release_retention_days() if retention_days is None else retention_days
+    query = db.query(AvbaseReleaseCache.release_date).filter(
+        AvbaseReleaseCache.release_date == date_str
+    )
+    if days <= 0:
+        return query.first() is not None
+
+    cutoff = (now or datetime.now()) - timedelta(days=days)
+    return query.filter(AvbaseReleaseCache.fetched_at >= cutoff).first() is not None
+
+
 async def get_release_service(db: Session, date_str: str):
+    if not _release_cache_is_fresh(db, date_str):
+        await fetch_avbase_release_by_date_and_write_db(db, date_str)
+
     records = (
         db.query(MovieData)
         .options(selectinload(MovieData.products))
         .filter(MovieData.min_date == date_str)
         .all()
     )
-    if not records:
-        await fetch_avbase_release_by_date_and_write_db(db, date_str)
-        records = (
-            db.query(MovieData)
-            .options(selectinload(MovieData.products))
-            .filter(MovieData.min_date == date_str)
-            .all()
-        )
 
     categorized: dict[str, list[dict]] = defaultdict(list)
     for movie in records:

@@ -121,6 +121,32 @@ def _run_alembic_command(engine: Engine, config: Config, operation) -> None:
     config.attributes.pop("connection", None)
 
 
+def _auto_vacuum_mode(engine: Engine) -> int:
+    with engine.connect() as connection:
+        return int(connection.exec_driver_sql("PRAGMA auto_vacuum").scalar() or 0)
+
+
+def _enable_incremental_auto_vacuum(engine: Engine) -> None:
+    if _auto_vacuum_mode(engine) == 2:
+        return
+
+    with engine.connect().execution_options(
+        isolation_level="AUTOCOMMIT"
+    ) as connection:
+        connection.exec_driver_sql("PRAGMA wal_checkpoint(TRUNCATE)")
+        connection.exec_driver_sql("PRAGMA auto_vacuum=INCREMENTAL")
+        connection.exec_driver_sql("VACUUM")
+        connection.exec_driver_sql("PRAGMA optimize")
+        connection.exec_driver_sql("PRAGMA wal_checkpoint(TRUNCATE)")
+
+    mode = _auto_vacuum_mode(engine)
+    if mode != 2:
+        raise RuntimeError(
+            "Failed to enable SQLite incremental auto-vacuum mode"
+        )
+    LOGGER.info("Enabled SQLite incremental auto-vacuum mode")
+
+
 def run_database_migrations(engine: Engine, database_path: Path) -> None:
     database_path = Path(database_path)
     database_path.parent.mkdir(parents=True, exist_ok=True)
@@ -128,13 +154,22 @@ def run_database_migrations(engine: Engine, database_path: Path) -> None:
     scripts = ScriptDirectory.from_config(config)
     head_revision = scripts.get_current_head()
     current_revision, has_app_tables = _database_state(engine)
+    backup_created = False
 
     if current_revision == head_revision:
+        if _auto_vacuum_mode(engine) != 2:
+            if has_app_tables and database_path.exists():
+                _backup_database(
+                    database_path,
+                    f"{head_revision}-incremental-vacuum",
+                )
+            _enable_incremental_auto_vacuum(engine)
         LOGGER.info("Database schema is current at revision %s", head_revision)
         return
 
     if has_app_tables and database_path.exists():
         _backup_database(database_path, head_revision)
+        backup_created = True
 
     if current_revision is None and has_app_tables:
         _prepare_legacy_database(engine)
@@ -149,6 +184,13 @@ def run_database_migrations(engine: Engine, database_path: Path) -> None:
         config,
         lambda cfg: command.upgrade(cfg, "head"),
     )
+    if _auto_vacuum_mode(engine) != 2:
+        if has_app_tables and database_path.exists() and not backup_created:
+            _backup_database(
+                database_path,
+                f"{head_revision}-incremental-vacuum",
+            )
+        _enable_incremental_auto_vacuum(engine)
     LOGGER.info(
         "Database schema upgraded from %s to %s",
         current_revision or "legacy/unversioned",

@@ -2,21 +2,31 @@
   <mat-card-title>{{ 'SETTINGS.ENV_VARIABLES' | translate }}</mat-card-title>
   <mat-card-content>
     <form (ngSubmit)="saveEnv()" #envForm="ngForm" class="env-form">
-      <div class="env-row">
-        <mat-form-field appearance="outline" class="env-field">
-          <mat-label>PROWLARR_URL</mat-label>
-          <input matInput [(ngModel)]="env.PROWLARR_URL" name="PROWLARR_URL" />
-        </mat-form-field>
+      <section class="env-section prowlarr-section">
+        <div class="section-heading">
+          <span class="section-icon tone-prowlarr"><i class="fas fa-magnifying-glass"></i></span>
+          <div>
+            <h3>{{ 'SETTINGS.PROWLARR_TITLE' | translate }}</h3>
+            <p>{{ 'SETTINGS.PROWLARR_DESC' | translate }}</p>
+          </div>
+        </div>
 
-        <mat-form-field appearance="outline" class="env-field">
-          <mat-label>PROWLARR_KEY</mat-label>
-          <input matInput [(ngModel)]="env.PROWLARR_KEY" name="PROWLARR_KEY" />
-        </mat-form-field>
-      </div>
+        <div class="env-row">
+          <mat-form-field appearance="outline" class="env-field">
+            <mat-label>{{ 'SETTINGS.SERVICE_URL' | translate }}</mat-label>
+            <input matInput [(ngModel)]="env.PROWLARR_URL" name="PROWLARR_URL" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="env-field">
+            <mat-label>{{ 'SETTINGS.API_KEY' | translate }}</mat-label>
+            <input matInput type="password" [(ngModel)]="env.PROWLARR_KEY" name="PROWLARR_KEY" />
+          </mat-form-field>
+        </div>
+      </section>
 
       <section class="env-section download-paths-section">
         <div class="section-heading">
-          <span class="section-icon"><i class="fas fa-folder-tree"></i></span>
+          <span class="section-icon tone-download"><i class="fas fa-folder-tree"></i></span>
           <div>
             <h3>{{ 'SETTINGS.DOWNLOAD_PATHS_TITLE' | translate }}</h3>
             <p>{{ 'SETTINGS.DOWNLOAD_PATHS_DESC' | translate }}</p>
@@ -56,66 +66,82 @@
         </div>
       </section>
 
-      <div class="env-row">
-        <mat-form-field appearance="outline" class="env-field">
-          <mat-label>QB_URL</mat-label>
-          <input matInput [(ngModel)]="env.QB_URL" name="QB_URL" />
-        </mat-form-field>
+      <section class="env-section qbittorrent-section">
+        <div class="section-heading">
+          <span class="section-icon tone-qbittorrent"><i class="fas fa-cloud-arrow-down"></i></span>
+          <div>
+            <h3>{{ 'SETTINGS.QBITTORRENT_TITLE' | translate }}</h3>
+            <p>{{ 'SETTINGS.QBITTORRENT_DESC' | translate }}</p>
+          </div>
+        </div>
 
-        <mat-form-field appearance="outline" class="env-field">
-          <mat-label>QB_KEYWORD_FILTER</mat-label>
-          <input
-            matInput
-            [(ngModel)]="env.QB_KEYWORD_FILTER"
-            name="QB_KEYWORD_FILTER"
-          />
-        </mat-form-field>
-      </div>
+        <div class="env-row">
+          <mat-form-field appearance="outline" class="env-field">
+            <mat-label>{{ 'SETTINGS.SERVICE_URL' | translate }}</mat-label>
+            <input matInput [(ngModel)]="env.QB_URL" name="QB_URL" />
+          </mat-form-field>
 
-      <div class="env-row">
-        <mat-form-field appearance="outline" class="env-field">
-          <mat-label>QB_USERNAME</mat-label>
-          <input matInput [(ngModel)]="env.QB_USERNAME" name="QB_USERNAME" />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="env-field">
-          <mat-label>QB_PASSWORD</mat-label>
-          <input
-            matInput
-            type="password"
-            [(ngModel)]="env.QB_PASSWORD"
-            name="QB_PASSWORD"
-          />
-        </mat-form-field>
-      </div>
+          <mat-form-field appearance="outline" class="env-field">
+            <mat-label>{{ 'SETTINGS.QB_KEYWORD_FILTER' | translate }}</mat-label>
+            <input matInput [(ngModel)]="env.QB_KEYWORD_FILTER" name="QB_KEYWORD_FILTER" />
+            <mat-hint>{{ 'SETTINGS.QB_KEYWORD_FILTER_HINT' | translate }}</mat-hint>
+          </mat-form-field>
+        </div>
 
-      <div class="env-row">
-        <mat-form-field appearance="outline" class="env-field">
-          <mat-label>TELEGRAM_TOKEN</mat-label>
-          <input
-            matInput
-            [(ngModel)]="env.TELEGRAM_TOKEN"
-            name="TELEGRAM_TOKEN"
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="env-field">
-          <mat-label>TELEGRAM_CHAT_ID</mat-label>
-          <input
-            matInput
-            [(ngModel)]="env.TELEGRAM_CHAT_ID"
-            name="TELEGRAM_CHAT_ID"
-          />
-        </mat-form-field>
-      </div>
+        <div class="env-row">
+          <mat-form-field appearance="outline" class="env-field">
+            <mat-label>{{ 'SETTINGS.USERNAME' | translate }}</mat-label>
+            <input matInput [(ngModel)]="env.QB_USERNAME" name="QB_USERNAME" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="env-field">
+            <mat-label>{{ 'SETTINGS.PASSWORD' | translate }}</mat-label>
+            <input matInput type="password" [(ngModel)]="env.QB_PASSWORD" name="QB_PASSWORD" />
+          </mat-form-field>
+        </div>
+      </section>
 
-      <div class="env-row">
-        <mat-form-field appearance="outline" class="env-field">
-          <mat-label>EMBY_URL</mat-label>
-          <input matInput [(ngModel)]="env.EMBY_URL" name="EMBY_URL" />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="env-field">
-          <mat-label>EMBY_API_KEY</mat-label>
-          <input matInput [(ngModel)]="env.EMBY_API_KEY" name="EMBY_API_KEY" />
-        </mat-form-field>
+      <div class="integration-grid">
+        <section class="env-section integration-section telegram-section">
+          <div class="section-heading">
+            <span class="section-icon tone-telegram"><i class="fab fa-telegram"></i></span>
+            <div>
+              <h3>{{ 'SETTINGS.TELEGRAM_TITLE' | translate }}</h3>
+              <p>{{ 'SETTINGS.TELEGRAM_DESC' | translate }}</p>
+            </div>
+          </div>
+
+          <div class="service-fields">
+            <mat-form-field appearance="outline" class="env-field">
+              <mat-label>{{ 'SETTINGS.BOT_TOKEN' | translate }}</mat-label>
+              <input matInput type="password" [(ngModel)]="env.TELEGRAM_TOKEN" name="TELEGRAM_TOKEN" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="env-field">
+              <mat-label>{{ 'SETTINGS.CHAT_ID' | translate }}</mat-label>
+              <input matInput [(ngModel)]="env.TELEGRAM_CHAT_ID" name="TELEGRAM_CHAT_ID" />
+            </mat-form-field>
+          </div>
+        </section>
+
+        <section class="env-section integration-section emby-section">
+          <div class="section-heading">
+            <span class="section-icon tone-emby"><i class="fas fa-photo-film"></i></span>
+            <div>
+              <h3>{{ 'SETTINGS.EMBY_TITLE' | translate }}</h3>
+              <p>{{ 'SETTINGS.EMBY_DESC' | translate }}</p>
+            </div>
+          </div>
+
+          <div class="service-fields">
+            <mat-form-field appearance="outline" class="env-field">
+              <mat-label>{{ 'SETTINGS.SERVICE_URL' | translate }}</mat-label>
+              <input matInput [(ngModel)]="env.EMBY_URL" name="EMBY_URL" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="env-field">
+              <mat-label>{{ 'SETTINGS.API_KEY' | translate }}</mat-label>
+              <input matInput type="password" [(ngModel)]="env.EMBY_API_KEY" name="EMBY_API_KEY" />
+            </mat-form-field>
+          </div>
+        </section>
       </div>
 
       <button mat-raised-button type="submit">

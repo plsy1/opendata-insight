@@ -2,17 +2,18 @@ import asyncio
 from database import get_db
 from config import _config
 from utils.logs import LOG_ERROR, LOG_INFO
-from datetime import datetime
 from services.subscribe import *
 from services.telegram import *
 from services.avbase import (
+    ACTIVE_SUBSCRIPTION_METADATA_MAX_AGE,
     get_information_by_work_id_service,
     get_movie_list_by_actor_name_service,
+    refresh_information_by_work_id_service,
 )
 from schemas.avbase import MoviePoster
 from services.downloader import build_download_tags
 from pathlib import Path
-from datetime import date, timedelta, datetime
+from datetime import date, datetime
 
 
 def _get_actor_name_from_db(db: Session, work_id: str):
@@ -62,8 +63,28 @@ async def _refresh_movie_feeds():
         today = date.today()
 
         for feed in feeds:
+            release_date = feed.release_date
             try:
-                min_date = datetime.strptime(feed.release_date, "%Y-%m-%d").date()
+                refreshed = await refresh_information_by_work_id_service(
+                    db,
+                    feed.full_id,
+                    max_age=ACTIVE_SUBSCRIPTION_METADATA_MAX_AGE,
+                )
+                product = refreshed.primary_product or (
+                    refreshed.products[0] if refreshed.products else None
+                )
+                release_date = (
+                    (product.date if product else None)
+                    or refreshed.min_date
+                    or release_date
+                )
+            except Exception as exc:
+                LOG_ERROR(
+                    f"[Scheduler] Failed to refresh metadata for {feed.id}: {exc}"
+                )
+
+            try:
+                min_date = datetime.strptime(release_date, "%Y-%m-%d").date()
             except (ValueError, TypeError):
                 LOG_INFO(
                     "[Scheduler] Skipping torrent fetch due to invalid release_date:",

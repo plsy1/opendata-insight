@@ -5,7 +5,10 @@ import { NgxEchartsModule } from 'ngx-echarts';
 import { MatIconModule } from '@angular/material/icon';
 import { DashboardService } from './../../service/dashboard.service';
 import { TranslateModule } from '@ngx-translate/core';
-import { StatAllResponse } from '../../models/statistic.interface';
+import {
+  StatAllResponse,
+  StatNamedItem,
+} from '../../models/statistic.interface';
 import { Router } from '@angular/router';
 import { APP_PATHS } from '../../../../app-paths';
 
@@ -20,8 +23,11 @@ export class DownloadStatisticComponent implements OnInit {
   statisticData: StatAllResponse | null = null;
 
   dailyChartOptions: any;
-  studioChartOptions: any;
-  actorChartOptions: any;
+  metadataRankings: Array<{
+    titleKey: string;
+    icon: string;
+    items: StatNamedItem[];
+  }> = [];
 
   constructor(
     private dashboardService: DashboardService,
@@ -32,7 +38,7 @@ export class DownloadStatisticComponent implements OnInit {
     this.router.navigate([APP_PATHS.performers, name]);
   }
 
-  goLabel(name: string): void {
+  goMetadata(name: string): void {
     this.router.navigate([APP_PATHS.movieSearch, name]);
   }
 
@@ -43,8 +49,33 @@ export class DownloadStatisticComponent implements OnInit {
         this.statisticData = data;
 
         this.initDailyChart(data);
-        this.initStudioChart(data);
-        this.initActorChart(data);
+        this.metadataRankings = [
+          {
+            titleKey: 'DASHBOARD.MAKER_RANKING',
+            icon: 'factory',
+            items: data.makers,
+          },
+          {
+            titleKey: 'DASHBOARD.LABEL_RANKING',
+            icon: 'sell',
+            items: data.labels,
+          },
+          {
+            titleKey: 'DASHBOARD.SERIES_RANKING',
+            icon: 'collections_bookmark',
+            items: data.series,
+          },
+          {
+            titleKey: 'DASHBOARD.GENRE_RANKING',
+            icon: 'category',
+            items: data.genres,
+          },
+          {
+            titleKey: 'DASHBOARD.TAG_RANKING',
+            icon: 'local_offer',
+            items: data.tags,
+          },
+        ];
       },
       error: (err) => {
         console.error('Failed to load Download Statistic data.', err);
@@ -112,52 +143,4 @@ export class DownloadStatisticComponent implements OnInit {
     };
   }
 
-  // ===============================
-  // Top Studio Chart
-  // ===============================
-  initStudioChart(data: StatAllResponse): void {
-    this.studioChartOptions = {
-      tooltip: { trigger: 'axis' },
-      xAxis: {
-        type: 'category',
-        data: data.studio.map(s => s.studio),
-      },
-      yAxis: {
-        type: 'value',
-      },
-      series: [
-        {
-          name: 'Downloads',
-          type: 'bar',
-          data: data.studio.map(s => s.count),
-        },
-      ],
-    };
-  }
-
-  // ===============================
-  // Top Actor Chart
-  // ===============================
-  initActorChart(data: StatAllResponse): void {
-    this.actorChartOptions = {
-      tooltip: { trigger: 'axis' },
-      xAxis: {
-        type: 'category',
-        data: data.actors.map(a => a.actor),
-        axisLabel: {
-          rotate: 30,
-        },
-      },
-      yAxis: {
-        type: 'value',
-      },
-      series: [
-        {
-          name: 'Downloads',
-          type: 'bar',
-          data: data.actors.map(a => a.count),
-        },
-      ],
-    };
-  }
 }

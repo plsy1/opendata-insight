@@ -27,6 +27,9 @@ class MovieData(Base):
     tags = Column(JSON, default=list)
     genres = Column(JSON, default=list)
     created_at = Column(DateTime, default=datetime.now)
+    source_type = Column(String, nullable=True)
+    last_seen_at = Column(DateTime, nullable=True)
+    metadata_updated_at = Column(DateTime, nullable=True)
 
     products = relationship(
         "MovieProduct", back_populates="work", cascade="all, delete-orphan"
@@ -39,7 +42,15 @@ class MovieData(Base):
         uselist=False,
     )
 
-    __table_args__ = (Index("ix_movie_data_min_date", "min_date"),)
+    __table_args__ = (
+        Index("ix_movie_data_min_date", "min_date"),
+        Index(
+            "ix_movie_data_source_last_seen",
+            "source_type",
+            "last_seen_at",
+        ),
+        Index("ix_movie_data_metadata_updated_at", "metadata_updated_at"),
+    )
 
 
 class MovieProduct(Base):

@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 import asyncio
+import inspect
 import os
 
 
@@ -18,12 +19,16 @@ class JobInfo:
     trigger: str
     schedule_type: str
     interval_seconds: Optional[int]
+    is_running: bool = False
 
 
 class AppScheduler:
     def __init__(self):
         self.scheduler: AsyncIOScheduler | None = None
         self._job_counter = 0
+        self._job_functions: dict[str, object] = {}
+        self._running_job_ids: set[str] = set()
+        self._manual_tasks: set[asyncio.Task] = set()
 
     def job_listener(self, event):
         if event.exception:
@@ -54,18 +59,82 @@ class AppScheduler:
         trigger_instance = (
             trigger(**trigger_args) if trigger else IntervalTrigger(seconds=60)
         )
-        self.scheduler.add_job(func, trigger_instance, id=job_id, name=name or job_id)
+        self._job_functions[job_id] = func
+
+        async def guarded_job():
+            started = await self.execute_job(job_id)
+            if not started:
+                LOG_INFO(f"Skipped already-running job: {job_id}")
+
+        self.scheduler.add_job(
+            guarded_job,
+            trigger_instance,
+            id=job_id,
+            name=name or job_id,
+        )
         return job_id
+
+    def is_job_running(self, job_id: str) -> bool:
+        return job_id in self._running_job_ids
+
+    def _reserve_job(self, job_id: str) -> bool:
+        if job_id in self._running_job_ids:
+            return False
+        if job_id not in self._job_functions:
+            raise KeyError(f"Job {job_id} not found")
+        self._running_job_ids.add(job_id)
+        return True
+
+    async def _execute_reserved_job(self, job_id: str) -> None:
+        try:
+            func = self._job_functions[job_id]
+            if inspect.iscoroutinefunction(func):
+                await func()
+            else:
+                await asyncio.to_thread(func)
+        finally:
+            self._running_job_ids.discard(job_id)
+
+    async def execute_job(self, job_id: str) -> bool:
+        if not self._reserve_job(job_id):
+            return False
+        await self._execute_reserved_job(job_id)
+        return True
+
+    def queue_job(self, job_id: str) -> bool:
+        if not self._reserve_job(job_id):
+            return False
+
+        async def runner():
+            try:
+                await self._execute_reserved_job(job_id)
+            except Exception as exc:
+                LOG_ERROR(f"Job {job_id} failed: {exc}")
+
+        task = asyncio.create_task(runner())
+        self._manual_tasks.add(task)
+        task.add_done_callback(self._manual_tasks.discard)
+        return True
 
     def remove_job(self, job_id):
         if self.scheduler:
             self.scheduler.remove_job(job_id)
+            self._job_functions.pop(job_id, None)
             LOG_INFO(f"Removed job: {job_id}")
 
     async def shutdown(self):
         if self.scheduler:
             self.scheduler.shutdown()
             self.scheduler = None
+            for task in self._manual_tasks:
+                task.cancel()
+            if self._manual_tasks:
+                await asyncio.gather(
+                    *self._manual_tasks,
+                    return_exceptions=True,
+                )
+            self._manual_tasks.clear()
+            self._running_job_ids.clear()
             LOG_INFO("Scheduler shutdown")
 
 

@@ -11,6 +11,9 @@ export function createDefaultMovieInformation(): MovieData {
     tags: [],
     genres: [],
     created_at: null,
+    source_type: null,
+    last_seen_at: null,
+    metadata_updated_at: null,
     products: [],
   };
 }

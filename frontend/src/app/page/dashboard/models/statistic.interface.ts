@@ -19,9 +19,19 @@ export interface StatActorItem {
   count: number;
 }
 
+export interface StatNamedItem {
+  name: string;
+  count: number;
+}
+
 export interface StatAllResponse {
   overview: StatOverview;
   daily: StatDailyItem[];
   studio: StatStudioItem[];
   actors: StatActorItem[];
+  makers: StatNamedItem[];
+  labels: StatNamedItem[];
+  series: StatNamedItem[];
+  genres: StatNamedItem[];
+  tags: StatNamedItem[];
 }

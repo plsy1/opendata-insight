@@ -33,6 +33,7 @@ class ConfigManager:
         self.config.setdefault("AVBASE_MAX_CONCURRENCY", 4)
         self.config.setdefault("AVBASE_HTTP_TIMEOUT_SECONDS", 10)
         self.config.setdefault("AVBASE_HTTP_RETRIES", 1)
+        self.config.setdefault("AVBASE_RELEASE_RETENTION_DAYS", 30)
         legacy_required = self.config.get("SUBSCRIBE_TITLE_REQUIRED", [])
         legacy_any = self.config.get("SUBSCRIBE_TITLE_ANY", [])
         legacy_excluded = self.config.get("SUBSCRIBE_TITLE_EXCLUDED", [])

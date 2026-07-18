@@ -11,6 +11,7 @@ class JobInfoOut(BaseModel):
     trigger: str
     schedule_type: Literal["interval", "other"]
     interval_seconds: Optional[int] = None
+    is_running: bool = False
 
     model_config = {"from_attributes": True, "extra": "allow"}
 

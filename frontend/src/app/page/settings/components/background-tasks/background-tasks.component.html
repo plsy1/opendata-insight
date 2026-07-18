@@ -70,7 +70,7 @@
           [class]="isRunning(job.id) ? 'fas fa-circle-notch fa-spin' : 'fas fa-play'"
         ></i>
         {{
-          (isRunning(job.id) ? 'SETTINGS.TASK_STARTING' : 'SETTINGS.TASK_RUN')
+          (isRunning(job.id) ? 'SETTINGS.TASK_RUNNING' : 'SETTINGS.TASK_RUN')
             | translate
         }}
       </button>

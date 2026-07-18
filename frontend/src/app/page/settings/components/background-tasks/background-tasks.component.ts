@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { SettingsService } from '../../service/settings.service';
 import { JobInfo } from '../../models/job_info.interface';
@@ -6,7 +6,6 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-background-tasks',
@@ -20,11 +19,13 @@ import { finalize } from 'rxjs';
   templateUrl: './background-tasks.component.html',
   styleUrl: './background-tasks.component.css',
 })
-export class BackgroundTasksComponent implements OnInit {
+export class BackgroundTasksComponent implements OnInit, OnDestroy {
   jobs: JobInfo[] = [];
   isLoading = false;
   loadFailed = false;
   private readonly runningJobIds = new Set<string>();
+  private readonly pendingRunRequestIds = new Set<string>();
+  private pollingTimer?: number;
 
   private readonly legacyJobIds: Record<string, string> = {
     'update emby': 'sync_emby_library',
@@ -44,6 +45,13 @@ export class BackgroundTasksComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadJobs();
+    this.pollingTimer = window.setInterval(() => this.loadJobs(false), 2000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.pollingTimer !== undefined) {
+      window.clearInterval(this.pollingTimer);
+    }
   }
 
   run(jobId: string): void {
@@ -52,41 +60,57 @@ export class BackgroundTasksComponent implements OnInit {
     }
 
     this.runningJobIds.add(jobId);
+    this.pendingRunRequestIds.add(jobId);
     this.settingsService
       .runBackgroundTask(jobId)
-      .pipe(finalize(() => this.runningJobIds.delete(jobId)))
       .subscribe({
         next: () => {
+          this.pendingRunRequestIds.delete(jobId);
           this.snackBar.open(
             this.translate.instant('SETTINGS.TASK_QUEUED'),
             this.translate.instant('COMMON.CLOSE'),
             { duration: 2000, panelClass: ['success-snackbar'] }
           );
-          this.loadJobs();
+          this.loadJobs(false);
         },
         error: (err) => {
+          this.pendingRunRequestIds.delete(jobId);
+          this.runningJobIds.delete(jobId);
           console.error('Run failed:', err);
           this.snackBar.open(
             this.translate.instant('SETTINGS.TASK_RUN_FAILED'),
             this.translate.instant('COMMON.CLOSE'),
             { duration: 3000, panelClass: ['error-snackbar'] }
           );
+          this.loadJobs(false);
         },
       });
   }
 
-  loadJobs(): void {
-    this.isLoading = true;
-    this.loadFailed = false;
+  loadJobs(showLoading = true): void {
+    if (showLoading) {
+      this.isLoading = true;
+      this.loadFailed = false;
+    }
     this.settingsService.listBackgroundTasks().subscribe({
       next: (jobs) => {
         this.jobs = jobs;
+        for (const jobId of this.runningJobIds) {
+          if (
+            !this.pendingRunRequestIds.has(jobId) &&
+            !jobs.some((job) => job.id === jobId && job.is_running)
+          ) {
+            this.runningJobIds.delete(jobId);
+          }
+        }
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Load jobs failed:', err);
-        this.loadFailed = true;
-        this.isLoading = false;
+        if (showLoading) {
+          this.loadFailed = true;
+          this.isLoading = false;
+        }
       },
     });
   }
@@ -96,7 +120,10 @@ export class BackgroundTasksComponent implements OnInit {
   }
 
   isRunning(jobId: string): boolean {
-    return this.runningJobIds.has(jobId);
+    return (
+      this.runningJobIds.has(jobId) ||
+      this.jobs.some((job) => job.id === jobId && job.is_running)
+    );
   }
 
   taskName(job: JobInfo): string {

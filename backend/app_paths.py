@@ -28,12 +28,9 @@ def _copy_legacy_data_if_needed(target: Path, legacy: Path) -> None:
         return
 
     if _contains_persistent_data(target):
-        warnings.warn(
-            "Persistent data exists in both the stable and legacy runtime "
-            f"directories. Using {target}; legacy data remains at {legacy}.",
-            RuntimeWarning,
-            stacklevel=2,
-        )
+        # The stable backend data directory is authoritative once initialized.
+        # Keep the legacy copy untouched so it can still be recovered manually,
+        # but do not emit a warning on every application startup.
         return
 
     target.mkdir(parents=True, exist_ok=True)

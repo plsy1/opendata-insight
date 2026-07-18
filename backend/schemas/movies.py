@@ -49,6 +49,9 @@ class MovieDataOut(BaseModel):
     tags: List[dict] = Field(default_factory=list)
     genres: List[str] = Field(default_factory=list)
     created_at: Optional[datetime] = None
+    source_type: Optional[str] = None
+    last_seen_at: Optional[datetime] = None
+    metadata_updated_at: Optional[datetime] = None
     products: List[MovieProductOut] = Field(default_factory=list)
     primary_product: Optional[MovieProductOut] = None
     subscribers: Optional[MovieSubscriptionOut] = None

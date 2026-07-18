@@ -41,7 +41,7 @@ class AppPathsTests(unittest.TestCase):
             )
             self.assertTrue((legacy / "database.db").exists())
 
-    def test_existing_target_is_never_overwritten(self):
+    def test_existing_target_is_never_overwritten_or_warned_about(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             legacy = root / "legacy"
@@ -56,7 +56,7 @@ class AppPathsTests(unittest.TestCase):
                 _copy_legacy_data_if_needed(target, legacy)
 
             self.assertEqual((target / "database.db").read_bytes(), b"current")
-            self.assertTrue(caught)
+            self.assertFalse(caught)
 
 
 if __name__ == "__main__":

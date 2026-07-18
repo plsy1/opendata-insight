@@ -15,6 +15,14 @@ export class ProductionInformationService {
     });
   }
 
+  refreshSingleProductionInformation(work_id: string): Observable<MovieData> {
+    return this.common.request<MovieData>(
+      'POST',
+      'avbase/movieInformation/refresh',
+      { params: { work_id: work_id } }
+    );
+  }
+
   addProductionSubscribe(work_id: string): Observable<void> {
     return this.common.request<void>('POST', 'feed/movieSubscribe', {
       params: { work_id: work_id },

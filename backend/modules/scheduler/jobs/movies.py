@@ -5,6 +5,7 @@ from datetime import datetime
 from database import get_db, FC2Ranking
 from database import avbaseNewbie, avbasePopular
 from services.avbase import (
+    cleanup_avbase_release_cache,
     fetch_actor_lists_from_source,
     fetch_avbase_release_by_date_and_write_db,
 )
@@ -15,6 +16,9 @@ async def update_avbase_release_everyday():
         db = next(get_db())
         date_str = datetime.today().strftime("%Y-%m-%d")
         await fetch_avbase_release_by_date_and_write_db(db, date_str)
+        deleted = cleanup_avbase_release_cache(db)
+        if deleted:
+            LOG_INFO(f"[AVBASE] Cleaned {deleted} expired release cache records")
     except Exception as e:
         LOG_ERROR(e)
     finally:

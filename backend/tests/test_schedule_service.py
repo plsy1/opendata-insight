@@ -20,7 +20,10 @@ class ScheduleServiceTests(unittest.TestCase):
 
         with patch(
             "modules.scheduler._scheduler_service",
-            SimpleNamespace(scheduler=scheduler),
+            SimpleNamespace(
+                scheduler=scheduler,
+                is_job_running=lambda _job_id: False,
+            ),
         ):
             result = list_jobs_service()
 
@@ -28,6 +31,7 @@ class ScheduleServiceTests(unittest.TestCase):
         self.assertEqual(result[0].schedule_type, "interval")
         self.assertEqual(result[0].interval_seconds, 10800)
         self.assertEqual(result[0].id, "clean_image_cache")
+        self.assertFalse(result[0].is_running)
 
 
 if __name__ == "__main__":

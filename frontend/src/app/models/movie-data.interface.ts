@@ -74,6 +74,9 @@ export interface MovieData {
   tags: MetadataTag[];
   genres: string[];
   created_at?: string | null;
+  source_type?: string | null;
+  last_seen_at?: string | null;
+  metadata_updated_at?: string | null;
   products: MovieProduct[];
   primary_product?: MovieProduct | null;
   subscribers?: MovieSubscription | null;

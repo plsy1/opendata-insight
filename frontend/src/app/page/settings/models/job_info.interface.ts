@@ -5,4 +5,5 @@ export interface JobInfo {
   trigger: string;
   schedule_type: 'interval' | 'other';
   interval_seconds: number | null;
+  is_running: boolean;
 }

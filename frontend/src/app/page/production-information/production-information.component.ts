@@ -30,6 +30,7 @@ import { APP_PATHS } from '../../app-paths';
   styleUrl: './production-information.component.css',
 })
 export class ProductionInformationComponent implements OnInit {
+  private readonly metadataMaxAgeMs = 3 * 24 * 60 * 60 * 1000;
   movieData: MovieData = createDefaultMovieInformation();
   movieId: string = '';
   isLoading: boolean = false;
@@ -179,10 +180,43 @@ export class ProductionInformationComponent implements OnInit {
       next: (data) => {
         this.movieData = data;
         this.isLoading = false;
+        this.refreshDownloadedMovieIfStale(work_id, data);
       },
       error: (error) => {
         console.error('Failed to load movie data:', error);
         this.isLoading = false;
+      },
+    });
+  }
+
+  private refreshDownloadedMovieIfStale(
+    workId: string,
+    movie: MovieData
+  ): void {
+    if (!movie.subscribers?.is_downloaded) {
+      return;
+    }
+
+    const refreshedAt = movie.metadata_updated_at
+      ? Date.parse(movie.metadata_updated_at)
+      : Number.NaN;
+    const isStale =
+      !Number.isFinite(refreshedAt) ||
+      Date.now() - refreshedAt >= this.metadataMaxAgeMs;
+    if (!isStale) {
+      return;
+    }
+
+    this.ProductionInformationService.refreshSingleProductionInformation(
+      encodeURIComponent(workId)
+    ).subscribe({
+      next: (data) => {
+        if (this.movieId === workId) {
+          this.movieData = data;
+        }
+      },
+      error: (error) => {
+        console.warn('Failed to refresh stale movie metadata:', error);
       },
     });
   }

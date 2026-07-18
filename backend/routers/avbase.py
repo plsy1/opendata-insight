@@ -5,12 +5,14 @@ from sqlalchemy.orm import Session
 
 from database import get_db
 from services.avbase import (
+    DOWNLOADED_METADATA_MAX_AGE,
     get_actor_information_by_name_service,
     get_avbase_index_actor_service,
     get_information_by_work_id_service,
     get_movie_list_by_actor_name_service,
     get_movie_list_by_keywords_service,
     get_release_service,
+    refresh_information_by_work_id_service,
 )
 from services.system import replace_domain_in_value
 from schemas.actor import ActorDataOut, AvbaseIndexOut
@@ -82,6 +84,27 @@ async def get_information_by_work_id(work_id: str, db: Session = Depends(get_db)
     try:
         work_id = unquote(work_id)
         result = await get_information_by_work_id_service(db, work_id)
+        return replace_domain_in_value(result)
+    except HTTPException:
+        db.rollback()
+        raise
+    except Exception as exc:
+        db.rollback()
+        _raise_internal_error(exc)
+
+
+@router.post("/movieInformation/refresh", response_model=MovieDataOut)
+async def refresh_information_by_work_id(
+    work_id: str,
+    db: Session = Depends(get_db),
+):
+    try:
+        work_id = unquote(work_id)
+        result = await refresh_information_by_work_id_service(
+            db,
+            work_id,
+            max_age=DOWNLOADED_METADATA_MAX_AGE,
+        )
         return replace_domain_in_value(result)
     except HTTPException:
         db.rollback()
