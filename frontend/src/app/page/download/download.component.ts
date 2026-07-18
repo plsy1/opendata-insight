@@ -46,6 +46,7 @@ export class DownloadComponent implements OnInit, OnDestroy {
 
   displayTitle(torrent: DownloadingTorrent): string {
     return (
+      torrent.fc2_product?.title ||
       torrent.movie?.title ||
       torrent.movie?.primary_product?.title ||
       torrent.name
@@ -59,12 +60,27 @@ export class DownloadComponent implements OnInit, OnDestroy {
     );
 
     return (
+      torrent.fc2_product?.cover ||
       primaryProduct?.image_url ||
       primaryProduct?.thumbnail_url ||
       productWithImage?.image_url ||
       productWithImage?.thumbnail_url ||
       null
     );
+  }
+
+  displayWorkId(torrent: DownloadingTorrent): string | null {
+    if (torrent.fc2_product?.product_id) {
+      return torrent.fc2_product.product_id;
+    }
+    if (torrent.media_type === 'fc2' && torrent.work_id) {
+      return `FC2-${torrent.work_id}`;
+    }
+    return torrent.work_id || null;
+  }
+
+  creatorName(torrent: DownloadingTorrent): string | null {
+    return torrent.fc2_product?.author || null;
   }
 
   trackByHash(_index: number, torrent: DownloadingTorrent): string {

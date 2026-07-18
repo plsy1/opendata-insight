@@ -20,9 +20,14 @@
           <h3 class="torrent-title" [matTooltip]="displayTitle(torrent)">
             {{ displayTitle(torrent) }}
           </h3>
-          <span class="work-id" *ngIf="torrent.work_id">
-            {{ torrent.work_id }}
-          </span>
+          <div class="work-meta" *ngIf="displayWorkId(torrent) || creatorName(torrent)">
+            <span class="work-id" *ngIf="displayWorkId(torrent) as workId">
+              {{ workId }}
+            </span>
+            <span class="creator-name" *ngIf="creatorName(torrent) as creator">
+              <i class="fas fa-user"></i>{{ creator }}
+            </span>
+          </div>
         </div>
         <button
           class="delete-btn"

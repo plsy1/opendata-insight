@@ -87,9 +87,19 @@
   flex: 1;
 }
 
-.work-id {
-  display: inline-flex;
+.work-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
   margin-top: 6px;
+}
+
+.work-id,
+.creator-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   padding: 3px 8px;
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-full);
@@ -100,18 +110,24 @@
   letter-spacing: 0.04em;
 }
 
+.creator-name {
+  color: var(--text-muted);
+}
+
 .has-cover .torrent-title,
 .has-cover .progress-value {
   color: #ffffff;
 }
 
 .has-cover .work-id,
+.has-cover .creator-name,
 .has-cover .progress-label,
 .has-cover .stat-item {
   color: rgba(255, 255, 255, 0.78);
 }
 
-.has-cover .work-id {
+.has-cover .work-id,
+.has-cover .creator-name {
   border-color: rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.1);
 }

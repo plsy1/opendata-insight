@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
 from database import Base
+from database.models.fc2 import FC2Product
 from database.models.movies import MovieData, MovieProduct
 from modules.downloader.qbittorrent import _normalize_keyword_filter
 from services.downloader import (
@@ -38,6 +39,18 @@ class DownloadMetadataTests(unittest.TestCase):
             )
         ]
         self.db.add(movie)
+        self.db.add(
+            FC2Product(
+                article_id="1234567",
+                product_id="FC2-PPV-1234567",
+                title="FC2 database title",
+                author="FC2 seller",
+                seller_id="fc2-seller",
+                cover="https://images.example/fc2-1234567.jpg",
+                duration="01:20:30",
+                sample_images=[],
+            )
+        )
         self.db.commit()
 
     def tearDown(self):
@@ -76,6 +89,43 @@ class DownloadMetadataTests(unittest.TestCase):
             result[0]["movie"].primary_product.image_url,
             "https://images.example/mida-645.jpg",
         )
+
+    def test_fc2_tagged_torrent_returns_cover_and_title_metadata(self):
+        result = enrich_downloading_torrents(
+            self.db,
+            [
+                {
+                    "hash": "fc2-tagged",
+                    "name": "unrelated release name",
+                    "tags": "kanojo, fc2-work:1234567",
+                }
+            ],
+        )
+
+        self.assertEqual(result[0]["work_id"], "1234567")
+        self.assertEqual(result[0]["media_type"], "fc2")
+        self.assertIsNone(result[0]["movie"])
+        self.assertEqual(result[0]["fc2_product"].title, "FC2 database title")
+        self.assertEqual(result[0]["fc2_product"].author, "FC2 seller")
+        self.assertEqual(
+            result[0]["fc2_product"].cover,
+            "https://images.example/fc2-1234567.jpg",
+        )
+
+    def test_legacy_fc2_name_is_matched_without_tag(self):
+        result = enrich_downloading_torrents(
+            self.db,
+            [
+                {
+                    "hash": "fc2-legacy",
+                    "name": "[site] FC2-PPV-1234567 4K",
+                    "tags": "kanojo",
+                }
+            ],
+        )
+
+        self.assertEqual(result[0]["work_id"], "1234567")
+        self.assertEqual(result[0]["fc2_product"].title, "FC2 database title")
 
     def test_legacy_torrent_name_is_matched_without_tag(self):
         result = enrich_downloading_torrents(

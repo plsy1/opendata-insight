@@ -5,7 +5,8 @@ from typing import Any
 from sqlalchemy import func
 from sqlalchemy.orm import Session, selectinload
 
-from database import MovieData
+from database import FC2Product, MovieData
+from schemas.fc2 import FC2ProductOut
 from schemas.movies import MovieDataOut, MovieProductOut
 
 
@@ -16,6 +17,10 @@ _SEPARATED_WORK_ID = re.compile(
 )
 _COMPACT_WORK_ID = re.compile(r"(?<![A-Za-z])([A-Za-z]{2,16})(0*\d{2,8})(?!\d)")
 _MEDIA_SUFFIX = re.compile(r"\.(?:torrent|mkv|mp4|avi|wmv|mov|ts)$", re.IGNORECASE)
+_FC2_WORK_ID = re.compile(
+    r"(?<![A-Za-z0-9])FC2(?:[-_ ]?PPV)?[-_ ]?(\d{3,10})(?!\d)",
+    re.IGNORECASE,
+)
 
 
 def _canonical_work_id(work_id: str) -> str:
@@ -92,6 +97,29 @@ def _candidate_work_ids(torrent: dict[str, Any]) -> list[str]:
     return unique_candidates
 
 
+def _candidate_fc2_ids(torrent: dict[str, Any]) -> list[str]:
+    candidates: list[str] = []
+
+    for tag in str(torrent.get("tags") or "").split(","):
+        tag = tag.strip()
+        if tag.casefold().startswith(FC2_ID_TAG_PREFIX):
+            candidate = tag[len(FC2_ID_TAG_PREFIX) :].strip()
+            if candidate:
+                candidates.append(_canonical_work_id(candidate))
+
+    name = str(torrent.get("name") or "")
+    candidates.extend(match.group(1) for match in _FC2_WORK_ID.finditer(name))
+
+    basename = _MEDIA_SUFFIX.sub(
+        "",
+        name.replace("\\", "/").rsplit("/", 1)[-1],
+    ).strip()
+    if basename.isdigit():
+        candidates.append(basename)
+
+    return list(dict.fromkeys(candidate for candidate in candidates if candidate))
+
+
 def _merge_products(products: list[MovieProductOut]) -> MovieProductOut | None:
     if not products:
         return None
@@ -131,6 +159,7 @@ def enrich_downloading_torrents(
 ) -> list[dict[str, Any]]:
     """Attach complete movie metadata to qBittorrent tasks in one database query."""
     candidate_lists = [_candidate_work_ids(torrent) for torrent in torrents]
+    fc2_candidate_lists = [_candidate_fc2_ids(torrent) for torrent in torrents]
     candidate_keys = {
         candidate.casefold()
         for candidates in candidate_lists
@@ -152,9 +181,38 @@ def enrich_downloading_torrents(
             movie.work_id.casefold(): _movie_out(movie) for movie in movies
         }
 
+    fc2_candidate_keys = {
+        candidate.casefold()
+        for candidates in fc2_candidate_lists
+        for candidate in candidates
+    }
+    fc2_by_article_id: dict[str, FC2ProductOut] = {}
+    if fc2_candidate_keys:
+        products = (
+            db.query(FC2Product)
+            .filter(func.lower(FC2Product.article_id).in_(fc2_candidate_keys))
+            .all()
+        )
+        fc2_by_article_id = {
+            product.article_id.casefold(): FC2ProductOut.model_validate(product)
+            for product in products
+        }
+
     results: list[dict[str, Any]] = []
-    for torrent, candidates in zip(torrents, candidate_lists):
+    for torrent, candidates, fc2_candidates in zip(
+        torrents,
+        candidate_lists,
+        fc2_candidate_lists,
+    ):
         item = dict(torrent)
+        fc2_product = next(
+            (
+                fc2_by_article_id[candidate.casefold()]
+                for candidate in fc2_candidates
+                if candidate.casefold() in fc2_by_article_id
+            ),
+            None,
+        )
         movie = next(
             (
                 movies_by_work_id[candidate.casefold()]
@@ -163,8 +221,18 @@ def enrich_downloading_torrents(
             ),
             None,
         )
-        item["work_id"] = movie.work_id if movie else None
-        item["movie"] = movie
+        if fc2_candidates:
+            item["work_id"] = (
+                fc2_product.article_id if fc2_product else fc2_candidates[0]
+            )
+            item["media_type"] = "fc2"
+            item["movie"] = None
+            item["fc2_product"] = fc2_product
+        else:
+            item["work_id"] = movie.work_id if movie else None
+            item["media_type"] = "jav" if movie else None
+            item["movie"] = movie
+            item["fc2_product"] = None
         results.append(item)
 
     return results
