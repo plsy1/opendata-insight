@@ -30,7 +30,7 @@ ngOnInit(): void {
   });
 }
 
-onImageError(event: Event, item: any) {
+onImageError(event: Event, item: ResumeItem) {
   item.hideImage = true;
 }
 

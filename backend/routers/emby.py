@@ -3,11 +3,12 @@ from sqlalchemy.orm import Session
 from services.emby import *
 from database import get_db
 from services.system import replace_domain_in_value
+from schemas.emby import EmbyExistsOut, EmbyMediaItemOut
 
 router = APIRouter()
 
 
-@router.get("/get_item_counts")
+@router.get("/get_item_counts", response_model=dict[str, int])
 async def get_item_counts():
     try:
         result = await get_item_counts_service()
@@ -16,7 +17,7 @@ async def get_item_counts():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}")
 
 
-@router.get("/get_resume")
+@router.get("/get_resume", response_model=list[EmbyMediaItemOut])
 async def get_resume():
     try:
         result = await get_resume_items_service()
@@ -25,7 +26,7 @@ async def get_resume():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}")
 
 
-@router.get("/get_latest")
+@router.get("/get_latest", response_model=list[EmbyMediaItemOut])
 async def get_latest():
     try:
         result = await get_latest_items_service()
@@ -34,7 +35,7 @@ async def get_latest():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}")
 
 
-@router.get("/get_views")
+@router.get("/get_views", response_model=list[EmbyMediaItemOut])
 async def get_latest():
     try:
         result = await get_views_service()
@@ -43,7 +44,7 @@ async def get_latest():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}")
 
 
-@router.get("/get_all")
+@router.get("/get_all", response_model=list[EmbyMediaItemOut])
 async def get_latest():
     try:
         result = await get_all_movies_service()
@@ -52,7 +53,7 @@ async def get_latest():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed: {e}")
 
 
-@router.get("/exists")
+@router.get("/exists", response_model=EmbyExistsOut)
 async def exists(
     title: str, db: Session = Depends(get_db), 
 ):

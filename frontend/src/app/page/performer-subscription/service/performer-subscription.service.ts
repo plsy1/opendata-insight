@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CommonService } from '../../../common.service';
+import { Actress } from '../model/actor-information.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -8,22 +9,22 @@ import { CommonService } from '../../../common.service';
 export class PerformerSubscriptionService {
   constructor(private common: CommonService) {}
 
-  getActressCollect(): Observable<any> {
-    return this.common.request<any>('GET', 'feed/actorCollect');
+  getActressCollect(): Observable<Actress[]> {
+    return this.common.request<Actress[]>('GET', 'feed/actorCollect');
   }
 
-  removeActressCollect(name: string): Observable<any> {
-    return this.common.request<any>('DELETE', 'feed/actorCollect', {
+  removeActressCollect(name: string): Observable<void> {
+    return this.common.request<void>('DELETE', 'feed/actorCollect', {
       params: { name: name },
     });
   }
 
-  getActressFeed(): Observable<any> {
-    return this.common.request<any>('GET', 'feed/actorSubscribe');
+  getActressFeed(): Observable<Actress[]> {
+    return this.common.request<Actress[]>('GET', 'feed/actorSubscribe');
   }
 
-  removeFeedsRSS(urlParam: string): Observable<any> {
-    return this.common.request<any>('DELETE', 'feed/actorSubscribe', {
+  removeFeedsRSS(urlParam: string): Observable<void> {
+    return this.common.request<void>('DELETE', 'feed/actorSubscribe', {
       params: { name: urlParam },
     });
   }
@@ -36,8 +37,8 @@ export class PerformerSubscriptionService {
     return this.common.enableBlur;
   }
 
-  updateActorOrder(type: 'subscribe' | 'collect', names: string[]): Observable<any> {
-    return this.common.request<any>('PUT', 'feed/actorOrder', {
+  updateActorOrder(type: 'subscribe' | 'collect', names: string[]): Observable<void> {
+    return this.common.request<void>('PUT', 'feed/actorOrder', {
       body: {
         type: type,
         names: names,

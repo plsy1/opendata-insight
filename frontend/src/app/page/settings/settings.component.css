@@ -2,7 +2,8 @@
 /* DE-BOXED: Making card backgrounds transparent to blend with theme */
 ::ng-deep app-environment-variable mat-card,
 ::ng-deep app-change-password mat-card,
-::ng-deep app-background-tasks mat-card {
+::ng-deep app-background-tasks mat-card,
+::ng-deep app-subscription-rules mat-card {
   background: transparent !important;
   border: 1px solid var(--border-soft) !important;
   border-radius: var(--radius-lg) !important;
@@ -12,7 +13,8 @@
 
 /* mat-card title in sub-components */
 ::ng-deep app-environment-variable mat-card-title,
-::ng-deep app-change-password mat-card-title {
+::ng-deep app-change-password mat-card-title,
+::ng-deep app-subscription-rules mat-card-title {
   font-size: 13px !important;
   font-weight: 800 !important;
   text-transform: uppercase;

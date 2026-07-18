@@ -9,6 +9,7 @@ import { PaginationComponent } from '../../../../../shared/pagination/pagination
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+import { APP_PATHS } from '../../../../../app-paths';
 @Component({
   selector: 'app-fc2',
   standalone: true,
@@ -66,7 +67,7 @@ export class Fc2Component implements OnInit {
 
   async posterClick(work_id: string) {
     try {
-      this.router.navigate(['/production/fc2', work_id]);
+      this.router.navigate([APP_PATHS.fc2Movies, work_id]);
     } catch (error) {
       console.error('Failed:', error);
     }

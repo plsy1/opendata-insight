@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { CommonService } from '../../../common.service';
 import { Observable } from 'rxjs';
-import { DownloadingTorrent } from '../models/torrent.interface';
+import {
+  DeleteTorrentResult,
+  DownloadingTorrent,
+} from '../models/torrent.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -19,8 +22,8 @@ export class DownloadService {
   deleteTorrent(
     torrentHash: string,
     deleteFiles: boolean = true
-  ): Observable<any> {
-    return this.common.request<any>('POST', 'downloader/delete_torrent', {
+  ): Observable<DeleteTorrentResult> {
+    return this.common.request<DeleteTorrentResult>('POST', 'downloader/delete_torrent', {
       body: {
         torrent_hash: torrentHash,
         delete_files: deleteFiles,

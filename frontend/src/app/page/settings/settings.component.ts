@@ -1,25 +1,37 @@
 import { Component } from '@angular/core';
-import { EnvironmentVariableComponent } from "./components/environment-variable/environment-variable.component";
-import { ChangePasswordComponent } from "./components/change-password/change-password.component";
-import { BackgroundTasksComponent } from './components/background-tasks/background-tasks.component';
+import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CommonModule } from '@angular/common';
+import { BackgroundTasksComponent } from './components/background-tasks/background-tasks.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { EnvironmentVariableComponent } from './components/environment-variable/environment-variable.component';
+import { SubscriptionRulesComponent } from './components/subscription-rules/subscription-rules.component';
 
 @Component({
   selector: 'app-settings',
   standalone: true,
-  imports: [EnvironmentVariableComponent, ChangePasswordComponent, BackgroundTasksComponent, MatTabsModule, TranslateModule, CommonModule],
+  imports: [
+    BackgroundTasksComponent,
+    ChangePasswordComponent,
+    CommonModule,
+    EnvironmentVariableComponent,
+    MatTabsModule,
+    SubscriptionRulesComponent,
+    TranslateModule,
+  ],
   templateUrl: './settings.component.html',
-  styleUrl: './settings.component.css'
+  styleUrl: './settings.component.css',
 })
 export class SettingsComponent {
-
   selectedTabIndex = 0;
   currentLang: string;
 
   constructor(private translate: TranslateService) {
-    this.currentLang = localStorage.getItem('appLang') || this.translate.currentLang || this.translate.getDefaultLang() || 'zh';
+    this.currentLang =
+      localStorage.getItem('appLang') ||
+      this.translate.currentLang ||
+      this.translate.getDefaultLang() ||
+      'zh';
   }
 
   ngOnInit() {
@@ -39,4 +51,3 @@ export class SettingsComponent {
     localStorage.setItem('appLang', lang);
   }
 }
-

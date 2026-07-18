@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { HomeService } from '../../service/home.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
+import { APP_PATHS } from '../../../../app-paths';
 
 @Component({
   selector: 'app-sidebar',
@@ -15,6 +16,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./sidebar.component.css'],
 })
 export class SidebarComponent implements OnInit, OnDestroy {
+  readonly paths = APP_PATHS;
   public version: string = '';
   public hasUpdate: boolean = false;
 

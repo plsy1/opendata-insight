@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CommonService } from '../../../common.service';
-import { MoviePoster } from '../../../models/movie-data.interface';
+import { MovieFeedItem } from '../../../models/movie-data.interface';
+import { MovieSubscriptionRules } from '../../../models/subscription-rules.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -9,12 +10,22 @@ import { MoviePoster } from '../../../models/movie-data.interface';
 export class ProductionSubscriptionService {
   constructor(private common: CommonService) {}
 
-  getKeywordFeeds(): Observable<MoviePoster[]> {
-    return this.common.request<MoviePoster[]>('GET', 'feed/movieSubscribe');
+  getKeywordFeeds(): Observable<MovieFeedItem[]> {
+    return this.common.request<MovieFeedItem[]>('GET', 'feed/movieSubscribe');
   }
 
-  getDownloadedKeywordsFeedListGet(): Observable<MoviePoster[]> {
-    return this.common.request<MoviePoster[]>('GET', 'feed/movieDownloaded');
+  getDownloadedKeywordsFeedListGet(): Observable<MovieFeedItem[]> {
+    return this.common.request<MovieFeedItem[]>('GET', 'feed/movieDownloaded');
+  }
+
+  updateMovieSubscriptionRules(
+    workId: string,
+    rules: MovieSubscriptionRules
+  ): Observable<void> {
+    return this.common.request<void>('PUT', 'feed/movieSubscribe/rules', {
+      params: { work_id: workId },
+      body: rules,
+    });
   }
   isEnableBlur$(): Observable<boolean> {
     return this.common.enableBlur$;

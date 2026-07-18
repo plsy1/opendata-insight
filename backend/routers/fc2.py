@@ -4,11 +4,12 @@ from modules.metadata.fc2.model import RankingType
 from services.fc2 import get_fc2_details, get_fc2_ranking
 from services.system import replace_domain_in_value
 from sqlalchemy.orm import Session
+from schemas.fc2 import FC2ProductOut, FC2RankingOut
 
 router = APIRouter()
 
 
-@router.get("/details")
+@router.get("/details", response_model=FC2ProductOut)
 async def fetch_details(number: str, db: Session = Depends(get_db)):
     try:
         product = await get_fc2_details(number, db)
@@ -22,7 +23,7 @@ async def fetch_details(number: str, db: Session = Depends(get_db)):
         db.close()
 
 
-@router.get("/ranking")
+@router.get("/ranking", response_model=list[FC2RankingOut])
 async def fetch_ranking(
     page: int = Query(1, ge=1, le=5),
     term: RankingType = RankingType.monthly,

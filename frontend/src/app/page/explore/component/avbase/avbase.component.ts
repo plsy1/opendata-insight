@@ -13,6 +13,7 @@ import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.com
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
+import { APP_PATHS } from '../../../../app-paths';
 
 @Component({
   selector: 'app-avbase',
@@ -92,7 +93,7 @@ export class AvbaseComponent implements OnInit {
 
   async cardClick(name: string) {
     try {
-      this.router.navigate(['/performer', name]);
+      this.router.navigate([APP_PATHS.performers, name]);
     } catch (error) {
       console.error('Failed:', error);
     }
@@ -100,7 +101,7 @@ export class AvbaseComponent implements OnInit {
 
   async posterClick(work_id: string) {
     try {
-      this.router.navigate(['/production', work_id]);
+      this.router.navigate([APP_PATHS.movies, work_id]);
     } catch (error) {
       console.error('Failed:', error);
     }

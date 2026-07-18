@@ -16,6 +16,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { PaginationComponent } from '../../../../shared/pagination/pagination.component';
 
 import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.component';
+import { APP_PATHS } from '../../../../app-paths';
+import { MoviePoster } from '../../../../models/movie-data.interface';
 
 @Component({
   selector: 'app-production-cards',
@@ -37,7 +39,7 @@ import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.com
   ],
 })
 export class MovieCards implements OnInit {
-  discoverResults: any[] = [];
+  discoverResults: MoviePoster[] = [];
   isLoading: boolean = false;
   searchKeyWords: string = '';
   page: number = 1;
@@ -85,11 +87,11 @@ export class MovieCards implements OnInit {
     });
   }
 
-  onImageError(event: any): void {}
+  onImageError(event: Event): void {}
 
-  async onMovieClick(movie: any) {
+  async onMovieClick(movie: MoviePoster) {
     try {
-      this.router.navigate(['production', movie.full_id]);
+      this.router.navigate([APP_PATHS.movies, movie.full_id]);
     } catch (error) {}
   }
 
@@ -104,7 +106,7 @@ export class MovieCards implements OnInit {
     this.page += 1;
     this.loadDiscoverData(this.searchKeyWords, this.page);
   }
-  shouldShowMovie(movie: any): boolean {
+  shouldShowMovie(movie: MoviePoster): boolean {
     if (!this.actressNumberFilter) return true;
 
     const actorCount = movie.actors?.length || 0;

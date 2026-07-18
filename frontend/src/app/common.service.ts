@@ -4,14 +4,12 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, map, throwError, Observable } from 'rxjs';
 import { of, BehaviorSubject } from 'rxjs';
+import { APP_PATHS } from './app-paths';
 @Injectable({
   providedIn: 'root',
 })
 export class CommonService {
   apiUrl = '/api/v1';
-  public isJumpFromProductionPage: boolean = false;
-  public currentPerformer: string = '';
-
   private hasUpdateSubject = new BehaviorSubject<boolean>(false);
   hasUpdate$ = this.hasUpdateSubject.asObservable();
 
@@ -51,7 +49,7 @@ export class CommonService {
     });
     localStorage.removeItem('loggedIn');
     localStorage.removeItem('access_token');
-    this.router.navigate(['/login']);
+    this.router.navigate([APP_PATHS.login]);
   }
 
   request<T>(
@@ -128,10 +126,14 @@ export class CommonService {
     body.set('username', username);
     body.set('password', password);
 
-    return this.request<{ access_token?: string }>('POST', 'auth/login', {
+    return this.request<{ access_token: string; token_type: 'bearer' }>(
+      'POST',
+      'auth/login',
+      {
       body: body.toString(),
       acceptJson: true,
-    }).pipe(
+      }
+    ).pipe(
       map((data) => {
         if (data.access_token) {
           localStorage.setItem('access_token', data.access_token);
@@ -153,9 +155,10 @@ export class CommonService {
     const formData = new FormData();
     formData.append('access_token', accessToken);
 
-    return this.request<boolean>('POST', 'auth/verify', {
+    return this.request<{ valid: boolean; message: string }>('POST', 'auth/verify', {
       body: formData,
     }).pipe(
+      map((response) => response.valid),
       catchError((error) => {
         console.error('Token verification failed', error);
         return of(false);

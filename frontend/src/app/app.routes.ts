@@ -1,92 +1,87 @@
 import { Routes } from '@angular/router';
+import { APP_ROUTE_SEGMENTS } from './app-paths';
 import { authGuard } from './guards/auth.guard';
-import { HomeComponent } from './page/home/home.component';
 import { DashboardComponent } from './page/dashboard/dashboard.component';
-import { SettingsComponent } from './page/settings/settings.component';
-import { PerformerSubscriptionComponent } from './page/performer-subscription/performer-subscription.component';
-import { ProductionSubscriptionComponent } from './page/production-subscription/production-subscription.component';
-import { TorrentListComponent } from './page/torrent-list/torrent-list.component';
-import { LoginComponent } from './page/login/login.component';
-import { ExploreComponent } from './page/explore/explore.component';
 import { DownloadComponent } from './page/download/download.component';
-import { KeywordsSearchComponent } from './page/keywords-search/keywords-search.component';
-import { PerformerInformationComponent } from './page/performer-information/performer-information.component';
-import { ProductionInformationComponent } from './page/production-information/production-information.component';
+import { ExploreComponent } from './page/explore/explore.component';
 import { Fc2ProductionInformationComponent } from './page/fc2-production-information/fc2-production-information.component';
+import { HomeComponent } from './page/home/home.component';
+import { KeywordsSearchComponent } from './page/keywords-search/keywords-search.component';
+import { LoginComponent } from './page/login/login.component';
+import { PerformerInformationComponent } from './page/performer-information/performer-information.component';
+import { PerformerSubscriptionComponent } from './page/performer-subscription/performer-subscription.component';
+import { ProductionInformationComponent } from './page/production-information/production-information.component';
+import { ProductionSubscriptionComponent } from './page/production-subscription/production-subscription.component';
+import { SettingsComponent } from './page/settings/settings.component';
+import { TorrentListComponent } from './page/torrent-list/torrent-list.component';
+
 
 export const routes: Routes = [
   {
     path: '',
     component: HomeComponent,
+    canActivate: [authGuard],
+    canActivateChild: [authGuard],
     children: [
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       {
-        path: 'dashboard',
-        component: DashboardComponent,
-        canActivate: [authGuard],
+        path: '',
+        redirectTo: APP_ROUTE_SEGMENTS.dashboard,
+        pathMatch: 'full',
       },
+      { path: APP_ROUTE_SEGMENTS.dashboard, component: DashboardComponent },
+      { path: APP_ROUTE_SEGMENTS.explore, component: ExploreComponent },
+      { path: APP_ROUTE_SEGMENTS.settings, component: SettingsComponent },
       {
-        path: 'settings',
-        component: SettingsComponent,
-        canActivate: [authGuard],
-      },
-      {
-        path: 'explore',
-        component: ExploreComponent,
-        canActivate: [authGuard],
-      },
-      {
-        path: 'subscription/performer',
+        path: APP_ROUTE_SEGMENTS.performerSubscriptions,
         component: PerformerSubscriptionComponent,
-        canActivate: [authGuard],
       },
       {
-        path: 'subscription/production',
+        path: APP_ROUTE_SEGMENTS.movieSubscriptions,
         component: ProductionSubscriptionComponent,
-        canActivate: [authGuard],
       },
       {
-        path: 'torrents',
+        path: APP_ROUTE_SEGMENTS.torrentSearch,
         component: TorrentListComponent,
-        canActivate: [authGuard],
       },
       {
-        path: 'torrents/:value',
+        path: APP_ROUTE_SEGMENTS.torrentSearchWithQuery,
         component: TorrentListComponent,
-        canActivate: [authGuard],
       },
       {
-        path: 'download',
-        component: DownloadComponent,
-        canActivate: [authGuard],
-      },
-      {
-        path: 'keywords',
+        path: APP_ROUTE_SEGMENTS.movieSearch,
         component: KeywordsSearchComponent,
-        canActivate: [authGuard],
       },
       {
-        path: 'keywords/:value',
+        path: APP_ROUTE_SEGMENTS.movieSearchWithQuery,
         component: KeywordsSearchComponent,
-        canActivate: [authGuard],
       },
+      { path: APP_ROUTE_SEGMENTS.downloads, component: DownloadComponent },
       {
-        path: 'performer/:name',
+        path: APP_ROUTE_SEGMENTS.performerDetail,
         component: PerformerInformationComponent,
-        canActivate: [authGuard],
       },
       {
-        path: 'production/:id',
-        component: ProductionInformationComponent,
-        canActivate: [authGuard],
-      },
-      {
-        path: 'production/fc2/:id',
+        path: APP_ROUTE_SEGMENTS.fc2MovieDetail,
         component: Fc2ProductionInformationComponent,
-        canActivate: [authGuard],
       },
+      {
+        path: APP_ROUTE_SEGMENTS.movieDetail,
+        component: ProductionInformationComponent,
+      },
+
+      // Compatibility redirects for links and bookmarks created before v1.0.18.
+      { path: 'subscription/performer', redirectTo: APP_ROUTE_SEGMENTS.performerSubscriptions },
+      { path: 'subscription/production', redirectTo: APP_ROUTE_SEGMENTS.movieSubscriptions },
+      { path: 'torrents', redirectTo: APP_ROUTE_SEGMENTS.torrentSearch, pathMatch: 'full' },
+      { path: 'torrents/:value', redirectTo: 'search/torrents/:value' },
+      { path: 'keywords', redirectTo: APP_ROUTE_SEGMENTS.movieSearch, pathMatch: 'full' },
+      { path: 'keywords/:value', redirectTo: 'search/movies/:value' },
+      { path: 'download', redirectTo: APP_ROUTE_SEGMENTS.downloads },
+      { path: 'performer/:name', redirectTo: APP_ROUTE_SEGMENTS.performerDetail },
+      { path: 'production/fc2/:id', redirectTo: APP_ROUTE_SEGMENTS.fc2MovieDetail },
+      { path: 'production/:id', redirectTo: APP_ROUTE_SEGMENTS.movieDetail },
     ],
   },
-  { path: 'login', component: LoginComponent },
-  { path: '**', redirectTo: '', canActivate: [authGuard] },
+  { path: APP_ROUTE_SEGMENTS.login, component: LoginComponent },
+  { path: '**', redirectTo: APP_ROUTE_SEGMENTS.dashboard },
 ];

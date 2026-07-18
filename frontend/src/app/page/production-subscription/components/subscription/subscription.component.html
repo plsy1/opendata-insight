@@ -10,6 +10,9 @@
       (movieDelete)="onUnsubscribeClick()"
       [showID]="true"
       [showDetialButton]="true"
+      [showSubscriptionRules]="true"
+      [hasCustomSubscriptionRules]="movie.subscription_rules.use_global === false"
+      (subscriptionRulesClick)="editSubscriptionRules(movie)"
       [enableBlur]="ProductionSubscriptionService.isEnableBlur$() | async"
     ></app-movie-card>
   </div>

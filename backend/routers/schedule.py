@@ -1,16 +1,17 @@
 from fastapi import APIRouter, HTTPException, status
 from services.schedule import *
+from schemas.schedule import JobInfoOut, JobRunOut
 
 
 router = APIRouter()
 
 
-@router.get("/list")
+@router.get("/list", response_model=list[JobInfoOut])
 async def list_jobs():
     return list_jobs_service()
 
 
-@router.post("/run")
+@router.post("/run", response_model=JobRunOut)
 async def run_task(job_id: str):
     try:
         await run_job_service(job_id)

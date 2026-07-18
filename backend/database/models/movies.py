@@ -8,6 +8,7 @@ from sqlalchemy import (
     UniqueConstraint,
     JSON,
     ForeignKey,
+    Index,
 )
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -21,10 +22,10 @@ class MovieData(Base):
     prefix = Column(String, index=True)
     title = Column(String)
     min_date = Column(String, nullable=True)
-    casts = Column(JSON, default=[])
-    actors = Column(JSON, default=[])
-    tags = Column(JSON, default=[])
-    genres = Column(JSON, default=[])
+    casts = Column(JSON, default=list)
+    actors = Column(JSON, default=list)
+    tags = Column(JSON, default=list)
+    genres = Column(JSON, default=list)
     created_at = Column(DateTime, default=datetime.now)
 
     products = relationship(
@@ -37,6 +38,8 @@ class MovieData(Base):
         cascade="all, delete-orphan",
         uselist=False,
     )
+
+    __table_args__ = (Index("ix_movie_data_min_date", "min_date"),)
 
 
 class MovieProduct(Base):
@@ -55,7 +58,7 @@ class MovieProduct(Base):
     maker = Column(String, nullable=True)
     label = Column(String, nullable=True)
     series = Column(String, nullable=True)
-    sample_image_urls = Column(JSON, default=[])
+    sample_image_urls = Column(JSON, default=list)
     director = Column(String, nullable=True)
     price = Column(String, nullable=True)
     volume = Column(String, nullable=True)
@@ -81,4 +84,16 @@ class MovieSubscribe(Base):
 
     created_at = Column(DateTime, default=datetime.now)
 
+    # NULL means this movie follows the global subscription filters. A JSON
+    # object, including an empty one, is an explicit per-movie override.
+    rule_config = Column(JSON, nullable=True)
+
     movie = relationship("MovieData", back_populates="subscribers")
+
+    __table_args__ = (
+        Index(
+            "ix_movie_subscribe_downloaded_created_at",
+            "is_downloaded",
+            "created_at",
+        ),
+    )

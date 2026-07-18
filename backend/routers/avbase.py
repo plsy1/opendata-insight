@@ -13,6 +13,9 @@ from services.avbase import (
     get_release_service,
 )
 from services.system import replace_domain_in_value
+from schemas.actor import ActorDataOut, AvbaseIndexOut
+from schemas.avbase import MoviePoster, MovieReleaseGroup
+from schemas.movies import MovieDataOut
 
 
 router = APIRouter()
@@ -25,7 +28,7 @@ def _raise_internal_error(exc: Exception) -> None:
     ) from exc
 
 
-@router.get("/get_index")
+@router.get("/get_index", response_model=AvbaseIndexOut)
 async def get_avbase_index_actor(db: Session = Depends(get_db)):
     try:
         result = await get_avbase_index_actor_service(db)
@@ -39,7 +42,7 @@ async def get_avbase_index_actor(db: Session = Depends(get_db)):
         _raise_internal_error(exc)
 
 
-@router.get("/search")
+@router.get("/search", response_model=list[MoviePoster])
 async def get_movie_list_by_keywords(keywords: str, page: int):
     try:
         result = await get_movie_list_by_keywords_service(keywords, page)
@@ -50,7 +53,7 @@ async def get_movie_list_by_keywords(keywords: str, page: int):
         _raise_internal_error(exc)
 
 
-@router.get("/moviesOfActor")
+@router.get("/moviesOfActor", response_model=list[MoviePoster])
 async def get_movie_list_by_actor_name(name: str, page: int):
     try:
         result = await get_movie_list_by_actor_name_service(name, page)
@@ -61,7 +64,7 @@ async def get_movie_list_by_actor_name(name: str, page: int):
         _raise_internal_error(exc)
 
 
-@router.get("/actorInformation")
+@router.get("/actorInformation", response_model=ActorDataOut)
 async def get_actor_information_by_name(name: str, db: Session = Depends(get_db)):
     try:
         result = await get_actor_information_by_name_service(db, name)
@@ -74,7 +77,7 @@ async def get_actor_information_by_name(name: str, db: Session = Depends(get_db)
         _raise_internal_error(exc)
 
 
-@router.get("/movieInformation")
+@router.get("/movieInformation", response_model=MovieDataOut)
 async def get_information_by_work_id(work_id: str, db: Session = Depends(get_db)):
     try:
         work_id = unquote(work_id)
@@ -88,7 +91,7 @@ async def get_information_by_work_id(work_id: str, db: Session = Depends(get_db)
         _raise_internal_error(exc)
 
 
-@router.get("/get_release_by_date")
+@router.get("/get_release_by_date", response_model=list[MovieReleaseGroup])
 async def get_release(yyyymmdd: str, db: Session = Depends(get_db)):
     if len(yyyymmdd) != 8 or not yyyymmdd.isdigit():
         raise HTTPException(

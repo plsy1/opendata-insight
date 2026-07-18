@@ -1,6 +1,0 @@
-@media (max-width: 720px) {
-  .poster-grid {
-    grid-template-columns: repeat(1, 1fr);
-  }
-}
-

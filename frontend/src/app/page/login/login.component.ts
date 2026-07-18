@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { APP_PATHS } from '../../app-paths';
 
 @Component({
   selector: 'app-login',
@@ -40,7 +41,7 @@ export class LoginComponent {
 
   ngOnInit(): void {
     if (localStorage.getItem('loggedIn') === 'true') {
-      this.router.navigate(['']);
+      this.router.navigate([APP_PATHS.dashboard]);
     }
   }
 
@@ -49,7 +50,7 @@ onSubmit(): void {
     next: (success) => {
       if (success) {
         localStorage.setItem('username', this.username);
-        this.router.navigate(['']);
+        this.router.navigate([APP_PATHS.dashboard]);
       } else {
         this.translate.get('LOGIN.ERROR').subscribe(msg => this.showErrorSnackbar(msg));
       }

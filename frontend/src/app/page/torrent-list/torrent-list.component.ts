@@ -1,5 +1,4 @@
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { CommonService } from './../../common.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,7 +22,11 @@ import {
   inject,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TorrentService } from './service/torrent.service';
+import {
+  DownloadMediaType,
+  TorrentService,
+} from './service/torrent.service';
+import { TorrentSearchResult } from './models/torrent-search-result.interface';
 
 @Component({
   selector: 'app-torrent-list',
@@ -45,24 +48,24 @@ import { TorrentService } from './service/torrent.service';
   styleUrl: './torrent-list.component.css',
 })
 export class TorrentListComponent implements OnInit, AfterViewInit {
-  searchResults: any[] = [];
+  searchResults: TorrentSearchResult[] = [];
   searchKeyWords: string = '';
 
-  movieId: string = '';
-  keywords: string = '';
-  dataSource = new MatTableDataSource<any>(this.searchResults);
+  workId: string = '';
+  mediaType?: DownloadMediaType;
+  dataSource = new MatTableDataSource<TorrentSearchResult>(this.searchResults);
   dialog: MatDialog = inject(MatDialog);
   @ViewChild(MatSort) sort: MatSort | undefined;
   displayedColumns: string[] = [
     'indexer',
     'title',
+    'technical',
     'size',
     'seeders',
     'publishDate',
   ];
 
   constructor(
-    private common: CommonService,
     private getRoute: ActivatedRoute,
     private TorrentService: TorrentService,
     private snackBar: MatSnackBar,
@@ -71,12 +74,15 @@ export class TorrentListComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.getRoute.queryParamMap.subscribe((params) => {
-      this.movieId = params.get('fullId') || '';
-      this.keywords = params.get('Id') || '';
+      // `Id` was used by older links; keep it as a read-only fallback.
+      this.workId = params.get('workId') || params.get('Id') || '';
+      const mediaType = params.get('mediaType');
+      this.mediaType =
+        mediaType === 'jav' || mediaType === 'fc2' ? mediaType : undefined;
     });
 
     this.getRoute.paramMap.subscribe((params) => {
-      this.searchKeyWords = params.get('value') || '';
+      this.searchKeyWords = params.get('query') || '';
       if (
         this.TorrentService.searchKeyWords === this.searchKeyWords ||
         this.searchKeyWords === ''
@@ -99,7 +105,7 @@ export class TorrentListComponent implements OnInit, AfterViewInit {
 
   loadDiscoverData(keywords: string): void {
     this.TorrentService.search(keywords).subscribe({
-      next: (results: any) => {
+      next: (results) => {
         this.searchResults = results;
         this.dataSource.data = this.searchResults;
         if (this.sort) {
@@ -139,20 +145,34 @@ export class TorrentListComponent implements OnInit, AfterViewInit {
     this.dataSource.filter = filterValue;
   }
 
-  onTitleClick(row: any): void {
+  codecLabel(codec: string | null | undefined): string {
+    const labels: Record<string, string> = {
+      av1: 'AV1',
+      h265: 'H.265',
+      h264: 'H.264',
+      vp9: 'VP9',
+      mpeg2: 'MPEG-2',
+    };
+    return codec ? labels[codec] || codec.toUpperCase() : '';
+  }
+
+  onTitleClick(row: TorrentSearchResult): void {
     const url = row.infoUrl;
     if (url) {
       window.open(url, '_blank');
     }
   }
 
-  onRowClick(row: any): void {
+  onRowClick(row: TorrentSearchResult): void {
     const downloadUrl = row.magnetUrl || row.downloadUrl;
+    if (!downloadUrl) {
+      return;
+    }
     const dialogRef = this.dialog.open(DownloadOptionComponent, {
       data: {
         downloadUrl: downloadUrl,
-        id: this.movieId,
-        keywords: this.keywords,
+        workId: this.workId,
+        mediaType: this.mediaType,
       },
       panelClass: 'custom-dialog-container'
     });

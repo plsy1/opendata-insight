@@ -10,6 +10,7 @@ from services.avbase import (
     get_movie_list_by_actor_name_service,
 )
 from schemas.avbase import MoviePoster
+from services.downloader import build_download_tags
 from pathlib import Path
 from datetime import date, timedelta, datetime
 
@@ -42,10 +43,18 @@ async def _refresh_movie_feeds():
         from modules.indexer.prowlarr import _prowlarr_instance
         from modules.downloader.qbittorrent import _qb_instance
 
-        save_path = Path(_config.get("DOWNLOAD_PATH", ""))
+        save_path = Path(_config.get_download_path("jav"))
 
         db = next(get_db())
         feeds = movie_subscribe_list_service(db, MovieStatus.SUBSCRIBE)
+
+        default_subscription_rules = subscription_rules_from_values(
+            _config.get("SUBSCRIBE_QUALITY_RULES", [])
+        )
+        default_global_excluded_keywords = _config.get(
+            "SUBSCRIBE_GLOBAL_EXCLUDED",
+            [],
+        )
 
         if not feeds:
             return
@@ -66,16 +75,44 @@ async def _refresh_movie_feeds():
                 continue
             work_id = feed.id
             search_data = await _prowlarr_instance.search(
-                query=work_id, page=1, page_size=5
+                query=work_id, page=1, page_size=50
             )
 
             if not search_data:
                 continue
 
-            search_data.sort(key=lambda x: x.get("seeders", 0), reverse=True)
-            best_seed = search_data[0]
+            search_data = [
+                result
+                for result in search_data
+                if result.get("magnetUrl") or result.get("downloadUrl")
+            ]
 
-            download_link = best_seed.get("downloadUrl")
+            movie_rules = feed.subscription_rules
+            if movie_rules.use_global:
+                subscription_rules = default_subscription_rules
+                global_excluded_keywords = default_global_excluded_keywords
+            else:
+                subscription_rules = subscription_rules_from_values(
+                    movie_rules.quality_rules
+                )
+                global_excluded_keywords = movie_rules.global_excluded_keywords
+
+            best_seed = select_best_subscription_resource(
+                search_data,
+                subscription_rules,
+                global_excluded_keywords,
+            )
+
+            if not best_seed:
+                LOG_INFO(
+                    "[Scheduler] No torrent title matched subscription rules:",
+                    work_id,
+                )
+                continue
+
+            download_link = best_seed.get("magnetUrl") or best_seed.get(
+                "downloadUrl"
+            )
 
             if not download_link:
                 continue
@@ -85,19 +122,24 @@ async def _refresh_movie_feeds():
             path = save_path / names
 
             torrent_name = best_seed.get("title", work_id)
-            torrent_data = await _qb_instance.download_torrent_file(download_link)
+            torrent_data = (
+                download_link
+                if download_link.startswith("magnet:")
+                else await _qb_instance.download_torrent_file(download_link)
+            )
             
             if not torrent_data:
                 LOG_INFO("[Scheduler] Failed to download torrent file for", work_id)
                 continue
 
+            download_tags = build_download_tags(_qb_instance.tags, work_id)
             if isinstance(torrent_data, str) and torrent_data.startswith("magnet:"):
                 success = await _qb_instance.add_torrent_url(
-                    torrent_data, str(path)
+                    torrent_data, str(path), tags=download_tags
                 )
             else:
                 success = await _qb_instance.add_torrent_file(
-                    torrent_name, torrent_data, str(path)
+                    torrent_name, torrent_data, str(path), tags=download_tags
                 )
 
             if success:

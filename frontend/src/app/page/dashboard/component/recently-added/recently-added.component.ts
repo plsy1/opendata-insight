@@ -28,7 +28,7 @@ ngOnInit(): void {
   });
 }
 
-onImageError(event: Event, item: any) {
+onImageError(event: Event, item: EmbyLatestItem) {
   item.hideImage = true;
 }
 

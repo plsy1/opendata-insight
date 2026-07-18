@@ -7,11 +7,45 @@
 
 .download-card {
   position: relative;
+  isolation: isolate;
+  min-height: 218px;
   background: var(--bg-card) !important;
   border: 1px solid var(--border-soft) !important;
   border-radius: var(--radius-lg) !important;
   overflow: hidden;
   transition: all var(--t-spring) !important;
+}
+
+.card-background,
+.card-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.card-background {
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 28%;
+  transform: scale(1.035);
+  transition: transform var(--t-slow), filter var(--t-normal);
+}
+
+.card-background.blurred {
+  filter: blur(14px);
+  transform: scale(1.14);
+}
+
+.download-card:hover .card-background:not(.blurred) {
+  transform: scale(1.075);
+}
+
+.card-overlay {
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(7, 11, 22, 0.46) 0%, rgba(7, 11, 22, 0.93) 100%),
+    linear-gradient(90deg, rgba(7, 11, 22, 0.64), transparent 70%);
 }
 
 .download-card:hover {
@@ -21,6 +55,8 @@
 }
 
 .card-content {
+  position: relative;
+  z-index: 1;
   padding: 20px;
 }
 
@@ -44,6 +80,49 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   color: var(--text-main);
+}
+
+.title-block {
+  min-width: 0;
+  flex: 1;
+}
+
+.work-id {
+  display: inline-flex;
+  margin-top: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-full);
+  color: var(--text-muted);
+  background: var(--bg-hover);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.has-cover .torrent-title,
+.has-cover .progress-value {
+  color: #ffffff;
+}
+
+.has-cover .work-id,
+.has-cover .progress-label,
+.has-cover .stat-item {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.has-cover .work-id {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.has-cover .delete-btn {
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.has-cover .stats-grid {
+  border-top-color: rgba(255, 255, 255, 0.13);
 }
 
 .delete-btn {

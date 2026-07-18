@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from database import get_db
 from services.auth import ChangePasswordResult, TokenResult, LoginResult, AuthService
+from schemas.auth import AccessTokenOut, MessageOut, TokenVerificationOut
 from .dependencies.auth_dependencies import (
     clear_image_auth_cookie,
     set_image_auth_cookie,
@@ -18,7 +19,7 @@ def map_enum_to_http(result_enum, mappings: dict):
         raise HTTPException(status_code=status_code, detail=detail)
 
 
-@router.post("/login")
+@router.post("/login", response_model=AccessTokenOut)
 def login(
     response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -41,7 +42,7 @@ def logout(response: Response):
     clear_image_auth_cookie(response)
 
 
-@router.post("/verify")
+@router.post("/verify", response_model=TokenVerificationOut)
 def verify_token(access_token: str = Form(...)):
     result = AuthService.is_token_valid(access_token)
     map_enum_to_http(
@@ -54,7 +55,7 @@ def verify_token(access_token: str = Form(...)):
     return {"valid": True, "message": "Token is valid"}
 
 
-@router.post("/changepassword")
+@router.post("/changepassword", response_model=MessageOut)
 def change_password(
     username: str = Form(...),
     old_password: str = Form(...),

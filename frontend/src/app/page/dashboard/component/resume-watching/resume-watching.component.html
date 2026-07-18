@@ -11,10 +11,10 @@
       <div class="items-grid" #scrollContainer>
         <app-movie-poster
           *ngFor="let item of resumeItems"
-          [title]="item.name"
+          [title]="item.name || ''"
           [imgUrl]="item.primary"
           [link]="item.indexLink"
-          [hideImage]="item.hideImage"
+          [hideImage]="item.hideImage ?? false"
           [enableBlur]="dashboardService.isEnableBlur$() | async"
         ></app-movie-poster>
       </div>

@@ -13,11 +13,11 @@
       <span class="meta-pill" *ngIf="movieData.min_date">
         <i class="fas fa-calendar-alt"></i>{{ movieData.min_date }}
       </span>
-      <span class="meta-pill" *ngIf="movieData.products[0]?.volume">
-        <i class="fas fa-clock"></i>{{ movieData.products[0].volume }} min
+      <span class="meta-pill" *ngIf="primaryProduct?.volume">
+        <i class="fas fa-clock"></i>{{ primaryProduct?.volume }} min
       </span>
-      <span class="meta-pill" *ngIf="movieData.products[0]?.price">
-        <i class="fas fa-yen-sign"></i>{{ movieData.products[0].price }}
+      <span class="meta-pill" *ngIf="primaryProduct?.price">
+        <i class="fas fa-yen-sign"></i>{{ primaryProduct?.price }}
       </span>
     </div>
     <div class="actions">
@@ -55,19 +55,19 @@
       <div class="detail-list">
         <div class="detail-row">
           <span class="detail-label">{{ 'DETAILS.MAKER' | translate }}</span>
-          <span class="detail-value">{{ movieData.products[0].maker || "N/A" }}</span>
+          <span class="detail-value">{{ primaryProduct?.maker || "N/A" }}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">{{ 'DETAILS.LABEL' | translate }}</span>
-          <span class="detail-value">{{ movieData.products[0].label || "N/A" }}</span>
+          <span class="detail-value">{{ primaryProduct?.label || "N/A" }}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">{{ 'DETAILS.SERIES' | translate }}</span>
-          <span class="detail-value">{{ movieData.products[0].series || "N/A" }}</span>
+          <span class="detail-value">{{ primaryProduct?.series || "N/A" }}</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">{{ 'DETAILS.PRICE' | translate }}</span>
-          <span class="detail-value">{{ movieData.products[0].price || "N/A" }}</span>
+          <span class="detail-value">{{ primaryProduct?.price || "N/A" }}</span>
         </div>
       </div>
 

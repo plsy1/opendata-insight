@@ -36,8 +36,8 @@ export class KeywordsSearchService {
     return this.selectedMovie;
   }
 
-  discoverByKeywords(filter_value: string, page: number): Observable<any> {
-    return this.common.request<any>('GET', 'avbase/search', {
+  discoverByKeywords(filter_value: string, page: number): Observable<keywordsSearchResponse[]> {
+    return this.common.request<keywordsSearchResponse[]>('GET', 'avbase/search', {
       params: {
         keywords: filter_value,
         page,

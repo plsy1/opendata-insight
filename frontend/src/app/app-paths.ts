@@ -1,0 +1,31 @@
+export const APP_ROUTE_SEGMENTS = {
+  dashboard: 'dashboard',
+  explore: 'explore',
+  torrentSearch: 'search/torrents',
+  torrentSearchWithQuery: 'search/torrents/:query',
+  movieSearch: 'search/movies',
+  movieSearchWithQuery: 'search/movies/:query',
+  downloads: 'downloads',
+  performerSubscriptions: 'subscriptions/performers',
+  movieSubscriptions: 'subscriptions/movies',
+  performerDetail: 'performers/:name',
+  movieDetail: 'movies/:id',
+  fc2MovieDetail: 'movies/fc2/:id',
+  settings: 'settings',
+  login: 'login',
+} as const;
+
+export const APP_PATHS = {
+  dashboard: `/${APP_ROUTE_SEGMENTS.dashboard}`,
+  explore: `/${APP_ROUTE_SEGMENTS.explore}`,
+  torrentSearch: `/${APP_ROUTE_SEGMENTS.torrentSearch}`,
+  movieSearch: `/${APP_ROUTE_SEGMENTS.movieSearch}`,
+  downloads: `/${APP_ROUTE_SEGMENTS.downloads}`,
+  performerSubscriptions: `/${APP_ROUTE_SEGMENTS.performerSubscriptions}`,
+  movieSubscriptions: `/${APP_ROUTE_SEGMENTS.movieSubscriptions}`,
+  performers: '/performers',
+  movies: '/movies',
+  fc2Movies: '/movies/fc2',
+  settings: `/${APP_ROUTE_SEGMENTS.settings}`,
+  login: `/${APP_ROUTE_SEGMENTS.login}`,
+} as const;

@@ -22,6 +22,7 @@
           autocomplete="off"
         />
         <mat-icon matSuffix class="input-suffix-icon">folder_open</mat-icon>
+        <mat-hint>{{ defaultPathHintKey | translate }}</mat-hint>
         
         <mat-autocomplete #auto="matAutocomplete" class="custom-autocomplete">
           <mat-option *ngFor="let option of filteredOptions" [value]="option">

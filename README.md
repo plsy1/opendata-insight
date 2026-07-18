@@ -87,6 +87,21 @@ docker-compose up -d
 > - `/app/backend/data`: 存放配置文件和数据库。
 > - `/app/runtime`: 存放 Playwright 浏览器二进制文件（建议挂载以避免每次重启都重新下载）。
 
+### 数据库自动升级
+
+应用启动时会自动把数据库升级到当前版本。升级已有数据库前，会在
+`backend/data/backups`（Docker 中为 `/app/backend/data/backups`）创建一致性备份，
+默认保留最近 5 份。可以通过以下环境变量调整：
+
+- `KANOJO_DATA_DIR`：覆盖持久化数据目录。
+- `KANOJO_DATABASE_BACKUP_KEEP`：设置升级前数据库备份的保留数量。
+
+开发者也可以在项目根目录手动执行迁移：
+
+```bash
+PYTHONPATH=backend python backend/utils/migrate_db.py
+```
+
 ### 2. 环境变量配置
 
 您可以在 `docker-compose.yml` 同级目录下创建 `.env` 文件来管理敏感配置，或者直接在 shell 环境中导出。

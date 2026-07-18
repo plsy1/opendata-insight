@@ -3,12 +3,13 @@ from services.subscribe import *
 from database import get_db
 from sqlalchemy.orm import Session
 from services.system import replace_domain_in_value
-from schemas.actor import ActorOrderUpdate
+from schemas.actor import ActorListOut, ActorOrderUpdate
+from schemas.feed import MovieFeedItemOut, MovieSubscriptionRulesUpdate
 
 router = APIRouter()
 
 
-@router.post("/movieSubscribe")
+@router.post("/movieSubscribe", status_code=status.HTTP_204_NO_CONTENT)
 async def add_movie_feed(
     work_id: str = Query(...),
     db: Session = Depends(get_db),
@@ -20,7 +21,7 @@ async def add_movie_feed(
     raise HTTPException(500, "Add movie feed failed")
 
 
-@router.delete("/movieSubscribe")
+@router.delete("/movieSubscribe", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_movie_feed(
     work_id: str = Query(...),
     db: Session = Depends(get_db),
@@ -32,7 +33,7 @@ async def remove_movie_feed(
     raise HTTPException(500, "Remove movie feed failed")
 
 
-@router.get("/movieSubscribe")
+@router.get("/movieSubscribe", response_model=list[MovieFeedItemOut])
 async def get_movies_subscribe_list(
     db: Session = Depends(get_db),
 ):
@@ -40,7 +41,25 @@ async def get_movies_subscribe_list(
     return replace_domain_in_value(result)
 
 
-@router.post("/actorSubscribe")
+@router.put(
+    "/movieSubscribe/rules",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=None,
+)
+async def update_movie_subscription_rules(
+    rules: MovieSubscriptionRulesUpdate,
+    work_id: str = Query(...),
+    db: Session = Depends(get_db),
+):
+    if update_movie_subscription_rules_service(db, work_id, rules):
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Movie subscription not found",
+    )
+
+
+@router.post("/actorSubscribe", status_code=status.HTTP_204_NO_CONTENT)
 async def add_actor_subscribe(
     name: str = Query(...),
     db: Session = Depends(get_db),
@@ -54,7 +73,7 @@ async def add_actor_subscribe(
     )
 
 
-@router.delete("/actorSubscribe")
+@router.delete("/actorSubscribe", status_code=status.HTTP_204_NO_CONTENT)
 async def del_actor_subscribe(
     name: str = Query(...),
     db: Session = Depends(get_db),
@@ -68,7 +87,7 @@ async def del_actor_subscribe(
     )
 
 
-@router.get("/actorSubscribe")
+@router.get("/actorSubscribe", response_model=list[ActorListOut])
 async def get_actor_subscribe_list(
     db: Session = Depends(get_db),
 ):
@@ -76,7 +95,7 @@ async def get_actor_subscribe_list(
     return replace_domain_in_value(result)
 
 
-@router.post("/actorCollect")
+@router.post("/actorCollect", status_code=status.HTTP_204_NO_CONTENT)
 async def add_actor_collect(
     name: str = Query(...),
     db: Session = Depends(get_db),
@@ -90,7 +109,7 @@ async def add_actor_collect(
     )
 
 
-@router.delete("/actorCollect")
+@router.delete("/actorCollect", status_code=status.HTTP_204_NO_CONTENT)
 async def del_actor_collect(
     name: str = Query(...),
     db: Session = Depends(get_db),
@@ -104,7 +123,7 @@ async def del_actor_collect(
     )
 
 
-@router.get("/actorCollect")
+@router.get("/actorCollect", response_model=list[ActorListOut])
 async def get_actor_collect_list(
     db: Session = Depends(get_db),
 ):
@@ -112,7 +131,7 @@ async def get_actor_collect_list(
     return replace_domain_in_value(result)
 
 
-@router.put("/actorOrder")
+@router.put("/actorOrder", status_code=status.HTTP_204_NO_CONTENT)
 async def update_actor_order(
     data: ActorOrderUpdate,
     db: Session = Depends(get_db),
@@ -131,7 +150,7 @@ async def update_actor_order(
     )
 
 
-@router.get("/movieDownloaded")
+@router.get("/movieDownloaded", response_model=list[MovieFeedItemOut])
 async def get_movies_downloaded_list(
     db: Session = Depends(get_db),
 ):

@@ -7,7 +7,6 @@ import {
   RankingTypeOfWorks,
   ActressRanking,
   RankingItem,
-  JavtrailersDailyRelease,
   AvbaseIndexData,
 } from '../models/page-explore';
 
@@ -23,20 +22,12 @@ export class PageExploreServiceService {
   private workRankingCache: RankingItem[] = [];
   private lastFetchedWorkPage: number = 1;
   private workRankingType: RankingTypeOfWorks = RankingTypeOfWorks.Weekly;
-  private CalenderData: JavtrailersDailyRelease | null = null;
   private AvbaseIndexData: AvbaseIndexData | null = null;
   private avbaseEverydayReleaseData: AvbaseEverydayReleaseByPrefix[] | null =
     null;
 
   private fc2CurrentPage: number = 1;
   private fc2RankingData: fc2RankingItem[] | null = null;
-
-  getJavtrailersData(): JavtrailersDailyRelease | null {
-    return this.CalenderData;
-  }
-  setJavtrailersData(data: JavtrailersDailyRelease): void {
-    this.CalenderData = data;
-  }
 
   getfc2CurrentPage(): number {
     return this.fc2CurrentPage;
@@ -125,12 +116,12 @@ export class PageExploreServiceService {
     });
   }
 
-  getAvbaseIndex(): Observable<any> {
-    return this.common.request<any>('GET', 'avbase/get_index');
+  getAvbaseIndex(): Observable<AvbaseIndexData> {
+    return this.common.request<AvbaseIndexData>('GET', 'avbase/get_index');
   }
 
-  getAvbaseReleaseByDate(yyyymmdd: string): Observable<any> {
-    return this.common.request<any>('GET', 'avbase/get_release_by_date', {
+  getAvbaseReleaseByDate(yyyymmdd: string): Observable<AvbaseEverydayReleaseByPrefix[]> {
+    return this.common.request<AvbaseEverydayReleaseByPrefix[]>('GET', 'avbase/get_release_by_date', {
       params: { yyyymmdd },
     });
   }
@@ -142,16 +133,6 @@ export class PageExploreServiceService {
     return this.common.request<fc2RankingItem[]>('GET', 'fc2/ranking', {
       params: { page, term },
     });
-  }
-
-  getJavtrailersReleaseByDate(
-    yyyymmdd: string
-  ): Observable<JavtrailersDailyRelease> {
-    return this.common.request<JavtrailersDailyRelease>(
-      'GET',
-      'javtrailers/getReleasebyDate',
-      { params: { yyyymmdd } }
-    );
   }
 
   isEnableBlur$(): Observable<boolean> {

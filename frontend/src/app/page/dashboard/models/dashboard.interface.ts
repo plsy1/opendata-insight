@@ -16,31 +16,37 @@ export interface EmbyItemCounts {
 }
 
 export interface EmbyLatestItem {
-  name: string;
+  name: string | null;
   primary: string;
-  primary_local:string;
-  serverId: string;
+  primary_local?: string;
+  serverId: string | null;
   indexLink: string;
-  playbackLink: string
-  hideImage: boolean;
+  playbackLink?: string | null;
+  hideImage?: boolean;
 }
 
 export interface ResumeItem {
-  name: string;
+  name: string | null;
   primary: string;
-    primary_local:string;
-  serverId: string;
+  primary_local?: string;
+  serverId: string | null;
   indexLink: string;
-  playbackLink: string
-  PlayedPercentage: number;
+  playbackLink?: string | null;
+  PlayedPercentage?: number;
   ProductionYear?: number;
-  hideImage: boolean;
+  hideImage?: boolean;
 }
 
 export interface EmbyView {
-  name: string;
+  name: string | null;
   primary: string;
-  primary_local: string;
-  serverId: string;
+  primary_local?: string;
+  serverId: string | null;
   indexLink: string;
+  hideImage?: boolean;
+}
+
+export interface EmbyExistsResponse {
+  exists: boolean;
+  indexLink: string | null;
 }

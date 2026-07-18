@@ -10,9 +10,10 @@ import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonService } from '../../common.service';
-import { MovieData } from './models/movie-data.interface';
+import { MovieData, MovieProduct } from './models/movie-data.interface';
 import { createDefaultMovieInformation } from './utils/default-movie-info';
 import { MatDivider } from '@angular/material/divider';
+import { APP_PATHS } from '../../app-paths';
 
 @Component({
   selector: 'app-production-information',
@@ -45,14 +46,18 @@ export class ProductionInformationComponent implements OnInit {
 
   get lightboxOpen(): boolean { return this.lightboxIndex >= 0; }
   /** Cover image prepended to sample images — used for both strip and lightbox */
+  get primaryProduct(): MovieProduct | null {
+    return this.movieData.primary_product || this.movieData.products?.[0] || null;
+  }
+
   get allSampleImages(): string[] {
-    const cover   = this.movieData?.products?.[0]?.image_url || '';
-    const samples = (this.movieData?.products?.[0]?.sample_image_urls || []).map((s: any) => s['l'] || '');
+    const cover = this.primaryProduct?.image_url || '';
+    const samples = (this.primaryProduct?.sample_image_urls || []).map((sample) => sample.l || '');
     return cover ? [cover, ...samples] : samples;
   }
   get lightboxImages(): string[] { return this.allSampleImages; }
   get lightboxSrc(): string { return this.lightboxImages[this.lightboxIndex] || ''; }
-  get coverUrl(): string { return this.movieData?.products?.[0]?.image_url || ''; }
+  get coverUrl(): string { return this.primaryProduct?.image_url || ''; }
   get lbTransform(): string {
     return `translate(${this.lbTx}px, ${this.lbTy}px) scale(${this.lbScale})`;
   }
@@ -184,17 +189,10 @@ export class ProductionInformationComponent implements OnInit {
 
   async downloadMovie(): Promise<void> {
     try {
-      this.common.isJumpFromProductionPage = true;
-      this.common.currentPerformer =
-        this.movieData.casts
-          ?.map((cast: any) => cast?.name)
-          ?.filter((name: string) => !!name)
-          ?.slice(0, 3)
-          ?.join(',') || '';
-      this.router.navigate(['/torrents', this.movieData.work_id], {
+      this.router.navigate([APP_PATHS.torrentSearch, this.movieData.work_id], {
         queryParams: {
-          fullId: this.movieId,
-          Id: this.movieData.work_id,
+          workId: this.movieData.work_id,
+          mediaType: 'jav',
         },
       });
     } catch (error) {
@@ -224,7 +222,7 @@ export class ProductionInformationComponent implements OnInit {
 
   async searchByActressName(name: string) {
     try {
-      this.router.navigate(['/performer', name]);
+      this.router.navigate([APP_PATHS.performers, name]);
     } catch (error) {
       console.error('Failed:', error);
     }

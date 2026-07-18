@@ -1,11 +1,12 @@
 from fastapi import APIRouter, HTTPException, Query
-from fastapi.responses import JSONResponse
+from schemas.prowlarr import ProwlarrSearchResultOut
+from services.torrent_metadata import parse_torrent_title_metadata
 
 
 router = APIRouter()
 
 
-@router.get("/search")
+@router.get("/search", response_model=list[ProwlarrSearchResultOut])
 async def search(
     query: str, page: int = Query(1, ge=1), page_size: int = Query(10, ge=1, le=100)
 ):
@@ -28,4 +29,15 @@ async def search(
     if search_results is None:
         raise HTTPException(status_code=500, detail="Prowlarr API请求失败")
 
-    return JSONResponse(content=search_results)
+    enriched_results = []
+    for result in search_results:
+        metadata = parse_torrent_title_metadata(result.get("title") or "")
+        enriched_results.append(
+            {
+                **result,
+                "resolution": metadata.resolution,
+                "codec": metadata.codec,
+            }
+        )
+
+    return enriched_results

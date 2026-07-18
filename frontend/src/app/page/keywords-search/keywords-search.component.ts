@@ -17,6 +17,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { PaginationComponent } from '../../shared/pagination/pagination.component';
 import { MovieCardComponent } from '../../shared/movie-card/movie-card.component';
+import { APP_PATHS } from '../../app-paths';
 
 @Component({
   selector: 'app-keywords-search',
@@ -56,7 +57,7 @@ export class KeywordsSearchComponent implements OnInit {
 
   ngOnInit(): void {
     this.getRoute.paramMap.subscribe((params) => {
-      this.searchKeyWords = params.get('value') || '';
+      this.searchKeyWords = params.get('query') || '';
       if (
         this.keywordsService.searchKeyWords === this.searchKeyWords ||
         this.searchKeyWords === ''
@@ -93,10 +94,10 @@ export class KeywordsSearchComponent implements OnInit {
       });
   }
 
-  async onMovieClick(movie: any) {
+  async onMovieClick(movie: keywordsSearchResponse) {
     try {
       this.keywordsService.saveSelectedMovie(movie);
-      this.router.navigate(['production', movie.full_id]);
+      this.router.navigate([APP_PATHS.movies, movie.full_id]);
     } catch (error) {}
   }
 
@@ -111,7 +112,7 @@ export class KeywordsSearchComponent implements OnInit {
     this.page += 1;
     this.loadDiscoverData(this.searchKeyWords, this.page);
   }
-  shouldShowMovie(movie: any): boolean {
+  shouldShowMovie(movie: keywordsSearchResponse): boolean {
     if (!this.actressNumberFilter) return true;
 
     const actorCount = movie.actors?.length || 0;

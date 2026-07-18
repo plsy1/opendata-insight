@@ -14,6 +14,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { CommonService } from '../../common.service';
 
 @Component({
   selector: 'app-download',
@@ -38,7 +39,37 @@ export class DownloadComponent implements OnInit, OnDestroy {
   torrents: DownloadingTorrent[] = [];
   private refreshSub?: Subscription;
 
-  constructor(private downloadService: DownloadService) {}
+  constructor(
+    private downloadService: DownloadService,
+    public common: CommonService
+  ) {}
+
+  displayTitle(torrent: DownloadingTorrent): string {
+    return (
+      torrent.movie?.title ||
+      torrent.movie?.primary_product?.title ||
+      torrent.name
+    );
+  }
+
+  coverUrl(torrent: DownloadingTorrent): string | null {
+    const primaryProduct = torrent.movie?.primary_product;
+    const productWithImage = torrent.movie?.products.find(
+      (product) => product.image_url || product.thumbnail_url
+    );
+
+    return (
+      primaryProduct?.image_url ||
+      primaryProduct?.thumbnail_url ||
+      productWithImage?.image_url ||
+      productWithImage?.thumbnail_url ||
+      null
+    );
+  }
+
+  trackByHash(_index: number, torrent: DownloadingTorrent): string {
+    return torrent.hash;
+  }
 
   ngOnInit() {
     this.downloadService.getDownloadingTorrents().subscribe({

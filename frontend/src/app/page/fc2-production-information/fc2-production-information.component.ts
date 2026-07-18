@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { Router } from '@angular/router';
 import { CommonService } from '../../common.service';
+import { APP_PATHS } from '../../app-paths';
 
 @Component({
   selector: 'app-fc2-production-information',
@@ -176,7 +177,12 @@ export class Fc2ProductionInformationComponent implements OnInit {
 
   async onSearchClick() {
     try {
-      this.router.navigate(['/torrents', this.data?.article_id]);
+      this.router.navigate([APP_PATHS.torrentSearch, this.data?.article_id], {
+        queryParams: {
+          workId: this.data?.article_id,
+          mediaType: 'fc2',
+        },
+      });
     } catch (error) {
       console.error('Failed:', error);
     }

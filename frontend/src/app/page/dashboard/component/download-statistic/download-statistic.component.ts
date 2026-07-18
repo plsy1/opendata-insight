@@ -7,6 +7,7 @@ import { DashboardService } from './../../service/dashboard.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { StatAllResponse } from '../../models/statistic.interface';
 import { Router } from '@angular/router';
+import { APP_PATHS } from '../../../../app-paths';
 
 @Component({
   selector: 'app-download-statistic',
@@ -28,11 +29,11 @@ export class DownloadStatisticComponent implements OnInit {
   ) {}
 
   goActor(name: string): void {
-    this.router.navigate(['/performer', name]);
+    this.router.navigate([APP_PATHS.performers, name]);
   }
 
   goLabel(name: string): void {
-    this.router.navigate(['/keywords', name]);
+    this.router.navigate([APP_PATHS.movieSearch, name]);
   }
 
 

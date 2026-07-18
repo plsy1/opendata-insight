@@ -9,6 +9,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { Actress } from '../../model/actor-information.interface';
+import { APP_PATHS } from '../../../../app-paths';
 
 @Component({
   selector: 'app-performer-subscription-list',
@@ -189,7 +190,7 @@ export class PerformerSubscriptionListComponent {
 
   /* ── Other ────────────────────────── */
 
-  onUnsubscribeClick(event: MouseEvent, movie: any): void {
+  onUnsubscribeClick(event: MouseEvent, movie: Actress): void {
     event.stopPropagation();
 
     this.PerformerSubscriptionService.removeFeedsRSS(movie.name).subscribe({
@@ -212,15 +213,15 @@ export class PerformerSubscriptionListComponent {
 
   async onClick(name: string) {
     try {
-      this.router.navigate(['/performer', name]);
+      this.router.navigate([APP_PATHS.performers, name]);
     } catch (error) {
       console.error('Failed:', error);
     }
   }
 
-  contextActress: any;
+  contextActress!: Actress;
 
-  openMenu(event: Event, actress: any) {
+  openMenu(event: Event, actress: Actress) {
     event.stopPropagation();
     this.contextActress = actress;
   }

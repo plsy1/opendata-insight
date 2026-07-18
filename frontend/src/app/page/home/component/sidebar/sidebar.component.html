@@ -12,34 +12,34 @@
     </div>
 
     <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <a mat-list-item [routerLink]="paths.dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
         <i class="fas fa-th-large"></i>
         <span>{{ 'NAV.DASHBOARD' | translate }}</span>
       </a>
-      <a mat-list-item routerLink="/explore" routerLinkActive="active">
+      <a mat-list-item [routerLink]="paths.explore" routerLinkActive="active">
         <i class="fas fa-compass"></i>
         <span>{{ 'NAV.EXPLORE' | translate }}</span>
       </a>
-      <a mat-list-item routerLink="/torrents" routerLinkActive="active">
+      <a mat-list-item [routerLink]="paths.torrentSearch" routerLinkActive="active">
         <i class="fas fa-magnet"></i>
         <span>{{ 'NAV.TORRENTS' | translate }}</span>
       </a>
-      <a mat-list-item routerLink="/keywords" routerLinkActive="active">
+      <a mat-list-item [routerLink]="paths.movieSearch" routerLinkActive="active">
         <i class="fas fa-search"></i>
         <span>{{ 'NAV.SEARCH' | translate }}</span>
       </a>
-      <a mat-list-item routerLink="/download" routerLinkActive="active">
+      <a mat-list-item [routerLink]="paths.downloads" routerLinkActive="active">
         <i class="fas fa-download"></i>
         <span>{{ 'NAV.DOWNLOAD' | translate }}</span>
       </a>
       
       <div style="margin: 24px 0 8px 12px; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">{{ 'NAV.SUBSCRIPTIONS_HEADER' | translate }}</div>
       
-      <a mat-list-item routerLink="/subscription/performer" routerLinkActive="active">
+      <a mat-list-item [routerLink]="paths.performerSubscriptions" routerLinkActive="active">
         <i class="fas fa-star"></i>
         <span>{{ 'NAV.PERFORMERS' | translate }}</span>
       </a>
-      <a mat-list-item routerLink="/subscription/production" routerLinkActive="active">
+      <a mat-list-item [routerLink]="paths.movieSubscriptions" routerLinkActive="active">
         <i class="fas fa-video"></i>
         <span>{{ 'NAV.PRODUCTIONS' | translate }}</span>
       </a>
@@ -48,7 +48,7 @@
       
       <div class="sidebar-footer-group">
         <div class="section-label">{{ 'NAV.SYSTEM_HEADER' | translate }}</div>
-        <a mat-list-item routerLink="/settings" routerLinkActive="active">
+        <a mat-list-item [routerLink]="paths.settings" routerLinkActive="active">
           <i class="fas fa-sliders-h"></i>
           <span>{{ 'NAV.SETTINGS' | translate }}</span>
         </a>

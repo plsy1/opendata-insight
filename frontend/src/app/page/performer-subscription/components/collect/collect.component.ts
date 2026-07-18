@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Actress } from '../../model/actor-information.interface';
+import { APP_PATHS } from '../../../../app-paths';
 
 @Component({
   selector: 'app-list-performer-collect',
@@ -186,7 +187,7 @@ export class PerformerCollectionListComponent {
 
   /* ── Other ────────────────────────── */
 
-  onUnsubscribeClick(event: MouseEvent, movie: any): void {
+  onUnsubscribeClick(event: MouseEvent, movie: Actress): void {
     event.stopPropagation();
 
     this.PerformerSubscriptionService.removeActressCollect(
@@ -209,15 +210,15 @@ export class PerformerCollectionListComponent {
 
   async onClick(name: string) {
     try {
-      this.router.navigate(['/performer', name]);
+      this.router.navigate([APP_PATHS.performers, name]);
     } catch (error) {
       console.error('Failed:', error);
     }
   }
 
-  contextActress: any;
+  contextActress!: Actress;
 
-  openMenu(event: Event, actress: any) {
+  openMenu(event: Event, actress: Actress) {
     event.stopPropagation();
     this.contextActress = actress;
   }

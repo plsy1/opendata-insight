@@ -11,9 +11,9 @@ import { JobInfo } from '../models/job_info.interface';
 export class SettingsService {
   constructor(private common: CommonService) {}
 
-  updateEnvironment(env: EnvironmentConfig): Observable<boolean> {
+  updateEnvironment(env: Partial<EnvironmentConfig>): Observable<boolean> {
     return this.common
-      .request<{ success?: boolean }>('POST', 'system/update_environment', {
+      .request<void>('POST', 'system/update_environment', {
         body: env,
       })
       .pipe(map(() => true));

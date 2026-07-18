@@ -7,6 +7,7 @@ from sqlalchemy import (
     DateTime,
     UniqueConstraint,
     JSON,
+    Index,
 )
 
 from datetime import datetime
@@ -64,6 +65,6 @@ class FC2Ranking(Base):
 
     __table_args__ = (
         UniqueConstraint("term", "article_id", "rank", name="uix_fc2_term_article"),
+        Index("ix_fc2_ranking_term_page_rank", "term", "page", "rank"),
     )
-
 

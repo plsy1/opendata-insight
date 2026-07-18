@@ -108,11 +108,12 @@ async def get_actor_information_by_name_service(
                 return ActorDataOut.model_validate(record)
             raise
 
+        actor_fields = data.model_dump(exclude={"subscribers"})
         if record is None:
-            record = ActorData(**data.model_dump())
+            record = ActorData(**actor_fields)
             db.add(record)
         else:
-            for key, value in data.model_dump().items():
+            for key, value in actor_fields.items():
                 setattr(record, key, value)
 
         record.updated_at = datetime.now()
@@ -168,7 +169,11 @@ async def get_information_by_work_id_service(
         )
         work = parse_movie_information(content)
         movie_out = _gen_movie_data(work)
-        movie = MovieData(**movie_out.model_dump())
+        movie = MovieData(
+            **movie_out.model_dump(
+                exclude={"products", "primary_product", "subscribers"}
+            )
+        )
         db.add(movie)
         db.flush()
 
@@ -192,7 +197,7 @@ async def get_information_by_work_id_service(
             "ps.jpg", "pl.jpg"
         )
 
-    movie_out.products = [merged_product]
+    movie_out.primary_product = merged_product
     return movie_out
 
 

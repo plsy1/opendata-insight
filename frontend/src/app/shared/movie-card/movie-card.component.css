@@ -126,6 +126,26 @@
   line-height: 1;
 }
 
+.custom-rules-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius-full, 50%);
+  color: #fff;
+  background: rgba(124, 58, 237, 0.82);
+  box-shadow: 0 4px 12px rgba(76, 29, 149, 0.3);
+  z-index: 10;
+}
+
+.custom-rules-badge i {
+  font-size: 11px;
+}
+
 /* ── Menu button (Details) ── */
 .menu-btn {
   position: absolute;

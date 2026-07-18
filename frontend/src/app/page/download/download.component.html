@@ -1,11 +1,29 @@
 <div class="download-container">
-  <mat-card class="download-card" *ngFor="let torrent of torrents">
+  <mat-card
+    class="download-card"
+    *ngFor="let torrent of torrents; trackBy: trackByHash"
+    [class.has-cover]="!!coverUrl(torrent)"
+  >
+    <img
+      *ngIf="coverUrl(torrent) as cover"
+      class="card-background"
+      [class.blurred]="common.enableBlur$ | async"
+      [src]="cover"
+      alt=""
+      aria-hidden="true"
+    />
+    <div class="card-overlay" *ngIf="coverUrl(torrent)"></div>
     <div class="card-content">
       <!-- Title & Action -->
       <div class="card-top-row">
-        <h3 class="torrent-title" [matTooltip]="torrent.name">
-          {{ torrent.name }}
-        </h3>
+        <div class="title-block">
+          <h3 class="torrent-title" [matTooltip]="displayTitle(torrent)">
+            {{ displayTitle(torrent) }}
+          </h3>
+          <span class="work-id" *ngIf="torrent.work_id">
+            {{ torrent.work_id }}
+          </span>
+        </div>
         <button
           class="delete-btn"
           (click)="deleteTorrent(torrent.hash)"

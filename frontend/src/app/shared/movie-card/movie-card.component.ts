@@ -5,12 +5,20 @@ import { SharedServiceService } from '../shared-service.service';
 import { Router } from '@angular/router';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
+import { APP_PATHS } from '../../app-paths';
+import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-movie-card',
   standalone: true,
-  imports: [CommonModule, MatMenuModule, MatIconModule, MatTooltipModule],
+  imports: [
+    CommonModule,
+    MatMenuModule,
+    MatIconModule,
+    MatTooltipModule,
+    TranslateModule,
+  ],
   templateUrl: './movie-card.component.html',
-  styleUrls: ['./movie-card.component.scss'],
+  styleUrls: ['./movie-card.component.css'],
 })
 export class MovieCardComponent {
   @Input() id!: string;
@@ -22,6 +30,8 @@ export class MovieCardComponent {
   @Input() hideImage = false;
   @Input() showID = true;
   @Input() showDetialButton = false;
+  @Input() showSubscriptionRules = false;
+  @Input() hasCustomSubscriptionRules = false;
   @Input() enableBlur: boolean | null = false;
 
   inLibrary: boolean = false;
@@ -31,6 +41,7 @@ export class MovieCardComponent {
 
   @Output() movieClick = new EventEmitter<string>();
   @Output() movieDelete = new EventEmitter<string>();
+  @Output() subscriptionRulesClick = new EventEmitter<void>();
 
   constructor(
     private shareService: SharedServiceService,
@@ -70,14 +81,14 @@ export class MovieCardComponent {
       .subscribe((res) => {
         this.inLibrary = res.exists;
         if (this.inLibrary === true) {
-          this.libraryLink = res.indexLink;
+          this.libraryLink = res.indexLink ?? undefined;
         }
       });
   }
 
   onActorClick(actor: string, event: MouseEvent) {
     event.stopPropagation();
-    this.router.navigate(['/performer', actor]);
+    this.router.navigate([APP_PATHS.performers, actor]);
   }
 
   onUnsubscribeClick(event: MouseEvent): void {
@@ -91,5 +102,10 @@ export class MovieCardComponent {
         console.error('Failed to remove RSS feed:', error);
       },
     });
+  }
+
+  onSubscriptionRulesClick(event: MouseEvent): void {
+    event.stopPropagation();
+    this.subscriptionRulesClick.emit();
   }
 }

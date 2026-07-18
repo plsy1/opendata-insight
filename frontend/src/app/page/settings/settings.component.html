@@ -13,6 +13,15 @@
   </mat-tab>
   <mat-tab>
     <ng-template mat-tab-label>
+      <i class="fas fa-filter tab-icon"></i>
+      {{ 'SETTINGS.SUBSCRIPTION_FILTERS' | translate }}
+    </ng-template>
+    <ng-template matTabContent>
+      <app-subscription-rules></app-subscription-rules>
+    </ng-template>
+  </mat-tab>
+  <mat-tab>
+    <ng-template mat-tab-label>
       <i class="fas fa-tasks tab-icon"></i>
       {{ 'SETTINGS.BACKGROUND_TASKS' | translate }}
     </ng-template>
@@ -23,7 +32,7 @@
   <mat-tab>
     <ng-template mat-tab-label>
       <i class="fas fa-key tab-icon"></i>
-      {{ 'SETTINGS.ACCOUNT_SECURITY' | translate }}
+      {{ 'SETTINGS.CHANGE_PASSWORD' | translate }}
     </ng-template>
     <ng-template matTabContent>
       <app-change-password></app-change-password>

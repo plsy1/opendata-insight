@@ -1,21 +1,23 @@
 export interface ActressRanking {
-  rank: string;
-  name: string;
-  image: string;
-  profile_url: string;
-  latest_work: string;
-  latest_work_url: string;
+  rank: string | null;
+  name: string | null;
+  image: string | null;
+  profile_url: string | null;
+  latest_work: string | null;
+  latest_work_url: string | null;
   work_count: number;
+  [key: string]: unknown;
 }
 
 export interface RankingItem {
-  rank: string;
-  title: string;
-  number: string;
-  image: string;
-  detail_url: string;
+  rank: string | null;
+  title: string | null;
+  number: string | null;
+  image: string | null;
+  detail_url: string | null;
   maker: string | null;
   actresses: string[];
+  [key: string]: unknown;
 }
 
 export enum RankingTypeOfWorks {
@@ -112,30 +114,6 @@ export interface ImageURL {
   small: string;
 }
 
-export interface JavtrailersVideo {
-  contentId: string;
-  dvdId: string;
-  releaseDate: string;
-  image: string;
-}
-
-export interface JavtrailersStudio {
-  name: string;
-  jpName: string;
-  slug: string;
-  link: string;
-  videos: JavtrailersVideo[];
-}
-
-export interface JavtrailersDailyRelease {
-  date: string;
-  year: number;
-  month: number;
-  day: number;
-  totalVideos: number;
-  studios: JavtrailersStudio[];
-}
-
 export interface AvbaseIndexData {
   newbie_talents: avbaseIndexTalent[];
   popular_talents: avbaseIndexTalent[];
@@ -143,6 +121,6 @@ export interface AvbaseIndexData {
 
 export interface avbaseIndexTalent {
   name: string;
-  id: number;
-  avatar_url: string;
+  id?: number | null;
+  avatar_url: string | null;
 }

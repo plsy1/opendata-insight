@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, String, Text
+from sqlalchemy import Column, DateTime, Index, String, Text
 
 from database import Base
 
@@ -21,3 +21,5 @@ class ImageSource(Base):
         onupdate=datetime.now,
         nullable=False,
     )
+
+    __table_args__ = (Index("ix_image_sources_updated_at", "updated_at"),)

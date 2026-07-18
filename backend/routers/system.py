@@ -26,6 +26,7 @@ from services.system import (
     register_image_sources,
     update_image_source_metadata,
 )
+from schemas.system import EnvironmentConfig, UpdateCheckOut, VersionOut
 from .dependencies.auth_dependencies import (
     image_cookie_interceptor,
     token_interceptor,
@@ -98,22 +99,26 @@ async def get_legacy_image(
     return await _serve_image(request, db, image_id_for_url(payload.url))
 
 
-@router.get("/get_environment")
+@router.get("/get_environment", response_model=EnvironmentConfig)
 async def get_app_environment(dep: None = Depends(token_interceptor)):
     return _config.get_environment()
 
 
-@router.post("/update_environment")
+@router.post(
+    "/update_environment",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_model=None,
+)
 async def update_environment(
-    env: dict = Body(...), dep: None = Depends(token_interceptor)
+    env: EnvironmentConfig = Body(...), dep: None = Depends(token_interceptor)
 ):
     try:
-        _config.set(env)
+        _config.set(env.model_dump(exclude_unset=True))
         return Response(status_code=status.HTTP_204_NO_CONTENT)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/version")
+@router.get("/version", response_model=VersionOut)
 async def get_version():
     # Trying to find VERSION file in project root
     version_path = os.path.join(
@@ -125,7 +130,7 @@ async def get_version():
             return {"version": f.read().strip()}
     return {"version": "1.0.0-dev"}
 
-@router.get("/check_update")
+@router.get("/check_update", response_model=UpdateCheckOut)
 async def check_update():
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:

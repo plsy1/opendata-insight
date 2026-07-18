@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { ProductionSubscriptionService } from '../../service/production-subscription.service';
 import { CommonModule } from '@angular/common';
-import { MoviePoster } from '../../../../models/movie-data.interface';
+import { MovieFeedItem } from '../../../../models/movie-data.interface';
 import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.component';
+import { APP_PATHS } from '../../../../app-paths';
 @Component({
   selector: 'app-download-history',
   standalone: true,
@@ -21,7 +22,7 @@ import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.com
   styleUrl: './download-history.component.css',
 })
 export class DownloadHistoryComponent {
-  keywordFeeds: MoviePoster[] = [];
+  keywordFeeds: MovieFeedItem[] = [];
   constructor(
     public ProductionSubscriptionService: ProductionSubscriptionService,
     private router: Router
@@ -30,7 +31,7 @@ export class DownloadHistoryComponent {
   ngOnInit(): void {
     this.ProductionSubscriptionService.getDownloadedKeywordsFeedListGet().subscribe(
       {
-        next: (data: MoviePoster[]) => {
+        next: (data) => {
           this.keywordFeeds = data;
         },
         error: (error) => {
@@ -41,7 +42,7 @@ export class DownloadHistoryComponent {
   }
   async posterClick(work_id: string) {
     try {
-      this.router.navigate(['/production',work_id]);
+      this.router.navigate([APP_PATHS.movies, work_id]);
     } catch (error) {
       console.error('Failed:', error);
     }
@@ -50,7 +51,7 @@ export class DownloadHistoryComponent {
   onUnsubscribeClick(): void {
     this.ProductionSubscriptionService.getDownloadedKeywordsFeedListGet().subscribe(
       {
-        next: (data: MoviePoster[]) => {
+        next: (data) => {
           this.keywordFeeds = data;
         },
         error: (error) => {

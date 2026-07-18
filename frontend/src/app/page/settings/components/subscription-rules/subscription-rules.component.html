@@ -1,0 +1,265 @@
+<mat-card class="rules-card" [class.dialog-card]="isMovieMode">
+  <mat-card-title>
+    <span>
+      {{
+        (isMovieMode
+          ? 'SETTINGS.MOVIE_SUBSCRIBE_RULES_TITLE'
+          : 'SETTINGS.SUBSCRIBE_RULES_TITLE') | translate
+      }}
+    </span>
+    <button
+      *ngIf="isMovieMode"
+      type="button"
+      class="close-dialog-btn"
+      (click)="closeDialog()"
+      [attr.aria-label]="'COMMON.CLOSE' | translate"
+    >
+      <i class="fas fa-times"></i>
+    </button>
+  </mat-card-title>
+  <mat-card-content>
+    <div class="loading-state" *ngIf="isLoading">
+      {{ 'COMMON.LOADING' | translate }}
+    </div>
+
+    <form
+      *ngIf="!isLoading"
+      (ngSubmit)="saveRules()"
+      #rulesForm="ngForm"
+      class="rules-form"
+    >
+      <div class="rules-intro">
+        <div class="rules-icon"><i class="fas fa-filter"></i></div>
+        <p>
+          {{
+            (isMovieMode
+              ? 'SETTINGS.MOVIE_SUBSCRIBE_RULES_DESC'
+              : 'SETTINGS.SUBSCRIBE_RULES_DESC') | translate
+          }}
+        </p>
+      </div>
+
+      <section class="movie-rule-mode" *ngIf="isMovieMode && movie">
+        <div class="movie-rule-identity">
+          <span>{{ movie.id }}</span>
+          <strong>{{ movie.title }}</strong>
+        </div>
+        <mat-slide-toggle
+          [(ngModel)]="useGlobalRules"
+          [ngModelOptions]="{ standalone: true }"
+        >
+          {{ 'SETTINGS.USE_GLOBAL_SUBSCRIBE_RULES' | translate }}
+        </mat-slide-toggle>
+        <p>{{ 'SETTINGS.USE_GLOBAL_SUBSCRIBE_RULES_HINT' | translate }}</p>
+      </section>
+
+      <div
+        class="global-rules-state"
+        *ngIf="isMovieMode && useGlobalRules"
+      >
+        <i class="fas fa-link"></i>
+        <div>
+          <strong>{{ 'SETTINGS.FOLLOWING_GLOBAL_RULES' | translate }}</strong>
+          <span>{{ 'SETTINGS.FOLLOWING_GLOBAL_RULES_HINT' | translate }}</span>
+        </div>
+      </div>
+
+      <section
+        class="global-rule-section"
+        *ngIf="!isMovieMode || !useGlobalRules"
+      >
+        <div class="section-heading">
+          <div>
+            <strong>
+              {{
+                (isMovieMode
+                  ? 'SETTINGS.MOVIE_SUBSCRIBE_EXCLUDED'
+                  : 'SETTINGS.SUBSCRIBE_GLOBAL_EXCLUDED') | translate
+              }}
+            </strong>
+            <span>
+              {{
+                (isMovieMode
+                  ? 'SETTINGS.MOVIE_SUBSCRIBE_EXCLUDED_HINT'
+                  : 'SETTINGS.SUBSCRIBE_GLOBAL_EXCLUDED_HINT') | translate
+              }}
+            </span>
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="global-excluded-field">
+          <mat-label>
+            {{
+              (isMovieMode
+                ? 'SETTINGS.MOVIE_SUBSCRIBE_EXCLUDED'
+                : 'SETTINGS.SUBSCRIBE_GLOBAL_EXCLUDED') | translate
+            }}
+          </mat-label>
+          <textarea
+            matInput
+            rows="2"
+            [(ngModel)]="globalExcludedKeywords"
+            name="SUBSCRIBE_GLOBAL_EXCLUDED"
+          ></textarea>
+        </mat-form-field>
+      </section>
+
+      <section
+        class="quality-rules-section"
+        *ngIf="!isMovieMode || !useGlobalRules"
+      >
+        <div class="quality-rules-header">
+          <div>
+            <strong>{{ 'SETTINGS.SUBSCRIBE_QUALITY_RULES' | translate }}</strong>
+            <span>{{ 'SETTINGS.SUBSCRIBE_QUALITY_RULES_HINT' | translate }}</span>
+          </div>
+          <button type="button" class="add-rule-btn" (click)="addQualityRule()">
+            <i class="fas fa-plus"></i>
+            {{ 'SETTINGS.SUBSCRIBE_ADD_RULE' | translate }}
+          </button>
+        </div>
+
+        <div
+          class="quality-rule"
+          *ngFor="let rule of subscriptionRules; let index = index"
+        >
+          <div class="quality-rule-header">
+            <div class="rule-priority">
+              <span>{{ 'SETTINGS.SUBSCRIBE_PRIORITY' | translate }}</span>
+              <strong>{{ index + 1 }}</strong>
+            </div>
+
+            <mat-form-field appearance="outline" class="rule-field">
+              <mat-label>{{ 'SETTINGS.SUBSCRIBE_RESOLUTION' | translate }}</mat-label>
+              <mat-select
+                [(ngModel)]="rule.resolution"
+                [name]="'quality_resolution_' + index"
+              >
+                <mat-option [value]="null">
+                  {{ 'SETTINGS.SUBSCRIBE_ANY_VALUE' | translate }}
+                </mat-option>
+                <mat-option
+                  *ngFor="let option of resolutionOptions"
+                  [value]="option.value"
+                >
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rule-field">
+              <mat-label>{{ 'SETTINGS.SUBSCRIBE_CODEC' | translate }}</mat-label>
+              <mat-select
+                [(ngModel)]="rule.codec"
+                [name]="'quality_codec_' + index"
+              >
+                <mat-option [value]="null">
+                  {{ 'SETTINGS.SUBSCRIBE_ANY_VALUE' | translate }}
+                </mat-option>
+                <mat-option
+                  *ngFor="let option of codecOptions"
+                  [value]="option.value"
+                >
+                  {{ option.label }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div class="rule-actions">
+              <button
+                type="button"
+                (click)="moveQualityRule(index, -1)"
+                [disabled]="index === 0"
+                [attr.aria-label]="'SETTINGS.SUBSCRIBE_MOVE_UP' | translate"
+              >
+                <i class="fas fa-arrow-up"></i>
+              </button>
+              <button
+                type="button"
+                (click)="moveQualityRule(index, 1)"
+                [disabled]="index === subscriptionRules.length - 1"
+                [attr.aria-label]="'SETTINGS.SUBSCRIBE_MOVE_DOWN' | translate"
+              >
+                <i class="fas fa-arrow-down"></i>
+              </button>
+              <button
+                type="button"
+                class="remove-rule"
+                (click)="removeQualityRule(index)"
+                [attr.aria-label]="'SETTINGS.SUBSCRIBE_REMOVE_RULE' | translate"
+              >
+                <i class="fas fa-trash-alt"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="rule-keywords-grid">
+            <mat-form-field appearance="outline" class="rule-field">
+              <mat-label>{{ 'SETTINGS.SUBSCRIBE_REQUIRED' | translate }}</mat-label>
+              <textarea
+                matInput
+                rows="2"
+                [(ngModel)]="rule.requiredKeywords"
+                [name]="'required_keywords_' + index"
+              ></textarea>
+              <mat-hint>{{ 'SETTINGS.SUBSCRIBE_REQUIRED_HINT' | translate }}</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rule-field">
+              <mat-label>{{ 'SETTINGS.SUBSCRIBE_ANY' | translate }}</mat-label>
+              <textarea
+                matInput
+                rows="2"
+                [(ngModel)]="rule.anyKeywords"
+                [name]="'any_keywords_' + index"
+              ></textarea>
+              <mat-hint>{{ 'SETTINGS.SUBSCRIBE_ANY_HINT' | translate }}</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rule-field">
+              <mat-label>{{ 'SETTINGS.SUBSCRIBE_EXCLUDED' | translate }}</mat-label>
+              <textarea
+                matInput
+                rows="2"
+                [(ngModel)]="rule.excludedKeywords"
+                [name]="'excluded_keywords_' + index"
+              ></textarea>
+              <mat-hint>{{ 'SETTINGS.SUBSCRIBE_EXCLUDED_HINT' | translate }}</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="rule-field">
+              <mat-label>{{ 'SETTINGS.SUBSCRIBE_REGEX' | translate }}</mat-label>
+              <input
+                matInput
+                [(ngModel)]="rule.titleRegex"
+                [name]="'title_regex_' + index"
+              />
+              <mat-hint>{{ 'SETTINGS.SUBSCRIBE_REGEX_HINT' | translate }}</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="quality-rules-empty" *ngIf="subscriptionRules.length === 0">
+          <i class="fas fa-layer-group"></i>
+          <span>{{ 'SETTINGS.SUBSCRIBE_NO_QUALITY_RULES' | translate }}</span>
+        </div>
+      </section>
+
+      <div class="form-actions">
+        <button
+          *ngIf="isMovieMode"
+          mat-button
+          type="button"
+          class="cancel-button"
+          (click)="closeDialog()"
+        >
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button mat-raised-button type="submit">
+          <i class="fas fa-save"></i>
+          {{ 'COMMON.SAVE' | translate }}
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

@@ -62,11 +62,11 @@
 <div class="poster-grid">
   <app-movie-card
     *ngFor="let work of workList"
-    [id]="work.number"
-    [title]="work.title"
-    [imgUrl]="work.image"
+    [id]="work.number || ''"
+    [title]="work.title || ''"
+    [imgUrl]="work.image || ''"
     [actors]="work.actresses"
-    [rank]="work.rank"
+    [rank]="work.rank || undefined"
     (movieClick)="posterClick($event)"
     [enableBlur]="PageExploreService.isEnableBlur$() | async"
   ></app-movie-card>

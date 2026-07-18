@@ -2,6 +2,8 @@ import { CommonService } from '../../../common.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { MoviePoster } from '../../../models/movie-data.interface';
+import { ActorProfile } from '../../performer-subscription/model/actor-information.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -9,19 +11,19 @@ import { Observable } from 'rxjs';
 export class PerformerService {
   constructor(private common: CommonService, private http: HttpClient) {}
 
-  performerInformation: any;
-  productionInformation: any;
+  performerInformation: ActorProfile | null = null;
+  productionInformation: MoviePoster[] | null = null;
 
   name: string = '';
   searchKeyWords: string = '';
   page: number = 1;
   actressNumberFilter: string = '0';
 
-  savePerformerInformation(data: any) {
+  savePerformerInformation(data: ActorProfile) {
     this.performerInformation = data;
   }
 
-  saveProductionInformation(data: any) {
+  saveProductionInformation(data: MoviePoster[]) {
     this.productionInformation = data;
   }
 
@@ -41,26 +43,26 @@ export class PerformerService {
     this.actressNumberFilter = actressNumberFilter;
   }
 
-  addActorCollect(name: string): Observable<any> {
-    return this.common.request<any>('POST', 'feed/actorCollect', {
+  addActorCollect(name: string): Observable<void> {
+    return this.common.request<void>('POST', 'feed/actorCollect', {
       params: { name },
     });
   }
 
-  addActorSubscribe(name: string): Observable<any> {
-    return this.common.request<any>('POST', 'feed/actorSubscribe', {
+  addActorSubscribe(name: string): Observable<void> {
+    return this.common.request<void>('POST', 'feed/actorSubscribe', {
       params: { name },
     });
   }
 
-  getActorInformation(name: string): Observable<any> {
-    return this.common.request<any>('GET', 'avbase/actorInformation', {
+  getActorInformation(name: string): Observable<ActorProfile> {
+    return this.common.request<ActorProfile>('GET', 'avbase/actorInformation', {
       params: { name },
     });
   }
 
-  getMoviesByActorName(name: string, page: number): Observable<any> {
-    return this.common.request<any>('GET', 'avbase/moviesOfActor', {
+  getMoviesByActorName(name: string, page: number): Observable<MoviePoster[]> {
+    return this.common.request<MoviePoster[]>('GET', 'avbase/moviesOfActor', {
       params: { name: name, page },
     });
   }

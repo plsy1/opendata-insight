@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class MoviePoster(BaseModel):
@@ -7,4 +7,13 @@ class MoviePoster(BaseModel):
     full_id: str
     release_date: str
     img_url: str
-    actors: list[str]
+    actors: list[str] = Field(default_factory=list)
+
+    model_config = {"extra": "allow"}
+
+
+class MovieReleaseGroup(BaseModel):
+    maker: str
+    works: list[MoviePoster] = Field(default_factory=list)
+
+    model_config = {"extra": "allow"}

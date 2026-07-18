@@ -1,35 +1,36 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { CommonService } from '../../../common.service';
+import { TorrentSearchResult } from '../models/torrent-search-result.interface';
+
+export type DownloadMediaType = 'jav' | 'fc2';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TorrentService {
   searchKeyWords: string = '';
-  searchResults: any[] = [];
+  searchResults: TorrentSearchResult[] = [];
 
-  constructor(private common: CommonService, private http: HttpClient) {}
+  constructor(private common: CommonService) {}
 
-  saveState(searchResults: any[], searchKeyWords: string) {
+  saveState(searchResults: TorrentSearchResult[], searchKeyWords: string): void {
     this.searchKeyWords = searchKeyWords;
     this.searchResults = searchResults;
   }
 
   pushTorrent(
-    keywords: string,
-    movieId: string,
+    workId: string,
     downloadLink: string,
     savePath: string,
-    performerName: string
-  ): Observable<any> {
-    return this.common.request<any>('POST', 'downloader/add_torrent_url', {
+    mediaType?: DownloadMediaType
+  ): Observable<void> {
+    return this.common.request<void>('POST', 'downloader/add_torrent_url', {
       params: {
-        work_id: keywords,
+        work_id: workId,
         download_link: downloadLink,
-        save_path: savePath
+        save_path: savePath,
+        ...(mediaType ? { media_type: mediaType } : {}),
       },
       body: null,
     });
@@ -39,8 +40,8 @@ export class TorrentService {
     query: string,
     page: number = 1,
     pageSize: number = 10
-  ): Observable<any> {
-    return this.common.request<any>('GET', 'prowlarr/search', {
+  ): Observable<TorrentSearchResult[]> {
+    return this.common.request<TorrentSearchResult[]>('GET', 'prowlarr/search', {
       params: {
         query,
         page,

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CommonService } from '../../../common.service';
 import { Observable } from 'rxjs';
+import { MovieData } from '../models/movie-data.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -8,14 +9,14 @@ import { Observable } from 'rxjs';
 export class ProductionInformationService {
   constructor(private common: CommonService) {}
 
-  getSingleProductionInformation(work_id: string): Observable<any> {
-    return this.common.request<any>('GET', 'avbase/movieInformation', {
+  getSingleProductionInformation(work_id: string): Observable<MovieData> {
+    return this.common.request<MovieData>('GET', 'avbase/movieInformation', {
       params: { work_id: work_id },
     });
   }
 
-  addProductionSubscribe(work_id: string): Observable<any> {
-    return this.common.request<any>('POST', 'feed/movieSubscribe', {
+  addProductionSubscribe(work_id: string): Observable<void> {
+    return this.common.request<void>('POST', 'feed/movieSubscribe', {
       params: { work_id: work_id },
     });
   }

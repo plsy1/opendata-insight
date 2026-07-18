@@ -14,6 +14,7 @@ import { CommonService } from '../../../../common.service';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { APP_PATHS } from '../../../../app-paths';
 
 @Component({
   selector: 'app-search-option',
@@ -70,12 +71,11 @@ export class SearchOptionComponent {
 
   async searchTorrents(): Promise<void> {
     try {
-      this.common.isJumpFromProductionPage = false;
       this.snackBar.open('Searching......', 'Close', { 
         duration: 2000,
         panelClass: ['info-snackbar']
       });
-      this.router.navigate(['/torrents', this.searchVaule]);
+      this.router.navigate([APP_PATHS.torrentSearch, this.searchVaule]);
       this.setRecentlySearch();
     } catch (error) {
       this.snackBar.open('Failed. Please try again.', 'Close', {
@@ -93,7 +93,7 @@ export class SearchOptionComponent {
         duration: 2000,
         panelClass: ['info-snackbar']
       });
-      this.router.navigate([`/performer/${this.searchVaule}`]);
+      this.router.navigate([APP_PATHS.performers, this.searchVaule]);
       this.setRecentlySearch();
     } catch (error) {
       this.snackBar.open('Failed. Please try again.', 'Close', {
@@ -111,7 +111,7 @@ export class SearchOptionComponent {
         duration: 2000,
         panelClass: ['info-snackbar']
       });
-      this.router.navigate([`/keywords/${this.searchVaule}`]);
+      this.router.navigate([APP_PATHS.movieSearch, this.searchVaule]);
       this.setRecentlySearch();
     } catch (error) {
       this.snackBar.open('Failed. Please try again.', 'Close', {

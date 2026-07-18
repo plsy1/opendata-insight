@@ -8,6 +8,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonService } from '../../../../common.service';
 import { Router } from '@angular/router';
+import { APP_PATHS } from '../../../../app-paths';
+import { ActorProfile } from '../../../performer-subscription/model/actor-information.interface';
 @Component({
   selector: 'app-performer-detials-card',
   standalone: true,
@@ -18,7 +20,7 @@ import { Router } from '@angular/router';
 })
 export class ActressInformationComponent {
   name: string = '';
-  performerInformation: any;
+  performerInformation: ActorProfile | null = null;
   isLoading: boolean = false;
   constructor(
     private getRoute: ActivatedRoute,
@@ -31,7 +33,6 @@ export class ActressInformationComponent {
   ngOnInit(): void {
     this.getRoute.paramMap.subscribe((params) => {
       this.name = params.get('name') || '';
-      this.common.currentPerformer = this.name;
       if (
         this.name === this.service.name &&
         this.service.performerInformation
@@ -95,7 +96,7 @@ export class ActressInformationComponent {
   }
 
   searchByName(): void {
-    this.router.navigate(['/torrents', this.name]);
+    this.router.navigate([APP_PATHS.torrentSearch, this.name]);
   }
 
   getFaIcon(platform: string): string {

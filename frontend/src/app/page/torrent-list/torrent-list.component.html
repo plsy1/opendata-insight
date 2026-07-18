@@ -40,6 +40,31 @@
       </mat-cell>
     </ng-container>
 
+    <ng-container matColumnDef="technical">
+      <mat-header-cell *matHeaderCellDef class="technical-column">
+        <i class="fas fa-microchip" [matTooltip]="'TORRENTS.TOOLTIP_TECHNICAL' | translate"></i>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let element" class="technical-column">
+        <span
+          class="tech-badge resolution"
+          [class.unknown]="!element.resolution"
+        >
+          <i class="fas fa-expand-arrows-alt"></i>
+          {{
+            element.resolution || ('TORRENTS.RESOLUTION_UNKNOWN' | translate)
+          }}
+        </span>
+        <span class="tech-badge codec" [class.unknown]="!element.codec">
+          <i class="fas fa-microchip"></i>
+          {{
+            element.codec
+              ? codecLabel(element.codec)
+              : ('TORRENTS.CODEC_UNKNOWN' | translate)
+          }}
+        </span>
+      </mat-cell>
+    </ng-container>
+
     <ng-container matColumnDef="size">
       <mat-header-cell *matHeaderCellDef mat-sort-header class="size-column">
         <i class="fas fa-file-archive" [matTooltip]="'TORRENTS.TOOLTIP_SIZE' | translate"></i>

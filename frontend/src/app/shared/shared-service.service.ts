@@ -4,6 +4,7 @@ import { CommonService } from '../common.service';
 import { HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { EmbyExistsResponse } from '../page/dashboard/models/dashboard.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,7 @@ import { HttpClient } from '@angular/common/http';
 export class SharedServiceService {
   constructor(private common: CommonService, private http: HttpClient) {}
 
-  checkMovieExists(title: string): Observable<any> {
+  checkMovieExists(title: string): Observable<EmbyExistsResponse> {
     const url = `${this.common.apiUrl}/emby/exists?title=${encodeURIComponent(
       title
     )}`;
@@ -20,7 +21,7 @@ export class SharedServiceService {
       Authorization: `Bearer ${localStorage.getItem('access_token') ?? ''}`,
     });
 
-    return this.http.get<boolean>(url, { headers }).pipe(
+    return this.http.get<EmbyExistsResponse>(url, { headers }).pipe(
       catchError((error: HttpErrorResponse) => {
         if (error.status === 401) {
           this.common.logout();
@@ -31,8 +32,8 @@ export class SharedServiceService {
     );
   }
 
-  removeMovieSubscribe(work_id: string): Observable<any> {
-    return this.common.request<any>('DELETE', 'feed/movieSubscribe', {
+  removeMovieSubscribe(work_id: string): Observable<void> {
+    return this.common.request<void>('DELETE', 'feed/movieSubscribe', {
       params: { work_id: work_id },
     });
   }

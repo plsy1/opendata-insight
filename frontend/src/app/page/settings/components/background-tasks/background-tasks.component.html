@@ -1,43 +1,87 @@
-
-  <mat-card class="tasks-card">
-    <div class="table-wrapper" *ngIf="jobs.length; else empty">
-      <table mat-table [dataSource]="jobs" class="mat-elevation-z1">
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef>{{ 'SETTINGS.TASK_NAME' | translate }}</th>
-          <td mat-cell *matCellDef="let job">
-            {{ job.name }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="trigger">
-          <th mat-header-cell *matHeaderCellDef>{{ 'SETTINGS.TASK_TRIGGER' | translate }}</th>
-          <td mat-cell *matCellDef="let job">
-            {{ formatTrigger(job.trigger) }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="nextRunTime">
-          <th mat-header-cell *matHeaderCellDef>{{ 'SETTINGS.TASK_NEXT_RUN' | translate }}</th>
-          <td mat-cell *matCellDef="let job">
-            {{ formatNextRun(job.next_run_time) }}
-          </td>
-        </ng-container>
-
-        <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef>{{ 'SETTINGS.TASK_ACTION' | translate }}</th>
-          <td mat-cell *matCellDef="let job">
-            <button mat-raised-button color="primary" (click)="run(job.id)">
-              {{ 'SETTINGS.TASK_RUN' | translate }}
-            </button>
-          </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-      </table>
+<mat-card class="tasks-card">
+  <header class="tasks-header">
+    <div class="header-copy">
+      <span class="header-icon"><i class="fas fa-clock-rotate-left"></i></span>
+      <div>
+        <h2>{{ 'SETTINGS.BACKGROUND_TASKS' | translate }}</h2>
+        <p>{{ 'SETTINGS.TASKS_SUMMARY' | translate: { count: jobs.length } }}</p>
+      </div>
     </div>
+    <span class="task-count">{{ jobs.length }}</span>
+  </header>
 
-    <ng-template #empty>
-      <div class="empty-state">{{ 'SETTINGS.NO_TASKS' | translate }}</div>
-    </ng-template>
-  </mat-card>
+  <div class="state-panel" *ngIf="isLoading">
+    <i class="fas fa-circle-notch fa-spin"></i>
+    <span>{{ 'COMMON.LOADING' | translate }}</span>
+  </div>
+
+  <div class="state-panel error" *ngIf="!isLoading && loadFailed">
+    <i class="fas fa-triangle-exclamation"></i>
+    <span>{{ 'SETTINGS.TASK_LOAD_FAILED' | translate }}</span>
+    <button mat-button type="button" (click)="loadJobs()">
+      {{ 'SETTINGS.TASK_RETRY' | translate }}
+    </button>
+  </div>
+
+  <div class="task-list" *ngIf="!isLoading && !loadFailed && jobs.length">
+    <article
+      class="task-row"
+      *ngFor="let job of jobs; trackBy: trackByJobId"
+    >
+      <div class="task-identity">
+        <span class="task-icon" [ngClass]="taskTone(job)">
+          <i [class]="taskIcon(job)"></i>
+        </span>
+        <div class="task-copy">
+          <div class="task-title-line">
+            <h3>{{ taskName(job) }}</h3>
+            <span class="enabled-badge">
+              <span class="status-dot"></span>
+              {{ 'SETTINGS.TASK_ENABLED' | translate }}
+            </span>
+          </div>
+          <p>{{ taskDescription(job) }}</p>
+        </div>
+      </div>
+
+      <div class="task-meta schedule-meta">
+        <span class="meta-label">{{ 'SETTINGS.TASK_SCHEDULE' | translate }}</span>
+        <span class="schedule-value">
+          <i class="fas fa-repeat"></i>
+          {{ formatInterval(job) }}
+        </span>
+      </div>
+
+      <div class="task-meta next-run-meta">
+        <span class="meta-label">{{ 'SETTINGS.TASK_NEXT_RUN' | translate }}</span>
+        <strong>{{ formatNextRunRelative(job.next_run_time) }}</strong>
+        <small>{{ formatNextRunExact(job.next_run_time) }}</small>
+      </div>
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="button"
+        class="run-button"
+        [disabled]="isRunning(job.id)"
+        (click)="run(job.id)"
+      >
+        <i
+          [class]="isRunning(job.id) ? 'fas fa-circle-notch fa-spin' : 'fas fa-play'"
+        ></i>
+        {{
+          (isRunning(job.id) ? 'SETTINGS.TASK_STARTING' : 'SETTINGS.TASK_RUN')
+            | translate
+        }}
+      </button>
+    </article>
+  </div>
+
+  <div
+    class="state-panel empty"
+    *ngIf="!isLoading && !loadFailed && !jobs.length"
+  >
+    <i class="fas fa-calendar-xmark"></i>
+    <span>{{ 'SETTINGS.NO_TASKS' | translate }}</span>
+  </div>
+</mat-card>

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from enum import Enum
 
@@ -14,6 +14,8 @@ class Actress(BaseModel):
     latest_work_url: Optional[str]
     work_count: int
 
+    model_config = {"extra": "allow"}
+
 
 class Work(BaseModel):
     rank: Optional[str]
@@ -22,7 +24,9 @@ class Work(BaseModel):
     image: Optional[str]
     detail_url: Optional[str]
     maker: Optional[str]
-    actresses: list[str] = []
+    actresses: list[str] = Field(default_factory=list)
+
+    model_config = {"extra": "allow"}
 
 
 class RankingType(Enum):

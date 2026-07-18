@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, Integer, String, Boolean, JSON, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, JSON, ForeignKey, DateTime, Index
 from sqlalchemy.orm import relationship
 from datetime import datetime
 
@@ -31,6 +31,8 @@ class ActorData(Base):
         uselist=False,
     )
 
+    __table_args__ = (Index("ix_actor_data_name", "name"),)
+
 
 class ActorSubscribe(Base):
     __tablename__ = "actor_subscribe"
@@ -57,3 +59,18 @@ class ActorSubscribe(Base):
     created_at = Column(DateTime, default=datetime.now)
 
     actor = relationship("ActorData", back_populates="subscribers")
+
+    __table_args__ = (
+        Index(
+            "ix_actor_subscribe_subscribed_order",
+            "is_subscribe",
+            "subscribe_order",
+            "created_at",
+        ),
+        Index(
+            "ix_actor_subscribe_collected_order",
+            "is_collect",
+            "collect_order",
+            "created_at",
+        ),
+    )

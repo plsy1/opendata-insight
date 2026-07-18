@@ -16,6 +16,8 @@ class JobInfo:
     name: str
     next_run_time: Optional[datetime]
     trigger: str
+    schedule_type: str
+    interval_seconds: Optional[int]
 
 
 class AppScheduler:
@@ -81,43 +83,50 @@ async def init_scheduler_service() -> AppScheduler:
             _scheduler_service.add_job(
                 update_emby_movies_in_db,
                 trigger=IntervalTrigger,
-                name="update emby",
+                job_id="sync_emby_library",
+                name="Sync Emby library",
                 hours=1,
             )
             _scheduler_service.add_job(
                 clean_cache_dir,
                 trigger=IntervalTrigger,
-                name="clean image cache",
+                job_id="clean_image_cache",
+                name="Clean image cache",
                 hours=3,
             )
             _scheduler_service.add_job(
                 refresh_feeds,
                 trigger=IntervalTrigger,
-                name="refresh subscribe",
+                job_id="refresh_subscriptions",
+                name="Refresh subscriptions",
                 hours=7,
             )
             _scheduler_service.add_job(
                 update_avbase_release_everyday,
                 trigger=IntervalTrigger,
-                name="update avbase release everyday",
+                job_id="sync_avbase_releases",
+                name="Sync AVBase releases",
                 hours=7,
             )
             _scheduler_service.add_job(
                 update_avbase_index_actor_service,
                 trigger=IntervalTrigger,
-                name="update_avbase_index_actor_service",
+                job_id="sync_avbase_performers",
+                name="Sync AVBase performers",
                 hours=12,
             )
             _scheduler_service.add_job(
                 update_fc2_ranking,
                 trigger=IntervalTrigger,
-                name="update fc2 ranking",
+                job_id="sync_fc2_rankings",
+                name="Sync FC2 rankings",
                 hours=3,
             )
             _scheduler_service.add_job(
                 update_actor_data_periodic,
                 trigger=IntervalTrigger,
-                name="update actor data periodic",
+                job_id="refresh_performer_profiles",
+                name="Refresh performer profiles",
                 hours=24,
             )
             

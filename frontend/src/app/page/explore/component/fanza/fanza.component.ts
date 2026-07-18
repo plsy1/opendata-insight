@@ -17,6 +17,7 @@ import {
 
 import { PaginationComponent } from '../../../../shared/pagination/pagination.component';
 import { MovieCardComponent } from '../../../../shared/movie-card/movie-card.component';
+import { APP_PATHS } from '../../../../app-paths';
 @Component({
   selector: 'app-fanza',
   standalone: true,
@@ -90,9 +91,12 @@ export class FanzaComponent implements OnInit {
     }
   }
 
-  async cardClick(name: string) {
+  async cardClick(name: string | null) {
+    if (!name) {
+      return;
+    }
     try {
-      this.router.navigate(['/performer', name]);
+      this.router.navigate([APP_PATHS.performers, name]);
     } catch (error) {
       console.error('Failed:', error);
     }
@@ -100,7 +104,7 @@ export class FanzaComponent implements OnInit {
 
   async posterClick(name: string) {
     try {
-      this.router.navigate(['keywords', name]);
+      this.router.navigate([APP_PATHS.movieSearch, name]);
     } catch (error) {
       console.error('Failed:', error);
     }
