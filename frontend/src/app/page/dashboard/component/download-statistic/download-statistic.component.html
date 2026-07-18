@@ -1,45 +1,47 @@
 <div class="dashboard" *ngIf="statisticData as data">
-  <!-- ================= Overview ================= -->
-  <div class="overview-cards">
-    <mat-card class="stat-card">
-      <div class="stat-icon">
-        <mat-icon>library_books</mat-icon>
-      </div>
-      <div class="stat-content">
-        <div class="label">{{ 'DASHBOARD.OVERVIEW_TOTAL' | translate }}</div>
-        <div class="value">{{ data.overview.total }}</div>
-      </div>
-    </mat-card>
+  <section class="summary-section">
+    <!-- ================= Overview ================= -->
+    <div class="overview-cards">
+      <mat-card class="stat-card">
+        <div class="stat-icon">
+          <mat-icon>library_books</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="label">{{ 'DASHBOARD.OVERVIEW_TOTAL' | translate }}</div>
+          <div class="value">{{ data.overview.total }}</div>
+        </div>
+      </mat-card>
 
-    <mat-card class="stat-card success">
-      <div class="stat-icon">
-        <mat-icon>download_done</mat-icon>
-      </div>
-      <div class="stat-content">
-        <div class="label">{{ 'DASHBOARD.OVERVIEW_DOWNLOADED' | translate }}</div>
-        <div class="value">{{ data.overview.downloaded }}</div>
-      </div>
-    </mat-card>
+      <mat-card class="stat-card success">
+        <div class="stat-icon">
+          <mat-icon>download_done</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="label">{{ 'DASHBOARD.OVERVIEW_DOWNLOADED' | translate }}</div>
+          <div class="value">{{ data.overview.downloaded }}</div>
+        </div>
+      </mat-card>
 
-    <mat-card class="stat-card warn">
-      <div class="stat-icon">
-        <mat-icon>subscriptions </mat-icon>
-      </div>
-      <div class="stat-content">
-        <div class="label">{{ 'DASHBOARD.OVERVIEW_SUBSCRIBING' | translate }}</div>
-        <div class="value">{{ data.overview.not_downloaded }}</div>
-      </div>
-    </mat-card>
-  </div>
+      <mat-card class="stat-card warn">
+        <div class="stat-icon">
+          <mat-icon>subscriptions</mat-icon>
+        </div>
+        <div class="stat-content">
+          <div class="label">{{ 'DASHBOARD.OVERVIEW_SUBSCRIBING' | translate }}</div>
+          <div class="value">{{ data.overview.not_downloaded }}</div>
+        </div>
+      </mat-card>
+    </div>
 
-  <!-- ================= Chart ================= -->
-  <mat-card class="chart-card">
-    <h2 class="card-title">
-      <mat-icon>timeline</mat-icon>
-      {{ 'DASHBOARD.DOWNLOAD_TREND' | translate }}
-    </h2>
-    <div echarts class="chart" [options]="dailyChartOptions"></div>
-  </mat-card>
+    <!-- ================= Chart ================= -->
+    <mat-card class="chart-card">
+      <h2 class="card-title">
+        <mat-icon>timeline</mat-icon>
+        {{ 'DASHBOARD.DOWNLOAD_TREND' | translate }}
+      </h2>
+      <div echarts class="chart" [options]="dailyChartOptions"></div>
+    </mat-card>
+  </section>
 
   <!-- ================= Ranking ================= -->
   <div class="ranking-section">

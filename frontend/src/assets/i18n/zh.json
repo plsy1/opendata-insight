@@ -22,6 +22,7 @@
         "MAKER_RANKING": "片商排行",
         "LABEL_RANKING": "厂牌排行",
         "SERIES_RANKING": "系列排行",
+        "TAXONOMY_RANKING": "类型/标签排行",
         "GENRE_RANKING": "影片类型排行",
         "TAG_RANKING": "标签排行",
         "ACTOR_RANKING": "演员排行",

@@ -113,7 +113,7 @@
             <strong>{{ 'SETTINGS.SUBSCRIBE_QUALITY_RULES' | translate }}</strong>
             <span>{{ 'SETTINGS.SUBSCRIBE_QUALITY_RULES_HINT' | translate }}</span>
           </div>
-          <button type="button" class="add-rule-btn" (click)="addQualityRule()">
+          <button mat-stroked-button color="primary" type="button" class="add-rule-btn" (click)="addQualityRule()">
             <i class="fas fa-plus"></i>
             {{ 'SETTINGS.SUBSCRIBE_ADD_RULE' | translate }}
           </button>
@@ -255,7 +255,7 @@
         >
           {{ 'COMMON.CANCEL' | translate }}
         </button>
-        <button mat-raised-button type="submit">
+        <button mat-raised-button color="primary" type="submit">
           <i class="fas fa-save"></i>
           {{ 'COMMON.SAVE' | translate }}
         </button>

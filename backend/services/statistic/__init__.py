@@ -158,23 +158,31 @@ def stat_taxonomy_metadata(db: Session, limit: int = 10) -> dict[str, list[dict]
         .join(MovieSubscribe, MovieData.id == MovieSubscribe.movie_id)
         .all()
     )
-    genre_values = [
-        (movie_id, [str(genre) for genre in (genres or [])])
-        for movie_id, genres, _tags in rows
-    ]
+    genre_values = []
     tag_values = []
-    for movie_id, _genres, tags in rows:
-        names = []
+    taxonomy_values = []
+    for movie_id, genres, tags in rows:
+        genre_names = [str(genre) for genre in (genres or [])]
+        tag_names = []
         for tag in tags or []:
             if isinstance(tag, dict):
-                names.append(tag.get("name") or "")
+                tag_names.append(tag.get("name") or "")
             else:
-                names.append(str(tag))
-        tag_values.append((movie_id, names))
+                tag_names.append(str(tag))
+
+        genre_values.append((movie_id, genre_names))
+        tag_values.append((movie_id, tag_names))
+        taxonomy_values.append((movie_id, [*genre_names, *tag_names]))
+
     return {
+        "taxonomy": _rank_unique_names_by_movie(taxonomy_values, limit),
         "genres": _rank_unique_names_by_movie(genre_values, limit),
         "tags": _rank_unique_names_by_movie(tag_values, limit),
     }
+
+
+def stat_taxonomy(db: Session, limit: int = 10) -> list[dict]:
+    return stat_taxonomy_metadata(db, limit)["taxonomy"]
 
 
 def stat_genres(db: Session, limit: int = 10) -> list[dict]:

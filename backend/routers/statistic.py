@@ -55,6 +55,11 @@ def api_stat_series(limit: int = 10, db: Session = Depends(get_db)):
     return stat_series(db, limit)
 
 
+@router.get("/taxonomy", response_model=list[StatNamedCountOut])
+def api_stat_taxonomy(limit: int = 10, db: Session = Depends(get_db)):
+    return stat_taxonomy(db, limit)
+
+
 @router.get("/genres", response_model=list[StatNamedCountOut])
 def api_stat_genres(limit: int = 10, db: Session = Depends(get_db)):
     return stat_genres(db, limit)

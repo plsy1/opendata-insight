@@ -39,6 +39,7 @@ class ApiContractTests(unittest.TestCase):
             "/statistic/makers",
             "/statistic/labels",
             "/statistic/series",
+            "/statistic/taxonomy",
             "/statistic/genres",
             "/statistic/tags",
             "/prowlarr/search",

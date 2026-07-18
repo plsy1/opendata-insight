@@ -1,9 +1,9 @@
-<div *ngIf="isLoading" class="loading-state">
+<div *ngIf="isLoading" class="movie-detail-loading">
   <i class="fas fa-spinner fa-spin"></i>
   <span>{{ 'COMMON.LOADING' | translate }}</span>
 </div>
 
-<div class="page" *ngIf="!isLoading && data">
+<div class="page movie-detail-page fc2-detail-page" *ngIf="!isLoading && data">
   <!-- ① Hero Row: Title, Meta and Actions -->
   <div class="head-row">
     <h1 class="movie-title">{{ data.title }}</h1>

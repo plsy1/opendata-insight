@@ -66,14 +66,9 @@ export class DownloadStatisticComponent implements OnInit {
             items: data.series,
           },
           {
-            titleKey: 'DASHBOARD.GENRE_RANKING',
+            titleKey: 'DASHBOARD.TAXONOMY_RANKING',
             icon: 'category',
-            items: data.genres,
-          },
-          {
-            titleKey: 'DASHBOARD.TAG_RANKING',
-            icon: 'local_offer',
-            items: data.tags,
+            items: data.taxonomy,
           },
         ];
       },
@@ -89,10 +84,10 @@ export class DownloadStatisticComponent implements OnInit {
   initDailyChart(data: StatAllResponse): void {
     this.dailyChartOptions = {
       grid: {
-        top: '15%',
-        left: '3%',
-        right: '4%',
-        bottom: '15%',
+        top: 16,
+        left: 12,
+        right: 12,
+        bottom: 24,
         containLabel: true,
       },
       tooltip: {
@@ -108,7 +103,8 @@ export class DownloadStatisticComponent implements OnInit {
         axisLabel: { 
           color: '#8a8a8a', 
           fontSize: 10,
-          margin: 12
+          margin: 8,
+          hideOverlap: true,
         },
       },
       yAxis: {
@@ -121,7 +117,7 @@ export class DownloadStatisticComponent implements OnInit {
           name: 'Downloads',
           type: 'line',
           smooth: true,
-          symbolSize: 8,
+          symbolSize: 5,
           itemStyle: { color: '#007bff' },
           areaStyle: {
             color: {
@@ -131,12 +127,12 @@ export class DownloadStatisticComponent implements OnInit {
               x2: 0,
               y2: 1,
               colorStops: [
-                { offset: 0, color: 'rgba(0, 123, 255, 0.3)' },
+                { offset: 0, color: 'rgba(0, 123, 255, 0.2)' },
                 { offset: 1, color: 'rgba(0, 123, 255, 0)' },
               ],
             },
           },
-          lineStyle: { width: 4, color: '#007bff' },
+          lineStyle: { width: 3, color: '#007bff' },
           data: data.daily.map(d => d.count),
         },
       ],

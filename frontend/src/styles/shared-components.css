@@ -1,0 +1,170 @@
+.dashboard-carousel .items-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  padding-bottom: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: var(--primary) transparent;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.dashboard-carousel .items-grid > * {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+}
+
+.dashboard-carousel .items-grid::-webkit-scrollbar { height: 8px; }
+.dashboard-carousel .items-grid::-webkit-scrollbar-track { background: transparent; }
+
+.dashboard-carousel .items-grid::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: var(--primary);
+}
+
+.dashboard-carousel .scroll-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.dashboard-carousel .scroll-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  border: 1px solid var(--border-soft) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: var(--shadow-md) !important;
+  color: var(--text-main) !important;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%);
+  transition: all var(--t-spring) !important;
+  backdrop-filter: blur(8px);
+}
+
+.dashboard-carousel .scroll-wrapper:hover .scroll-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dashboard-carousel .scroll-btn:hover {
+  border-color: var(--primary) !important;
+  background: var(--primary) !important;
+  color: #fff !important;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.dashboard-carousel .left-btn { left: -16px; }
+.dashboard-carousel .right-btn { right: -16px; }
+.dashboard-carousel mat-card-header { padding: 16px 24px 0; }
+.dashboard-carousel mat-card-content { padding: 16px 24px 24px; }
+
+.performer-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  padding: 0;
+}
+
+.performer-card-grid .actress-card {
+  position: relative;
+  overflow: hidden;
+  padding: 16px 8px !important;
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--t-spring);
+}
+
+.performer-card-grid .actress-card:hover {
+  border-color: var(--border-accent);
+  background: var(--bg-hover);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.performer-card-grid .avatar-wrapper {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 12px;
+}
+
+.performer-card-grid .avatar-img {
+  width: 100%;
+  height: 100%;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--border-soft);
+  object-fit: cover;
+  transition: all var(--t-normal);
+}
+
+.performer-card-grid .actress-card:hover .avatar-img {
+  box-shadow: 0 0 0 2px var(--primary);
+  transform: scale(1.08);
+}
+
+.performer-card-grid .avatar-img.blurred { filter: blur(12px); }
+.performer-card-grid .actress-card:hover .avatar-img.blurred { filter: blur(0); }
+
+.performer-card-grid .title {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.performer-card-grid .actress-card:hover .title { color: var(--primary); }
+
+.performer-card-grid .menu-button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: var(--text-faint);
+  opacity: 0;
+}
+
+.performer-card-grid .actress-card:hover .menu-button { opacity: 1; }
+
+.performer-card-grid .menu-button:hover {
+  background: var(--bg-hover);
+  color: var(--primary);
+}
+
+.performer-card-grid .actress-card.dragging {
+  opacity: 0.35;
+  transform: scale(0.95);
+}
+
+.performer-card-grid .actress-card.drag-over {
+  border-color: var(--primary) !important;
+  background: var(--bg-hover) !important;
+  box-shadow: 0 0 0 2px var(--primary), var(--shadow-md) !important;
+  transform: scale(1.05);
+}
+
+.touch-drag-clone {
+  position: fixed;
+  z-index: 9999;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-xl);
+  opacity: 0.85;
+  pointer-events: none;
+  transform: scale(1.08);
+}
+
+@media (max-width: 480px) {
+  .dashboard-carousel .scroll-btn { display: none !important; }
+  .dashboard-carousel .items-grid > * { flex-basis: 80%; }
+}

@@ -1,9 +1,9 @@
-<div *ngIf="isLoading" class="loading-state">
+<div *ngIf="isLoading" class="movie-detail-loading">
   <i class="fas fa-spinner fa-spin"></i>
   <span>{{ 'COMMON.LOADING' | translate }}</span>
 </div>
 
-<div class="page" *ngIf="!isLoading">
+<div class="page movie-detail-page jav-detail-page" *ngIf="!isLoading">
 
   <!-- ② Title + actions — 封面下方 -->
   <div class="head-row">

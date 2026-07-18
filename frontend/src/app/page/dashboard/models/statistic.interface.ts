@@ -32,6 +32,7 @@ export interface StatAllResponse {
   makers: StatNamedItem[];
   labels: StatNamedItem[];
   series: StatNamedItem[];
+  taxonomy: StatNamedItem[];
   genres: StatNamedItem[];
   tags: StatNamedItem[];
 }

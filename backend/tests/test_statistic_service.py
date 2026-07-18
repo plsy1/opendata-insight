@@ -11,6 +11,7 @@ from services.statistic import (
     stat_makers,
     stat_series,
     stat_tags,
+    stat_taxonomy,
 )
 
 
@@ -24,7 +25,11 @@ class StatisticMetadataRankingTests(unittest.TestCase):
             work_id="AAA-001",
             title="First",
             genres=["Drama", "Drama", "Romance"],
-            tags=[{"name": "Featured"}, {"name": "Featured"}],
+            tags=[
+                {"name": "Featured"},
+                {"name": "Featured"},
+                {"name": "Drama"},
+            ],
             casts=[],
             actors=[],
         )
@@ -83,6 +88,14 @@ class StatisticMetadataRankingTests(unittest.TestCase):
     def test_json_metadata_deduplicates_values_within_each_movie(self):
         self.assertEqual(stat_genres(self.db)[0], {"name": "Drama", "count": 2})
         self.assertEqual(stat_tags(self.db)[0], {"name": "Featured", "count": 2})
+
+        taxonomy = {
+            item["name"]: item["count"] for item in stat_taxonomy(self.db)
+        }
+        self.assertEqual(taxonomy["Drama"], 2)
+        self.assertEqual(taxonomy["Featured"], 2)
+        self.assertEqual(taxonomy["Romance"], 1)
+        self.assertEqual(taxonomy["Popular"], 1)
 
 
 if __name__ == "__main__":

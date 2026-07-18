@@ -35,5 +35,6 @@ class StatAllOut(BaseModel):
     makers: list[StatNamedCountOut] = Field(default_factory=list)
     labels: list[StatNamedCountOut] = Field(default_factory=list)
     series: list[StatNamedCountOut] = Field(default_factory=list)
+    taxonomy: list[StatNamedCountOut] = Field(default_factory=list)
     genres: list[StatNamedCountOut] = Field(default_factory=list)
     tags: list[StatNamedCountOut] = Field(default_factory=list)

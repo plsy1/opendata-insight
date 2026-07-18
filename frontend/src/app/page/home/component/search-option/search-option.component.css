@@ -11,16 +11,9 @@
   flex-direction: column;
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-xl);
   overflow: hidden;
-  animation: modalAppear 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes modalAppear {
-  from { opacity: 0; transform: scale(0.95) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 /* Header Section */
@@ -41,9 +34,6 @@
   font-weight: 800;
   font-size: 18px;
   color: var(--primary);
-  letter-spacing: -0.5px;
-  text-transform: uppercase;
-  font-family: 'Outfit', sans-serif;
 }
 
 .header-title mat-icon {
@@ -55,14 +45,12 @@
 
 .close-btn {
   color: var(--text-faint);
-  transition: all 0.2s;
   border-radius: var(--radius-md) !important;
 }
 
 .close-btn:hover {
   background: var(--bg-hover);
   color: #ef4444;
-  transform: rotate(90deg);
 }
 
 /* Body Content */
@@ -87,7 +75,6 @@
   background: var(--bg-raised) !important;
   border-radius: var(--radius-lg) !important;
   padding: 4px 16px !important;
-  transition: all 0.2s;
 }
 
 ::ng-deep .search-field.mat-focused .mat-mdc-form-field-flex {
@@ -115,8 +102,6 @@
   font-size: 13px;
   font-weight: 700;
   color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .recent-title mat-icon {
@@ -142,7 +127,6 @@
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-full);
   cursor: pointer;
-  transition: all 0.2s;
   font-size: 13px;
   font-weight: 500;
   color: var(--text-main);
@@ -166,8 +150,6 @@
 .recent-item:hover {
   background: var(--bg-raised);
   border-color: var(--primary);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
 }
 
 .delete-recent {
@@ -176,7 +158,6 @@
   height: 14px;
   color: var(--text-faint);
   opacity: 0;
-  transition: all 0.2s;
   border-radius: 50%;
   padding: 2px;
   flex: 0 0 auto;
@@ -187,10 +168,8 @@
 }
 
 .delete-recent:hover {
-  background: rgba(239, 68, 68, 0.1);
   color: #ef4444 !important;
   opacity: 1 !important;
-  transform: scale(1.1);
 }
 
 /* Search Methods Divider */
@@ -201,8 +180,6 @@
   color: var(--text-faint);
   font-size: 12px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 .search-divider::after {
@@ -229,7 +206,6 @@
   border-radius: var(--radius-lg) !important;
   background: var(--bg-card) !important;
   border: 1px solid var(--border-soft) !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
   text-align: left !important;
 }
 
@@ -269,15 +245,6 @@
 .type-btn:hover mat-icon {
   color: var(--primary);
 }
-
-.type-btn:active {
-  transform: scale(0.98) translateX(4px);
-}
-
-/* Specific button icons colors on hover */
-.torrents-btn:hover mat-icon { color: #8b5cf6; }  /* Violet */
-.actress-btn:hover mat-icon { color: #ec4899; }   /* Pink */
-.keywords-btn:hover mat-icon { color: #3b82f6; }  /* Blue */
 
 @media (max-width: 600px) {
   .dialog-container {
