@@ -1,3 +1,6 @@
+import base64
+from datetime import datetime
+
 from database import ActorData, MovieData, MovieSubscribe, ActorSubscribe
 from schemas.movies import MovieDataOut, MovieProductOut
 from copy import deepcopy
@@ -5,9 +8,11 @@ from utils.logs import LOG_ERROR
 from services.avbase import get_actor_information_by_name_service
 from schemas.feed import (
     MovieFeedItemOut,
+    MovieFeedPageOut,
     MovieSubscriptionRulesOut,
     MovieSubscriptionRulesUpdate,
 )
+from sqlalchemy import and_, or_
 from sqlalchemy.orm import selectinload, Session
 from enum import Enum
 from dataclasses import dataclass
@@ -213,59 +218,115 @@ async def actor_operation_service(
         return False
 
 
-def movie_subscribe_list_service(
-    db: Session, status: MovieStatus
-) -> list[MovieFeedItemOut]:
-
-    downloaded_flag = status == MovieStatus.DOWNLOADED
-
-    subs = (
+def _movie_feed_query(db: Session, downloaded: bool):
+    return (
         db.query(MovieSubscribe)
+        .join(MovieSubscribe.movie)
         .options(
             selectinload(MovieSubscribe.movie).selectinload(MovieData.products),
             selectinload(MovieSubscribe.movie).selectinload(MovieData.subscribers),
         )
-        .filter(MovieSubscribe.is_downloaded == downloaded_flag)
+        .filter(
+            MovieSubscribe.is_downloaded == downloaded,
+            MovieData.products.any(),
+        )
+    )
+
+
+def _movie_feed_item(sub: MovieSubscribe) -> MovieFeedItemOut:
+    movie_out = MovieDataOut.model_validate(sub.movie)
+    merged_product = _merge_products(movie_out.products)
+
+    img_url = merged_product.image_url
+    if not img_url and merged_product.thumbnail_url:
+        img_url = merged_product.thumbnail_url.replace("ps.jpg", "pl.jpg")
+
+    actor_names = {
+        actor.get("name")
+        for actor in (movie_out.actors + movie_out.casts)
+        if actor.get("name")
+    }
+
+    movie_out.primary_product = merged_product
+    return MovieFeedItemOut(
+        id=movie_out.work_id,
+        full_id=f"{movie_out.prefix}:{movie_out.work_id}",
+        title=merged_product.title or movie_out.title,
+        release_date=merged_product.date or movie_out.min_date or "",
+        img_url=img_url or "",
+        actors=list(actor_names),
+        movie=movie_out,
+        subscription_rules=_movie_subscription_rules_out(sub.rule_config),
+    )
+
+
+def movie_subscribe_list_service(
+    db: Session, status: MovieStatus
+) -> list[MovieFeedItemOut]:
+    subs = (
+        _movie_feed_query(db, status == MovieStatus.DOWNLOADED)
         .order_by(MovieSubscribe.created_at.desc())
         .all()
     )
+    return [_movie_feed_item(sub) for sub in subs]
 
-    posters: list[MovieFeedItemOut] = []
 
-    for sub in subs:
-        movie = sub.movie
-        movie_out = MovieDataOut.model_validate(movie)
+def _encode_download_cursor(sub: MovieSubscribe) -> str:
+    value = f"{sub.created_at.isoformat()}|{sub.movie_id}"
+    return base64.urlsafe_b64encode(value.encode()).decode().rstrip("=")
 
-        if not movie_out.products:
-            continue
 
-        merged_product = _merge_products(movie_out.products)
+def _decode_download_cursor(cursor: str) -> tuple[datetime, int]:
+    try:
+        padded = cursor + "=" * (-len(cursor) % 4)
+        value = base64.urlsafe_b64decode(padded.encode()).decode()
+        created_at, movie_id = value.rsplit("|", 1)
+        return datetime.fromisoformat(created_at), int(movie_id)
+    except (ValueError, UnicodeDecodeError) as exc:
+        raise ValueError("Invalid download history cursor") from exc
 
-        img_url = merged_product.image_url
-        if not img_url and merged_product.thumbnail_url:
-            img_url = merged_product.thumbnail_url.replace("ps.jpg", "pl.jpg")
 
-        actor_names = {
-            actor.get("name")
-            for actor in (movie_out.actors + movie_out.casts)
-            if actor.get("name")
-        }
+def movie_downloaded_page_service(
+    db: Session,
+    *,
+    limit: int = 30,
+    cursor: str | None = None,
+) -> MovieFeedPageOut:
+    base_query = _movie_feed_query(db, True)
+    total = base_query.count()
 
-        movie_out.primary_product = merged_product
-        poster = MovieFeedItemOut(
-            id=movie_out.work_id,
-            full_id = f"{movie_out.prefix}:{movie_out.work_id}",
-            title=merged_product.title or movie_out.title,
-            release_date=merged_product.date or movie_out.min_date or "",
-            img_url=img_url or "",
-            actors=list(actor_names),
-            movie=movie_out,
-            subscription_rules=_movie_subscription_rules_out(sub.rule_config),
+    if cursor:
+        cursor_created_at, cursor_movie_id = _decode_download_cursor(cursor)
+        base_query = base_query.filter(
+            or_(
+                MovieSubscribe.created_at < cursor_created_at,
+                and_(
+                    MovieSubscribe.created_at == cursor_created_at,
+                    MovieSubscribe.movie_id < cursor_movie_id,
+                ),
+            )
         )
 
-        posters.append(poster)
-
-    return posters
+    rows = (
+        base_query.order_by(
+            MovieSubscribe.created_at.desc(),
+            MovieSubscribe.movie_id.desc(),
+        )
+        .limit(limit + 1)
+        .all()
+    )
+    has_more = len(rows) > limit
+    page_rows = rows[:limit]
+    return MovieFeedPageOut(
+        items=[_movie_feed_item(sub) for sub in page_rows],
+        next_cursor=(
+            _encode_download_cursor(page_rows[-1])
+            if has_more and page_rows
+            else None
+        ),
+        has_more=has_more,
+        total=total,
+    )
 
 
 def _movie_subscription_rules_out(rule_config) -> MovieSubscriptionRulesOut:

@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CommonService } from '../../../common.service';
-import { MovieFeedItem } from '../../../models/movie-data.interface';
+import {
+  MovieFeedItem,
+  MovieFeedPage,
+} from '../../../models/movie-data.interface';
 import { MovieSubscriptionRules } from '../../../models/subscription-rules.interface';
 
 @Injectable({
@@ -14,8 +17,13 @@ export class ProductionSubscriptionService {
     return this.common.request<MovieFeedItem[]>('GET', 'feed/movieSubscribe');
   }
 
-  getDownloadedKeywordsFeedListGet(): Observable<MovieFeedItem[]> {
-    return this.common.request<MovieFeedItem[]>('GET', 'feed/movieDownloaded');
+  getDownloadedMoviePage(
+    cursor: string | null = null,
+    limit = 30
+  ): Observable<MovieFeedPage> {
+    return this.common.request<MovieFeedPage>('GET', 'feed/movieDownloaded', {
+      params: { cursor, limit },
+    });
   }
 
   updateMovieSubscriptionRules(

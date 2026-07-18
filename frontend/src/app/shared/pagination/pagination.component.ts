@@ -16,6 +16,7 @@ export class PaginationComponent {
   @Input() hasNext = true;
   @Input() hasPrevious?: boolean;
   @Input() showPageInfo = true;
+  @Input() compact = false;
 
   get canGoPrevious(): boolean {
     return this.hasPrevious !== undefined ? this.hasPrevious : this.page > 1;

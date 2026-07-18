@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 @import './styles/movie-detail.css';
 @import './styles/shared-components.css';
+@import './styles/avbase-explore.css';
+@import './styles/subscription-rules.css';
 
 /* ============================================================
    DESIGN SYSTEM — ULTRA PREMIUM DARK-FIRST
@@ -24,7 +26,7 @@
 
   /* Surface — Light */
   --bg-main:    #f1f5f9;
-  --bg-card:    #ffffff;
+  --bg-card:    #f8fafc;
   --bg-raised:  #f8fafc;
   --bg-sidebar: rgba(255, 255, 255, 0.9);
   --bg-topbar:  rgba(255, 255, 255, 0.85);

@@ -134,11 +134,12 @@
   width: 26px;
   height: 26px;
   place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  border: 1px solid rgba(147, 197, 253, 0.62);
   border-radius: var(--radius-full, 50%);
   color: #fff;
-  background: rgba(124, 58, 237, 0.82);
-  box-shadow: 0 4px 12px rgba(76, 29, 149, 0.3);
+  background: var(--primary-gradient);
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.32);
+  backdrop-filter: blur(8px);
   z-index: 10;
 }
 

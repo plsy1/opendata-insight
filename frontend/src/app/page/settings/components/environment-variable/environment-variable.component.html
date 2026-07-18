@@ -33,7 +33,7 @@
           </div>
         </div>
 
-        <mat-form-field appearance="outline" class="env-field">
+        <mat-form-field appearance="outline" class="env-field hinted-field">
           <mat-label>{{ 'SETTINGS.DEFAULT_DOWNLOAD_PATH' | translate }}</mat-label>
           <input
             matInput
@@ -44,7 +44,7 @@
         </mat-form-field>
 
         <div class="env-row">
-          <mat-form-field appearance="outline" class="env-field media-path-field jav-path">
+          <mat-form-field appearance="outline" class="env-field media-path-field jav-path hinted-field">
             <mat-label>{{ 'SETTINGS.JAV_DOWNLOAD_PATH' | translate }}</mat-label>
             <input
               matInput
@@ -54,7 +54,7 @@
             <mat-hint>{{ 'SETTINGS.JAV_DOWNLOAD_PATH_HINT' | translate }}</mat-hint>
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="env-field media-path-field fc2-path">
+          <mat-form-field appearance="outline" class="env-field media-path-field fc2-path hinted-field">
             <mat-label>{{ 'SETTINGS.FC2_DOWNLOAD_PATH' | translate }}</mat-label>
             <input
               matInput
@@ -81,7 +81,7 @@
             <input matInput [(ngModel)]="env.QB_URL" name="QB_URL" />
           </mat-form-field>
 
-          <mat-form-field appearance="outline" class="env-field">
+          <mat-form-field appearance="outline" class="env-field hinted-field">
             <mat-label>{{ 'SETTINGS.QB_KEYWORD_FILTER' | translate }}</mat-label>
             <input matInput [(ngModel)]="env.QB_KEYWORD_FILTER" name="QB_KEYWORD_FILTER" />
             <mat-hint>{{ 'SETTINGS.QB_KEYWORD_FILTER_HINT' | translate }}</mat-hint>

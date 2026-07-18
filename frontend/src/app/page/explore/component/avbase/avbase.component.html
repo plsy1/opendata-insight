@@ -39,6 +39,14 @@
 </div>
 
 <div class="release-header">
+  <button
+    type="button"
+    class="date-nav"
+    (click)="prevDay()"
+    [attr.aria-label]="'EXPLORE.AVBASE_PREVIOUS_DAY' | translate"
+  >
+    <mat-icon>chevron_left</mat-icon>
+  </button>
   <div class="date-jump" (click)="picker.open()">
     <h2 class="jump-title">
       {{ 'EXPLORE.RELEASED_ON' | translate }} {{ currentDate | date : "yyyy-MM-dd" }}
@@ -53,20 +61,123 @@
     />
     <mat-datepicker #picker></mat-datepicker>
   </div>
+  <button
+    type="button"
+    class="date-nav"
+    (click)="nextDay()"
+    [attr.aria-label]="'EXPLORE.AVBASE_NEXT_DAY' | translate"
+  >
+    <mat-icon>chevron_right</mat-icon>
+  </button>
 </div>
 
-<app-pagination
-  [hasPrevious]="true"
-  [showPageInfo]="false"
-  (previousClick)="prevDay()"
-  (nextClick)="nextDay()"
-></app-pagination>
+<section class="release-filters" *ngIf="releaseData.length">
+  <div class="maker-filter-row">
+    <div
+      class="maker-tags"
+      [class.expanded]="makersExpanded"
+      role="group"
+      [attr.aria-label]="'EXPLORE.AVBASE_MAKER_FILTER' | translate"
+    >
+      <button
+        type="button"
+        class="maker-tag"
+        [class.active]="selectedMaker === ''"
+        (click)="selectMaker('')"
+      >
+        {{ 'EXPLORE.AVBASE_ALL_MAKERS' | translate }}
+        <span>{{ totalReleaseCount }}</span>
+      </button>
+      <button
+        type="button"
+        class="maker-tag"
+        *ngFor="let group of releaseData; trackBy: trackMaker"
+        [class.active]="selectedMaker === group.maker"
+        (click)="selectMaker(group.maker)"
+      >
+        {{ group.maker }}
+        <span>{{ group.works.length }}</span>
+      </button>
+    </div>
+    <button
+      type="button"
+      class="maker-toggle"
+      *ngIf="releaseData.length > 4"
+      (click)="toggleMakers()"
+    >
+      {{
+        (makersExpanded
+          ? 'EXPLORE.AVBASE_COLLAPSE_MAKERS'
+          : 'EXPLORE.AVBASE_MORE_MAKERS') | translate
+      }}
+      <mat-icon>{{ makersExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+    </button>
+  </div>
 
-<div *ngFor="let group of releaseData">
+  <div class="release-search-wrap">
+    <label class="release-search">
+      <mat-icon>search</mat-icon>
+      <input
+        type="search"
+        [(ngModel)]="releaseFilter"
+        (ngModelChange)="applyReleaseFilters()"
+        (focus)="openFilterHistory()"
+        (click)="openFilterHistory()"
+        (blur)="closeFilterHistory()"
+        (keydown.enter)="commitReleaseFilter(); $event.preventDefault()"
+        [placeholder]="'EXPLORE.AVBASE_FILTER_PLACEHOLDER' | translate"
+        autocomplete="off"
+      />
+      <button
+        type="button"
+        *ngIf="releaseFilter"
+        (mousedown)="$event.preventDefault()"
+        (click)="clearReleaseFilter()"
+        [attr.aria-label]="'COMMON.CLOSE' | translate"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </label>
+
+    <div
+      class="filter-history"
+      *ngIf="filterHistoryOpen && visibleFilterHistory.length"
+      (mousedown)="$event.preventDefault()"
+    >
+      <div class="filter-history-title">
+        <mat-icon>history</mat-icon>
+        {{ 'SEARCH_OPTION.RECENT_ACTIVITY' | translate }}
+      </div>
+      <div
+        class="filter-history-item"
+        *ngFor="let option of visibleFilterHistory; trackBy: trackFilterHistory"
+        (click)="selectFilterHistory(option)"
+      >
+        <span>{{ option }}</span>
+        <button
+          type="button"
+          (click)="removeFilterHistory(option, $event)"
+          [attr.aria-label]="'COMMON.DELETE' | translate"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-result">
+    {{
+      'EXPLORE.AVBASE_FILTER_RESULT'
+        | translate: { visible: visibleReleaseCount, total: totalReleaseCount }
+    }}
+  </div>
+</section>
+
+<div *ngFor="let group of filteredReleaseData; trackBy: trackMaker">
   <h3>{{ group.maker }}</h3>
   <div class="poster-grid">
     <app-movie-card
-      *ngFor="let work of group.works"
+      *ngFor="let work of group.works; trackBy: trackWork"
       [id]="work.id"
       [title]="work.title"
       [imgUrl]="work.img_url"
@@ -77,9 +188,10 @@
   </div>
 </div>
 
-<app-pagination
-  [hasPrevious]="true"
-  [showPageInfo]="false"
-  (previousClick)="prevDay()"
-  (nextClick)="nextDay()"
-></app-pagination>
+<div
+  class="no-release-results"
+  *ngIf="releaseData.length && !filteredReleaseData.length"
+>
+  <mat-icon>filter_alt_off</mat-icon>
+  <span>{{ 'EXPLORE.AVBASE_NO_FILTER_RESULTS' | translate }}</span>
+</div>

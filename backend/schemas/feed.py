@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 from schemas.avbase import MoviePoster
@@ -20,3 +22,10 @@ class MovieFeedItemOut(MoviePoster):
 
     movie: MovieDataOut
     subscription_rules: MovieSubscriptionRulesOut
+
+
+class MovieFeedPageOut(BaseModel):
+    items: list[MovieFeedItemOut] = Field(default_factory=list)
+    next_cursor: Optional[str] = None
+    has_more: bool = False
+    total: int = 0

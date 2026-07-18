@@ -1,4 +1,43 @@
+.ranking-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 8px 0 12px;
+}
+
+.ranking-header h2 {
+  margin: 0;
+}
+
+.ranking-header__controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.ranking-type {
+  width: 200px;
+}
+
 @media (max-width: 720px) {
+  .ranking-header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .ranking-header__controls {
+    width: 100%;
+    justify-content: space-between;
+    margin-left: 0;
+  }
+
+  .ranking-type {
+    width: min(200px, calc(100% - 132px));
+  }
+
   .poster-grid {
     grid-template-columns: 1fr;
     gap: 12px;

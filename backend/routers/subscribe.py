@@ -4,7 +4,11 @@ from database import get_db
 from sqlalchemy.orm import Session
 from services.system import replace_domain_in_value
 from schemas.actor import ActorListOut, ActorOrderUpdate
-from schemas.feed import MovieFeedItemOut, MovieSubscriptionRulesUpdate
+from schemas.feed import (
+    MovieFeedItemOut,
+    MovieFeedPageOut,
+    MovieSubscriptionRulesUpdate,
+)
 
 router = APIRouter()
 
@@ -150,9 +154,18 @@ async def update_actor_order(
     )
 
 
-@router.get("/movieDownloaded", response_model=list[MovieFeedItemOut])
+@router.get("/movieDownloaded", response_model=MovieFeedPageOut)
 async def get_movies_downloaded_list(
+    limit: int = Query(30, ge=1, le=100),
+    cursor: str | None = Query(None),
     db: Session = Depends(get_db),
 ):
-    result = movie_subscribe_list_service(db, MovieStatus.DOWNLOADED)
+    try:
+        result = movie_downloaded_page_service(
+            db,
+            limit=limit,
+            cursor=cursor,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return replace_domain_in_value(result)

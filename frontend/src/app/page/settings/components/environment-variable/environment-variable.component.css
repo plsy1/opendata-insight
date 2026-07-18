@@ -42,6 +42,10 @@ mat-card-title {
   width: 100%;
 }
 
+.hinted-field {
+  margin-bottom: 10px;
+}
+
 .env-section {
   margin: 0;
   padding: 18px;

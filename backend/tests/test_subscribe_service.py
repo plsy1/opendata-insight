@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
 from sqlalchemy import create_engine
@@ -13,6 +14,7 @@ from services.subscribe import (
     MovieStatus,
     Operation,
     actor_operation_service,
+    movie_downloaded_page_service,
     movie_subscribe_list_service,
     update_movie_subscription_rules_service,
 )
@@ -85,6 +87,68 @@ class MovieFeedTests(unittest.TestCase):
                 custom_result[0].subscription_rules.quality_rules[0].resolution,
                 "2160p",
             )
+
+        engine.dispose()
+
+    def test_download_history_uses_stable_cursor_pages(self):
+        engine = create_engine("sqlite:///:memory:")
+        Base.metadata.create_all(engine)
+        started_at = datetime(2026, 7, 18, 12, 0, 0)
+
+        with Session(engine) as db:
+            for index in range(4):
+                movie = MovieData(
+                    work_id=f"HISTORY-{index}",
+                    prefix="dvd",
+                    title=f"History movie {index}",
+                )
+                movie.products = [
+                    MovieProduct(
+                        product_id=f"store-{index}",
+                        url=f"https://store.example/{index}",
+                        title=f"Product {index}",
+                    )
+                ]
+                movie.subscribers = MovieSubscribe(
+                    is_downloaded=True,
+                    created_at=started_at + timedelta(minutes=index),
+                )
+                db.add(movie)
+            db.commit()
+
+            first_page = movie_downloaded_page_service(db, limit=2)
+            second_page = movie_downloaded_page_service(
+                db,
+                limit=2,
+                cursor=first_page.next_cursor,
+            )
+
+            self.assertEqual(first_page.total, 4)
+            self.assertTrue(first_page.has_more)
+            self.assertIsNotNone(first_page.next_cursor)
+            self.assertEqual(
+                [item.id for item in first_page.items],
+                ["HISTORY-3", "HISTORY-2"],
+            )
+            self.assertFalse(second_page.has_more)
+            self.assertIsNone(second_page.next_cursor)
+            self.assertEqual(
+                [item.id for item in second_page.items],
+                ["HISTORY-1", "HISTORY-0"],
+            )
+
+        engine.dispose()
+
+    def test_download_history_rejects_invalid_cursor(self):
+        engine = create_engine("sqlite:///:memory:")
+        Base.metadata.create_all(engine)
+
+        with Session(engine) as db:
+            with self.assertRaisesRegex(ValueError, "Invalid download history cursor"):
+                movie_downloaded_page_service(
+                    db,
+                    cursor="not-a-valid-cursor",
+                )
 
         engine.dispose()
 

@@ -87,3 +87,10 @@ export interface MovieFeedItem extends MoviePoster {
   movie: MovieData;
   subscription_rules: MovieSubscriptionRules;
 }
+
+export interface MovieFeedPage {
+  items: MovieFeedItem[];
+  next_cursor: string | null;
+  has_more: boolean;
+  total: number;
+}

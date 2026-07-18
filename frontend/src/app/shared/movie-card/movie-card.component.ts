@@ -96,7 +96,7 @@ export class MovieCardComponent {
 
     this.shareService.removeMovieSubscribe(this.id).subscribe({
       next: () => {
-        this.movieDelete.emit();
+        this.movieDelete.emit(this.id);
       },
       error: (error) => {
         console.error('Failed to remove RSS feed:', error);

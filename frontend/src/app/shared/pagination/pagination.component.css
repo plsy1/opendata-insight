@@ -7,6 +7,36 @@
   width: 100%;
 }
 
+.pagination-container.compact {
+  width: auto;
+  gap: 8px;
+  padding: 0;
+}
+
+.pagination-container.compact .nav-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.pagination-container.compact .page-pill {
+  height: 36px;
+  padding: 0 14px;
+}
+
+.pagination-container.compact .page-info {
+  gap: 6px;
+}
+
+.pagination-container.compact .page-info .label {
+  font-size: 9px;
+}
+
+.pagination-container.compact .page-info .number {
+  font-size: 15px;
+}
+
 /* ── Navigation Buttons ──────────────────────── */
 .nav-btn {
   width: 44px;

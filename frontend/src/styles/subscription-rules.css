@@ -1,0 +1,79 @@
+app-subscription-rules .movie-rule-mode mat-slide-toggle {
+  --mdc-switch-selected-track-color: var(--primary);
+  --mdc-switch-selected-hover-track-color: var(--primary-dark);
+  --mdc-switch-selected-focus-track-color: var(--primary);
+  --mdc-switch-selected-pressed-track-color: var(--primary-dark);
+  --mdc-switch-selected-handle-color: #fff;
+  --mdc-switch-selected-hover-handle-color: #fff;
+  --mdc-switch-selected-focus-handle-color: #fff;
+  --mdc-switch-selected-pressed-handle-color: #fff;
+  --mdc-switch-selected-icon-color: var(--primary);
+  --mdc-switch-selected-hover-state-layer-color: var(--primary);
+  --mdc-switch-selected-focus-state-layer-color: var(--primary);
+  --mdc-switch-selected-pressed-state-layer-color: var(--primary);
+  --mdc-switch-unselected-track-color: var(--border-medium);
+  --mdc-switch-unselected-hover-track-color: var(--border-accent);
+  --mdc-switch-unselected-focus-track-color: var(--border-accent);
+  --mdc-switch-unselected-handle-color: var(--text-muted);
+  --mdc-switch-unselected-hover-handle-color: var(--text-main);
+  --mdc-switch-unselected-focus-handle-color: var(--text-main);
+  --mat-switch-selected-track-outline-color: transparent;
+  --mat-switch-label-text-color: var(--text-main);
+}
+
+app-subscription-rules .add-rule-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 0 0 auto;
+  border: 1px solid var(--border-accent) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-hover) !important;
+  color: var(--primary) !important;
+  font-weight: 700;
+  box-shadow: none !important;
+  --mdc-outlined-button-label-text-color: var(--primary);
+  --mdc-outlined-button-outline-color: var(--border-accent);
+  --mat-outlined-button-state-layer-color: var(--primary);
+  --mat-outlined-button-ripple-color: rgba(59, 130, 246, 0.14);
+}
+
+app-subscription-rules .add-rule-btn:hover {
+  border-color: var(--primary) !important;
+  background: rgba(59, 130, 246, 0.12) !important;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.14) !important;
+}
+
+app-subscription-rules .form-actions button {
+  min-width: 88px;
+  height: 40px;
+  border-radius: var(--radius-md) !important;
+  font-weight: 700;
+}
+
+app-subscription-rules .cancel-button {
+  border: 1px solid var(--border-medium) !important;
+  background: var(--bg-raised) !important;
+  color: var(--text-muted) !important;
+}
+
+app-subscription-rules .cancel-button:hover {
+  border-color: var(--border-accent) !important;
+  background: var(--bg-hover) !important;
+  color: var(--primary) !important;
+}
+
+app-subscription-rules button[mat-raised-button][type='submit'] {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid transparent !important;
+  background: var(--primary-gradient) !important;
+  color: var(--text-on-primary) !important;
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.24) !important;
+}
+
+app-subscription-rules button[mat-raised-button][type='submit']:hover {
+  box-shadow: 0 8px 20px rgba(59, 130, 246, 0.34) !important;
+  transform: translateY(-1px);
+}

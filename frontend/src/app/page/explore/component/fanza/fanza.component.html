@@ -1,4 +1,12 @@
-<h2>{{ 'EXPLORE.FANZA_ACTRESS_RANKING' | translate }}</h2>
+<div class="ranking-header">
+  <h2>{{ 'EXPLORE.FANZA_ACTRESS_RANKING' | translate }}</h2>
+  <app-pagination
+    [page]="currentPage"
+    [compact]="true"
+    (previousClick)="prevPage()"
+    (nextClick)="nextPage()"
+  ></app-pagination>
+</div>
 
 <div>
   <div class="card-grid">
@@ -22,42 +30,45 @@
   </div>
 </div>
 
-<app-pagination
-  [page]="currentPage"
-  (previousClick)="prevPage()"
-  (nextClick)="nextPage()"
-></app-pagination>
+<div class="ranking-header ranking-header--works">
+  <h2>{{ 'EXPLORE.WORK_RANKING' | translate }}</h2>
+  <div class="ranking-header__controls">
+    <mat-form-field
+      class="ranking-type"
+      appearance="outline"
+      subscriptSizing="dynamic"
+    >
+      <mat-label>{{ 'EXPLORE.RANKING_TYPE' | translate }}</mat-label>
+      <mat-select
+        [(ngModel)]="workRankingType"
+        (ngModelChange)="onWorkRankingTypeChange($event)"
+      >
+        <mat-select-trigger>
+          {{
+            workRankingType === RankingTypeOfWorks.Daily
+              ? ('EXPLORE.DAILY' | translate)
+              : workRankingType === RankingTypeOfWorks.Weekly
+              ? ('EXPLORE.WEEKLY' | translate)
+              : workRankingType === RankingTypeOfWorks.Monthly
+              ? ('EXPLORE.MONTHLY' | translate)
+              : ('EXPLORE.SELECT_TYPE' | translate)
+          }}
+        </mat-select-trigger>
 
-<h2>{{ 'EXPLORE.WORK_RANKING' | translate }}</h2>
-<mat-form-field appearance="outline">
-  <mat-label>{{ 'EXPLORE.RANKING_TYPE' | translate }}</mat-label>
-  <mat-select
-    [(ngModel)]="workRankingType"
-    (ngModelChange)="onWorkRankingTypeChange($event)"
-  >
-    <mat-select-trigger>
-      {{
-        workRankingType === RankingTypeOfWorks.Daily
-          ? ('EXPLORE.DAILY' | translate)
-          : workRankingType === RankingTypeOfWorks.Weekly
-          ? ('EXPLORE.WEEKLY' | translate)
-          : workRankingType === RankingTypeOfWorks.Monthly
-          ? ('EXPLORE.MONTHLY' | translate)
-          : ('EXPLORE.SELECT_TYPE' | translate)
-      }}
-    </mat-select-trigger>
+        <mat-option [value]="RankingTypeOfWorks.Daily">{{ 'EXPLORE.DAILY' | translate }}</mat-option>
+        <mat-option [value]="RankingTypeOfWorks.Weekly">{{ 'EXPLORE.WEEKLY' | translate }}</mat-option>
+        <mat-option [value]="RankingTypeOfWorks.Monthly">{{ 'EXPLORE.MONTHLY' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-    <mat-option [value]="RankingTypeOfWorks.Daily">{{ 'EXPLORE.DAILY' | translate }}</mat-option>
-    <mat-option [value]="RankingTypeOfWorks.Weekly">{{ 'EXPLORE.WEEKLY' | translate }}</mat-option>
-    <mat-option [value]="RankingTypeOfWorks.Monthly">{{ 'EXPLORE.MONTHLY' | translate }}</mat-option>
-  </mat-select>
-</mat-form-field>
-
-<app-pagination
-  [page]="currentWorkPage"
-  (previousClick)="prevWorkPage()"
-  (nextClick)="nextWorkPage()"
-></app-pagination>
+    <app-pagination
+      [page]="currentWorkPage"
+      [compact]="true"
+      (previousClick)="prevWorkPage()"
+      (nextClick)="nextWorkPage()"
+    ></app-pagination>
+  </div>
+</div>
 
 <div class="poster-grid">
   <app-movie-card

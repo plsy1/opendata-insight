@@ -12,7 +12,6 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { CommonService } from '../../../../common.service';
 
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { APP_PATHS } from '../../../../app-paths';
 
@@ -27,7 +26,6 @@ import { APP_PATHS } from '../../../../app-paths';
     CommonModule,
     MatAutocompleteModule,
     MatButtonToggleModule,
-    MatDialogModule,
     MatIconModule,
     TranslateModule,
   ],
@@ -149,10 +147,6 @@ export class SearchOptionComponent {
       'searchKeywordsOptions',
       JSON.stringify(this.searchKeywordsOptions)
     );
-  }
-
-  close() {
-    this.dialogRef.close();
   }
 
   showErrorNotification(message: string) {

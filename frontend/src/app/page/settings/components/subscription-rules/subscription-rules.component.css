@@ -143,12 +143,8 @@ mat-card-title {
 .global-excluded-field,
 .rule-field { width: 100%; }
 
-.add-rule-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  flex: 0 0 auto;
-  color: var(--primary);
+.hinted-field {
+  margin-bottom: 10px;
 }
 
 .quality-rule {
@@ -218,12 +214,6 @@ mat-card-title {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-}
-
-button[mat-raised-button][type='submit'] {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
 }
 
 @media (max-width: 720px) {

@@ -1,5 +1,15 @@
+<div class="history-toolbar" *ngIf="total > 0">
+  {{
+    'SUBSCRIPTION.HISTORY_PROGRESS'
+      | translate: { loaded: keywordFeeds.length, total: total }
+  }}
+</div>
+
 <div class="poster-grid">
-  <div class="poster-wrapper" *ngFor="let movie of keywordFeeds">
+  <div
+    class="poster-wrapper"
+    *ngFor="let movie of keywordFeeds; trackBy: trackByMovie"
+  >
     <app-movie-card
       [id]="movie.id"
       [title]="movie.title"
@@ -7,10 +17,37 @@
       [releaseDate]="movie.release_date || ''"
       [actors]="movie.actors"
       (movieClick)="posterClick(movie.full_id)"
-      (movieDelete)="onUnsubscribeClick()"
+      (movieDelete)="onMovieDelete($event)"
       [showID]="true"
       [showDetialButton]="true"
       [enableBlur]="ProductionSubscriptionService.isEnableBlur$() | async"
     ></app-movie-card>
   </div>
 </div>
+
+<div class="history-state" *ngIf="isLoading">
+  <i class="fas fa-circle-notch fa-spin"></i>
+  {{ 'COMMON.LOADING' | translate }}
+</div>
+
+<div class="history-state error" *ngIf="loadError && !isLoading">
+  <span>{{ 'SUBSCRIPTION.HISTORY_LOAD_FAILED' | translate }}</span>
+  <button type="button" (click)="loadNextPage()">
+    {{ 'SUBSCRIPTION.HISTORY_RETRY' | translate }}
+  </button>
+</div>
+
+<div
+  class="history-state empty"
+  *ngIf="!isLoading && !loadError && keywordFeeds.length === 0"
+>
+  <i class="fas fa-clock-rotate-left"></i>
+  {{ 'SUBSCRIPTION.HISTORY_EMPTY' | translate }}
+</div>
+
+<div
+  #loadSentinel
+  class="load-sentinel"
+  *ngIf="hasMore && !isLoading && !loadError"
+  aria-hidden="true"
+></div>
