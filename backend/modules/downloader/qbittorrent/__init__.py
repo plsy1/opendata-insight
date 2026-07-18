@@ -5,8 +5,24 @@ from io import BytesIO
 from urllib.parse import urlparse
 
 
+def _normalize_keyword_filter(
+    keywords_filter: str | list[str] | None,
+) -> list[str]:
+    if isinstance(keywords_filter, str):
+        values = keywords_filter.split(",")
+    else:
+        values = keywords_filter or []
+    return [str(value).strip().casefold() for value in values if str(value).strip()]
+
+
 class QB:
-    def __init__(self, qb_url: str, username: str, password: str, keywords_filter: str):
+    def __init__(
+        self,
+        qb_url: str,
+        username: str,
+        password: str,
+        keywords_filter: str | list[str] | None,
+    ):
 
         parsed = urlparse(qb_url)
 
@@ -15,7 +31,7 @@ class QB:
 
         self.tags = "kanojo"
         self.random_tag = None
-        self.filter = [kw.strip() for kw in keywords_filter.split(",") if kw.strip()]
+        self.filter = _normalize_keyword_filter(keywords_filter)
 
         self.qb = Client(host=host, port=port, username=username, password=password)
 
@@ -158,7 +174,12 @@ _qb_instance: QB | None = None
 _qb_lock = asyncio.Lock()
 
 
-async def init_qb(qb_url: str, username: str, password: str, filter: str) -> QB:
+async def init_qb(
+    qb_url: str,
+    username: str,
+    password: str,
+    filter: str | list[str] | None,
+) -> QB:
     global _qb_instance
     async with _qb_lock:
         if _qb_instance is None:

@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from database import Base
 from database.models.movies import MovieData, MovieProduct
+from modules.downloader.qbittorrent import _normalize_keyword_filter
 from services.downloader import (
     build_download_tags,
     enrich_downloading_torrents,
@@ -93,6 +94,23 @@ class DownloadMetadataTests(unittest.TestCase):
 
         self.assertIsNone(result[0]["work_id"])
         self.assertIsNone(result[0]["movie"])
+
+
+class QBKeywordFilterTests(unittest.TestCase):
+    def test_accepts_webui_list_format(self):
+        self.assertEqual(
+            _normalize_keyword_filter(["游戏大全", " 996GG.CC ", ""]),
+            ["游戏大全", "996gg.cc"],
+        )
+
+    def test_accepts_legacy_comma_separated_format(self):
+        self.assertEqual(
+            _normalize_keyword_filter("游戏大全, 996GG.CC, 海獺加速"),
+            ["游戏大全", "996gg.cc", "海獺加速"],
+        )
+
+    def test_accepts_empty_value(self):
+        self.assertEqual(_normalize_keyword_filter(None), [])
 
 
 if __name__ == "__main__":
