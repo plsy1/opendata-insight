@@ -7,14 +7,16 @@ from fastapi import HTTPException
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from database import AvbaseReleaseCache, Base
+from database import ActorData, AvbaseReleaseCache, Base
 from database.models.movies import MovieData, MovieProduct, MovieSubscribe
+from schemas.actor import ActorDataOut
 from services.avbase import (
     AVBASE_DETAIL_SOURCE,
     AVBASE_RELEASE_SOURCE,
     _actor_cache_expired,
     cleanup_avbase_release_cache,
     fetch_avbase_release_by_date_and_write_db,
+    get_actor_information_by_name_service,
     get_information_by_work_id_service,
     get_release_service,
     refresh_information_by_work_id_service,
@@ -43,6 +45,49 @@ class ActorCacheTests(unittest.TestCase):
             updated_at=now - timedelta(hours=25),
         )
         self.assertTrue(_actor_cache_expired(record, now=now, cache_hours=24))
+
+
+class ActorInformationTests(unittest.IsolatedAsyncioTestCase):
+    async def test_refresh_never_overwrites_actor_primary_key(self):
+        engine = create_engine("sqlite:///:memory:")
+        Base.metadata.create_all(engine)
+
+        with Session(engine) as db:
+            actor = ActorData(
+                name="Actor A",
+                avatar_url=None,
+                updated_at=datetime(2026, 1, 1),
+            )
+            db.add(actor)
+            db.commit()
+            actor_id = actor.id
+
+            source_data = ActorDataOut(
+                id=None,
+                name="Unexpected replacement name",
+                avatar_url="https://example.com/actor.jpg",
+                updated_at=None,
+            )
+            with patch(
+                "services.avbase.fetch_actor_information_from_source",
+                new=AsyncMock(return_value=source_data),
+            ):
+                result = await get_actor_information_by_name_service(
+                    db,
+                    "Actor A",
+                )
+
+            refreshed = db.get(ActorData, actor_id)
+            self.assertIsNotNone(refreshed)
+            self.assertEqual(result.id, actor_id)
+            self.assertEqual(refreshed.id, actor_id)
+            self.assertEqual(refreshed.name, "Actor A")
+            self.assertEqual(
+                refreshed.avatar_url,
+                "https://example.com/actor.jpg",
+            )
+
+        engine.dispose()
 
 
 class MovieInformationTests(unittest.IsolatedAsyncioTestCase):

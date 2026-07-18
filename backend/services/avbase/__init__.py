@@ -42,6 +42,23 @@ DEFAULT_RELEASE_RETENTION_DAYS = 30
 DOWNLOADED_METADATA_MAX_AGE = timedelta(days=3)
 ACTIVE_SUBSCRIPTION_METADATA_MAX_AGE = timedelta(days=1)
 _MOVIE_REFRESH_LOCKS: defaultdict[str, asyncio.Lock] = defaultdict(asyncio.Lock)
+ACTOR_SOURCE_METADATA_FIELDS = frozenset(
+    {
+        "avatar_url",
+        "birthday",
+        "blood_type",
+        "bust",
+        "cup",
+        "height",
+        "hip",
+        "hobby",
+        "aliases",
+        "prefectures",
+        "ruby",
+        "social_media",
+        "waist",
+    }
+)
 
 
 def _cache_hours() -> float:
@@ -93,6 +110,17 @@ async def fetch_actor_lists_from_source() -> tuple[
     return parse_actor_lists(content)
 
 
+def apply_actor_source_metadata(record: ActorData, data: ActorDataOut) -> None:
+    """Apply only mutable source metadata to an existing actor record."""
+    update_data = data.model_dump(
+        include=ACTOR_SOURCE_METADATA_FIELDS,
+        exclude_unset=True,
+    )
+    for key, value in update_data.items():
+        if value is not None:
+            setattr(record, key, value)
+
+
 async def get_movie_list_by_actor_name_service(
     name: str, page: int
 ) -> list[MoviePoster]:
@@ -130,13 +158,17 @@ async def get_actor_information_by_name_service(
                 return ActorDataOut.model_validate(record)
             raise
 
-        actor_fields = data.model_dump(exclude={"subscribers"})
         if record is None:
+            actor_fields = data.model_dump(
+                include=ACTOR_SOURCE_METADATA_FIELDS | {"name"},
+                exclude_unset=True,
+                exclude_none=True,
+            )
+            actor_fields["name"] = actor_fields.get("name") or name
             record = ActorData(**actor_fields)
             db.add(record)
         else:
-            for key, value in actor_fields.items():
-                setattr(record, key, value)
+            apply_actor_source_metadata(record, data)
 
         record.updated_at = datetime.now()
         db.commit()

@@ -6,7 +6,10 @@ from config import _config
 from utils.logs import LOG_ERROR, LOG_INFO
 from database import get_db
 from database.models.actors import ActorData
-from services.avbase import fetch_actor_information_from_source
+from services.avbase import (
+    apply_actor_source_metadata,
+    fetch_actor_information_from_source,
+)
 
 
 async def update_actor_data_periodic():
@@ -41,11 +44,7 @@ async def update_actor_data_periodic():
             try:
                 data = await fetch_actor_information_from_source(actor.name)
                 if data:
-                    # 获取解析到的所有字段字典（排除 name 避免意外覆盖主记录名）
-                    update_data = data.model_dump(exclude={"name"}, exclude_unset=True)
-                    for key, value in update_data.items():
-                        if value is not None:
-                            setattr(actor, key, value)
+                    apply_actor_source_metadata(actor, data)
                 actor.updated_at = datetime.now()
                 db.commit()
                 # 睡两秒，防止请求太快被封
