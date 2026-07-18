@@ -11,7 +11,15 @@
       <span class="meta-pill">
         <i class="fas fa-hashtag"></i>{{ data.product_id }}
       </span>
-      <span class="meta-pill" *ngIf="data.author">
+      <button
+        type="button"
+        class="meta-pill seller-link"
+        *ngIf="data.author && data.seller_id"
+        (click)="openSeller()"
+      >
+        <i class="fas fa-person"></i>{{ data.author }}
+      </button>
+      <span class="meta-pill" *ngIf="data.author && !data.seller_id">
         <i class="fas fa-person"></i>{{ data.author }}
       </span>
       <span class="meta-pill" *ngIf="data.sale_day">
@@ -59,7 +67,17 @@
         <div class="detail-list">
           <div class="detail-row">
             <span class="detail-label">{{ 'DETAILS.MAKER_AUTHOR' | translate }}</span>
-            <span class="detail-value">{{ data.author || "N/A" }}</span>
+            <button
+              type="button"
+              class="detail-value seller-detail-link"
+              *ngIf="data.seller_id; else sellerName"
+              (click)="openSeller()"
+            >
+              {{ data.author || "N/A" }}<mat-icon>chevron_right</mat-icon>
+            </button>
+            <ng-template #sellerName>
+              <span class="detail-value">{{ data.author || "N/A" }}</span>
+            </ng-template>
           </div>
           <div class="detail-row">
             <span class="detail-label">{{ 'DETAILS.SALE_DAY' | translate }}</span>

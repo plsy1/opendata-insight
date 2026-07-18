@@ -26,6 +26,7 @@ class ApiContractTests(unittest.TestCase):
             "/feed/actorCollect",
             "/fc2/details",
             "/fc2/ranking",
+            "/fc2/sellers/{seller_id}",
             "/emby/get_latest",
             "/emby/get_resume",
             "/emby/get_views",

@@ -32,6 +32,32 @@
 
 .cover-img.blurred:hover { filter: blur(0); }
 
+.seller-link {
+  font: inherit;
+  cursor: pointer;
+}
+
+.seller-detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: color var(--t-fast);
+}
+
+.seller-detail-link:hover {
+  color: var(--primary);
+}
+
+.seller-detail-link mat-icon {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+}
+
 @media (max-width: 900px) {
   .cover-column { order: -1; }
   .cover-img { max-height: 400px; }

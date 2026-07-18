@@ -67,10 +67,10 @@
       <div class="movie-date">{{ releaseDate }}</div>
       <div class="movie-tags">
         <span
-          *ngFor="let tag of actors.slice(0, 3)"
+          *ngFor="let tag of actors.slice(0, 3); let i = index"
           class="movie-tag"
           [matTooltip]="tag"
-          (click)="onActorClick(tag, $event)"
+          (click)="onActorClick(tag, i, $event)"
         >
           {{ tag }}
         </span>

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './movie-poster.component.html',
-  styleUrls: ['./movie-poster.component.scss'],
+  styleUrls: ['./movie-poster.component.css'],
 })
 export class MoviePosterComponent {
   @Input() title: string = '';

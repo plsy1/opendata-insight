@@ -26,6 +26,7 @@ import { APP_PATHS } from '../../../../../app-paths';
   styleUrl: './fc2.component.css',
 })
 export class Fc2Component implements OnInit {
+  readonly fc2SellerPath = APP_PATHS.fc2Sellers;
   constructor(
     private router: Router,
     public PageExploreService: PageExploreServiceService

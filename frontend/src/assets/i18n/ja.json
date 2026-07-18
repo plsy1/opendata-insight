@@ -230,7 +230,17 @@
         "DELETE": "削除",
         "DETAILS": "詳細",
         "LOADING": "読み込み中...",
+        "RETRY": "再試行",
         "CLOSE": "閉じる"
+    },
+    "FC2_SELLER": {
+        "WORKS": "販売者の作品",
+        "WORKS_UNIT": "作品",
+        "FOLLOWERS": "フォロワー",
+        "NEWEST_FIRST": "発売日の新しい順",
+        "OPEN_FC2": "FC2 プロフィールを開く",
+        "NO_WORKS": "このページに作品はありません",
+        "LOAD_FAILED": "販売者情報または作品を読み込めませんでした"
     },
     "DOWNLOAD_PAGE": {
         "DOWNLOADING": "ダウンロード中...",

@@ -7,6 +7,8 @@ export interface fc2RankingItem {
   url: string;
   cover: string;
   owner: string;
+  seller_id?: string | null;
+  seller_url?: string | null;
   rating: number;
   comment_count: number;
   hot_comments: string[];

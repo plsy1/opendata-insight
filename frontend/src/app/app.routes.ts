@@ -5,6 +5,7 @@ import { DashboardComponent } from './page/dashboard/dashboard.component';
 import { DownloadComponent } from './page/download/download.component';
 import { ExploreComponent } from './page/explore/explore.component';
 import { Fc2ProductionInformationComponent } from './page/fc2-production-information/fc2-production-information.component';
+import { Fc2SellerInformationComponent } from './page/fc2-seller-information/fc2-seller-information.component';
 import { HomeComponent } from './page/home/home.component';
 import { KeywordsSearchComponent } from './page/keywords-search/keywords-search.component';
 import { LoginComponent } from './page/login/login.component';
@@ -63,6 +64,10 @@ export const routes: Routes = [
       {
         path: APP_ROUTE_SEGMENTS.fc2MovieDetail,
         component: Fc2ProductionInformationComponent,
+      },
+      {
+        path: APP_ROUTE_SEGMENTS.fc2SellerDetail,
+        component: Fc2SellerInformationComponent,
       },
       {
         path: APP_ROUTE_SEGMENTS.movieDetail,

@@ -11,6 +11,7 @@ export const APP_ROUTE_SEGMENTS = {
   performerDetail: 'performers/:name',
   movieDetail: 'movies/:id',
   fc2MovieDetail: 'movies/fc2/:id',
+  fc2SellerDetail: 'sellers/fc2/:sellerId',
   settings: 'settings',
   login: 'login',
 } as const;
@@ -26,6 +27,7 @@ export const APP_PATHS = {
   performers: '/performers',
   movies: '/movies',
   fc2Movies: '/movies/fc2',
+  fc2Sellers: '/sellers/fc2',
   settings: `/${APP_ROUTE_SEGMENTS.settings}`,
   login: `/${APP_ROUTE_SEGMENTS.login}`,
 } as const;

@@ -188,6 +188,11 @@ export class Fc2ProductionInformationComponent implements OnInit {
     }
   }
 
+  openSeller(): void {
+    if (!this.data?.seller_id) return;
+    this.router.navigate([APP_PATHS.fc2Sellers, this.data.seller_id]);
+  }
+
   async toSupjav() {
     try {
       window.open(`https://supjav.com/?s=${this.data?.article_id}`, '_blank');

@@ -21,6 +21,7 @@ describe('application routes', () => {
       APP_ROUTE_SEGMENTS.performerDetail,
       APP_ROUTE_SEGMENTS.movieDetail,
       APP_ROUTE_SEGMENTS.fc2MovieDetail,
+      APP_ROUTE_SEGMENTS.fc2SellerDetail,
       APP_ROUTE_SEGMENTS.settings,
     ];
 

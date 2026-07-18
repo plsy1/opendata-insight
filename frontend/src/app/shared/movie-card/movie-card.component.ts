@@ -26,6 +26,8 @@ export class MovieCardComponent {
   @Input() imgUrl!: string;
   @Input() releaseDate?: string;
   @Input() actors: string[] = [];
+  @Input() actorIds: string[] = [];
+  @Input() actorBasePath: string = APP_PATHS.performers;
   @Input() rank?: string;
   @Input() hideImage = false;
   @Input() showID = true;
@@ -86,9 +88,12 @@ export class MovieCardComponent {
       });
   }
 
-  onActorClick(actor: string, event: MouseEvent) {
+  onActorClick(actor: string, index: number, event: MouseEvent) {
     event.stopPropagation();
-    this.router.navigate([APP_PATHS.performers, actor]);
+    this.router.navigate([
+      this.actorBasePath,
+      this.actorIds[index] || actor,
+    ]);
   }
 
   onUnsubscribeClick(event: MouseEvent): void {

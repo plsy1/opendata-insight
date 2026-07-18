@@ -38,6 +38,9 @@
     [id]="work.article_id"
     [title]="work.title"
     [imgUrl]="work.cover || ''"
+    [actors]="work.seller_id && work.owner ? [work.owner] : []"
+    [actorIds]="work.seller_id ? [work.seller_id] : []"
+    [actorBasePath]="fc2SellerPath"
     (movieClick)="posterClick(work.article_id)"
     [enableBlur]="PageExploreService.isEnableBlur$() | async"
   ></app-movie-card>

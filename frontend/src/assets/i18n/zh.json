@@ -230,7 +230,17 @@
         "DELETE": "删除",
         "DETAILS": "详情",
         "LOADING": "加载中...",
+        "RETRY": "重试",
         "CLOSE": "关闭"
+    },
+    "FC2_SELLER": {
+        "WORKS": "卖家作品",
+        "WORKS_UNIT": "部作品",
+        "FOLLOWERS": "位关注者",
+        "NEWEST_FIRST": "按发售时间从新到旧",
+        "OPEN_FC2": "打开 FC2 主页",
+        "NO_WORKS": "该页暂无作品",
+        "LOAD_FAILED": "卖家资料或作品加载失败"
     },
     "DOWNLOAD_PAGE": {
         "DOWNLOADING": "正在下载...",

@@ -1,0 +1,112 @@
+<div *ngIf="isLoading" class="seller-state">
+  <i class="fas fa-spinner fa-spin"></i>
+  <span>{{ 'COMMON.LOADING' | translate }}</span>
+</div>
+
+<div *ngIf="!isLoading && error" class="seller-state seller-state--error">
+  <mat-icon>cloud_off</mat-icon>
+  <span>{{ 'FC2_SELLER.LOAD_FAILED' | translate }}</span>
+  <button type="button" (click)="loadSeller()">
+    {{ 'COMMON.RETRY' | translate }}
+  </button>
+</div>
+
+<div class="seller-page" *ngIf="!isLoading && !error && seller">
+  <section class="seller-hero">
+    <div class="seller-banner" *ngIf="seller.banner_url">
+      <img
+        [src]="seller.banner_url"
+        alt=""
+        [class.blurred]="common.enableBlur$ | async"
+      />
+      <div class="seller-banner__shade"></div>
+    </div>
+
+    <div class="seller-profile">
+      <div class="seller-avatar">
+        <img
+          [src]="seller.avatar_url || 'assets/logo.svg'"
+          [alt]="seller.name"
+          [class.blurred]="common.enableBlur$ | async"
+        />
+      </div>
+
+      <div class="seller-profile__content">
+        <div class="seller-title-row">
+          <div>
+            <span class="seller-kicker">FC2 CREATOR</span>
+            <h1>{{ seller.name }}</h1>
+          </div>
+          <button type="button" class="source-button" (click)="openSource()">
+            <mat-icon>open_in_new</mat-icon>
+            {{ 'FC2_SELLER.OPEN_FC2' | translate }}
+          </button>
+        </div>
+
+        <div class="seller-pills">
+          <span class="seller-pill">
+            <mat-icon>movie</mat-icon>
+            {{ total || seller.product_count || 0 }} {{ 'FC2_SELLER.WORKS_UNIT' | translate }}
+          </span>
+          <span class="seller-pill" *ngIf="seller.follower_count">
+            <mat-icon>group</mat-icon>
+            {{ seller.follower_count | number }} {{ 'FC2_SELLER.FOLLOWERS' | translate }}
+          </span>
+          <span class="seller-pill seller-pill--id">
+            <mat-icon>alternate_email</mat-icon>{{ seller.seller_id }}
+          </span>
+        </div>
+
+        <p class="seller-intro" *ngIf="seller.short_intro">
+          {{ seller.short_intro }}
+        </p>
+        <p class="seller-description" *ngIf="seller.description">
+          {{ seller.description }}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="seller-works">
+    <div class="works-heading">
+      <div>
+        <span class="section-kicker">{{ 'FC2_SELLER.NEWEST_FIRST' | translate }}</span>
+        <h2>{{ 'FC2_SELLER.WORKS' | translate }}</h2>
+      </div>
+      <app-pagination
+        [page]="page"
+        [hasNext]="hasNext"
+        [compact]="true"
+        (previousClick)="previousPage()"
+        (nextClick)="nextPage()"
+      ></app-pagination>
+    </div>
+
+    <div class="poster-grid" *ngIf="works.length; else noWorks">
+      <app-movie-card
+        *ngFor="let work of works"
+        [id]="work.article_id || ''"
+        [title]="work.title || ''"
+        [imgUrl]="work.cover || ''"
+        [releaseDate]="workMeta(work)"
+        [enableBlur]="common.enableBlur$ | async"
+        (movieClick)="openWork(work.article_id || '')"
+      ></app-movie-card>
+    </div>
+
+    <ng-template #noWorks>
+      <div class="empty-state">
+        <mat-icon>video_library</mat-icon>
+        <span>{{ 'FC2_SELLER.NO_WORKS' | translate }}</span>
+      </div>
+    </ng-template>
+
+    <app-pagination
+      *ngIf="works.length"
+      [page]="page"
+      [hasNext]="hasNext"
+      (previousClick)="previousPage()"
+      (nextClick)="nextPage()"
+    ></app-pagination>
+  </section>
+</div>

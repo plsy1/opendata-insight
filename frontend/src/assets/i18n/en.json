@@ -230,7 +230,17 @@
         "DELETE": "Delete",
         "DETAILS": "Details",
         "LOADING": "Loading...",
+        "RETRY": "Retry",
         "CLOSE": "Close"
+    },
+    "FC2_SELLER": {
+        "WORKS": "Seller works",
+        "WORKS_UNIT": "works",
+        "FOLLOWERS": "followers",
+        "NEWEST_FIRST": "Newest releases first",
+        "OPEN_FC2": "Open FC2 profile",
+        "NO_WORKS": "No works on this page",
+        "LOAD_FAILED": "Failed to load the seller profile or works"
     },
     "DOWNLOAD_PAGE": {
         "DOWNLOADING": "Downloading...",

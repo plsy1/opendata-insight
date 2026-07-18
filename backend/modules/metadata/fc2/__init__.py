@@ -1,5 +1,11 @@
-from .model import RankingType, FC2RankingItem, FC2VideoInformation
-from .helper import parse_ranking
+from .model import (
+    FC2RankingItem,
+    FC2SellerInformation,
+    FC2SellerWorksPage,
+    FC2VideoInformation,
+    RankingType,
+)
+from .helper import parse_ranking, parse_seller_information, parse_seller_works
 from utils.logs import LOG_ERROR, LOG_INFO
 
 import asyncio
@@ -80,3 +86,45 @@ async def get_information_by_number(number: str) -> FC2VideoInformation:
     from .helper import parse_information
 
     return parse_information(html)
+
+
+async def get_seller_information(seller_id: str) -> FC2SellerInformation:
+    profile_url = f"https://adult.contents.fc2.com/users/{seller_id}/"
+
+    async with httpx.AsyncClient(
+        headers=headers,
+        timeout=20,
+        follow_redirects=True,
+    ) as client:
+        response = await client.get(profile_url)
+        response.raise_for_status()
+
+    return parse_seller_information(response.text, seller_id)
+
+
+async def get_seller_works(
+    seller: FC2SellerInformation,
+    page: int = 1,
+) -> FC2SellerWorksPage:
+    search_url = "https://adult.contents.fc2.com/search/"
+    params = {
+        "q": "",
+        "is_adult": 1,
+        "sort": "date",
+        "order": "desc",
+        "size": 20,
+        "author_id": seller.author_id,
+        "keep": 0,
+        "page": page,
+    }
+    request_headers = {**headers, "Referer": seller.profile_url}
+
+    async with httpx.AsyncClient(
+        headers=request_headers,
+        timeout=20,
+        follow_redirects=True,
+    ) as client:
+        response = await client.get(search_url, params=params)
+        response.raise_for_status()
+
+    return parse_seller_works(response.text, seller.seller_id, page)

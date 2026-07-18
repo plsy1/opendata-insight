@@ -28,6 +28,7 @@ class DatabaseMigrationTests(unittest.TestCase):
             self.assertIn("movie_data", inspector.get_table_names())
             self.assertIn("image_sources", inspector.get_table_names())
             self.assertIn("avbase_release_cache", inspector.get_table_names())
+            self.assertIn("fc2_sellers", inspector.get_table_names())
             self.assertIn("alembic_version", inspector.get_table_names())
             movie_indexes = {
                 index["name"] for index in inspector.get_indexes("movie_data")
@@ -47,13 +48,24 @@ class DatabaseMigrationTests(unittest.TestCase):
                 for column in inspector.get_columns("movie_subscribe")
             }
             self.assertIn("rule_config", subscribe_columns)
+            fc2_product_columns = {
+                column["name"]
+                for column in inspector.get_columns("fc2_products")
+            }
+            self.assertIn("seller_id", fc2_product_columns)
+            self.assertIn("seller_page", fc2_product_columns)
+            fc2_ranking_columns = {
+                column["name"]
+                for column in inspector.get_columns("fc2_ranking")
+            }
+            self.assertIn("seller_id", fc2_ranking_columns)
 
             with engine.connect() as connection:
                 revision = MigrationContext.configure(connection).get_current_revision()
                 auto_vacuum = connection.exec_driver_sql(
                     "PRAGMA auto_vacuum"
                 ).scalar_one()
-            self.assertEqual(revision, "20260718_0007")
+            self.assertEqual(revision, "20260719_0008")
             self.assertEqual(auto_vacuum, 2)
             self.assertFalse((database_path.parent / "backups").exists())
             engine.dispose()
@@ -153,7 +165,7 @@ class DatabaseMigrationTests(unittest.TestCase):
             self.assertEqual(actor_name, "legacy actor")
             self.assertEqual(source_types["RELEASE-001"], "avbase_release")
             self.assertEqual(source_types["DETAIL-001"], "avbase_detail")
-            self.assertEqual(revision, "20260718_0007")
+            self.assertEqual(revision, "20260719_0008")
 
             backups = list((database_path.parent / "backups").glob("*.db"))
             self.assertEqual(len(backups), 1)
