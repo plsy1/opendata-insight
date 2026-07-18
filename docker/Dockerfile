@@ -39,6 +39,7 @@ COPY --from=frontend /app/frontend/dist/frontend/browser /app/frontend
 
 # Copy application code
 COPY backend /app/backend
+COPY alembic.ini /app/alembic.ini
 COPY VERSION /app/VERSION
 COPY docker/start.sh /app/start.sh
 COPY docker/supervisord.conf /app/supervisord.conf

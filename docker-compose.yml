@@ -6,6 +6,7 @@ services:
     volumes:
       - ./data:/app/backend/data
       - ./runtime:/app/runtime
+      - ./alembic.ini:/app/alembic.ini:ro
     ports:
       - "8080:80"
     environment:

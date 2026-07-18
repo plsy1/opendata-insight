@@ -27,11 +27,16 @@ APP_TABLES = {
 
 
 def _alembic_config(database_url: str) -> Config:
-    project_dir = Path(__file__).resolve().parents[3]
-    config = Config(str(project_dir / "alembic.ini"))
+    # Runtime migrations must not depend on the repository-level alembic.ini.
+    # Packaged deployments (notably Docker) may only contain the backend tree.
+    config = Config()
     config.set_main_option(
         "script_location",
         str(Path(__file__).resolve().parent),
+    )
+    config.set_main_option(
+        "prepend_sys_path",
+        str(Path(__file__).resolve().parents[2]),
     )
     config.set_main_option("sqlalchemy.url", database_url.replace("%", "%%"))
     return config

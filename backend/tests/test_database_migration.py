@@ -7,7 +7,7 @@ from alembic.migration import MigrationContext
 from sqlalchemy import create_engine, inspect, text
 
 from database.base import configure_sqlite_connection
-from database.migrations.runner import run_database_migrations
+from database.migrations.runner import _alembic_config, run_database_migrations
 
 
 class DatabaseMigrationTests(unittest.TestCase):
@@ -15,6 +15,15 @@ class DatabaseMigrationTests(unittest.TestCase):
         return create_engine(
             f"sqlite:///{database_path}",
             connect_args={"check_same_thread": False, "timeout": 5},
+        )
+
+    def test_runtime_alembic_config_is_self_contained(self):
+        config = _alembic_config("sqlite:////tmp/kanojo-test.db")
+
+        self.assertIsNone(config.config_file_name)
+        self.assertEqual(
+            Path(config.get_main_option("script_location")).name,
+            "migrations",
         )
 
     def test_fresh_database_is_created_at_head(self):
